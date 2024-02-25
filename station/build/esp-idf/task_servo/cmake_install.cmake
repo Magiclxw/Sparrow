@@ -1,4 +1,4 @@
-# Install script for directory: E:/WORK/PersonalProject/ComputerControlStation/Firmware/station/app_task/task_servo
+# Install script for directory: E:/WORK/PersonalProject/X-Station/X-station/station/app_task/task_servo
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

@@ -1,4 +1,4 @@
-# Install script for directory: E:/WORK/PersonalProject/ComputerControlStation/Firmware/station/main
+# Install script for directory: E:/WORK/PersonalProject/X-Station/X-station/station/main
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

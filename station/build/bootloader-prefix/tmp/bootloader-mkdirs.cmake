@@ -5,18 +5,18 @@ cmake_minimum_required(VERSION 3.5)
 
 file(MAKE_DIRECTORY
   "C:/Espressif/frameworks/esp-idf-v5.1.2/components/bootloader/subproject"
-  "E:/WORK/PersonalProject/ComputerControlStation/Firmware/station/build/bootloader"
-  "E:/WORK/PersonalProject/ComputerControlStation/Firmware/station/build/bootloader-prefix"
-  "E:/WORK/PersonalProject/ComputerControlStation/Firmware/station/build/bootloader-prefix/tmp"
-  "E:/WORK/PersonalProject/ComputerControlStation/Firmware/station/build/bootloader-prefix/src/bootloader-stamp"
-  "E:/WORK/PersonalProject/ComputerControlStation/Firmware/station/build/bootloader-prefix/src"
-  "E:/WORK/PersonalProject/ComputerControlStation/Firmware/station/build/bootloader-prefix/src/bootloader-stamp"
+  "E:/WORK/PersonalProject/X-Station/X-station/station/build/bootloader"
+  "E:/WORK/PersonalProject/X-Station/X-station/station/build/bootloader-prefix"
+  "E:/WORK/PersonalProject/X-Station/X-station/station/build/bootloader-prefix/tmp"
+  "E:/WORK/PersonalProject/X-Station/X-station/station/build/bootloader-prefix/src/bootloader-stamp"
+  "E:/WORK/PersonalProject/X-Station/X-station/station/build/bootloader-prefix/src"
+  "E:/WORK/PersonalProject/X-Station/X-station/station/build/bootloader-prefix/src/bootloader-stamp"
 )
 
 set(configSubDirs )
 foreach(subDir IN LISTS configSubDirs)
-    file(MAKE_DIRECTORY "E:/WORK/PersonalProject/ComputerControlStation/Firmware/station/build/bootloader-prefix/src/bootloader-stamp/${subDir}")
+    file(MAKE_DIRECTORY "E:/WORK/PersonalProject/X-Station/X-station/station/build/bootloader-prefix/src/bootloader-stamp/${subDir}")
 endforeach()
 if(cfgdir)
-  file(MAKE_DIRECTORY "E:/WORK/PersonalProject/ComputerControlStation/Firmware/station/build/bootloader-prefix/src/bootloader-stamp${cfgdir}") # cfgdir has leading slash
+  file(MAKE_DIRECTORY "E:/WORK/PersonalProject/X-Station/X-station/station/build/bootloader-prefix/src/bootloader-stamp${cfgdir}") # cfgdir has leading slash
 endif()

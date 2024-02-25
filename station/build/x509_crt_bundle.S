@@ -1,4 +1,4 @@
-/* * Data converted from E:/WORK/PersonalProject/ComputerControlStation/Firmware/station/build/esp-idf/mbedtls/x509_crt_bundle
+/* * Data converted from E:/WORK/PersonalProject/X-Station/X-station/station/build/esp-idf/mbedtls/x509_crt_bundle
  */
 .data
 .section .rodata.embedded
