@@ -9,6 +9,6 @@
 #include "esp_event.h"
 #include "esp_log.h"
 
-void wifi_init_sta(void);
+void initialise_wifi(void);
 
 #endif

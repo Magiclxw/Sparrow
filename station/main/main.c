@@ -32,7 +32,7 @@ void app_main(void)
     }
     ESP_ERROR_CHECK(ret);
 
-    wifi_init_sta();
+    initialise_wifi();
 
     mqtt_app_start();
 
