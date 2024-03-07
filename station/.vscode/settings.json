@@ -5,7 +5,7 @@
     "board/esp32s3-builtin.cfg"
   ],
   "idf.flashType": "UART",
-  "idf.portWin": "COM1",
+  "idf.portWin": "COM20",
   "files.associations": {
     "mqtt_client.h": "c",
     "wifi.h": "c",
@@ -20,6 +20,8 @@
     "event_groups.h": "c",
     "esp_log.h": "c",
     "sys_config.h": "c",
-    "mcpwm_prelude.h": "c"
+    "mcpwm_prelude.h": "c",
+    "string_view": "c",
+    "regex": "c"
   }
 }

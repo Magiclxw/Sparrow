@@ -59,6 +59,31 @@ static void event_handler(void* arg, esp_event_base_t event_base,
         memcpy(password, evt->password, sizeof(evt->password));
         ESP_LOGI(TAG, "SSID:%s", ssid);
         ESP_LOGI(TAG, "PASSWORD:%s", password);
+
+        nvs_handle_t my_handle;
+        esp_err_t ret = nvs_open("storage", NVS_READWRITE, &my_handle);
+        if (ret != ESP_OK) {
+            printf("Error (%s) opening NVS handle!\n", esp_err_to_name(ret));
+        } else {
+
+            ret = nvs_set_str(my_handle,"ssid",(char*)ssid);
+
+            if(ret == ESP_OK)
+            {
+                ret = nvs_set_str(my_handle,"password",(char*)password);
+
+                ret = nvs_commit(my_handle);
+
+                nvs_close(my_handle);
+
+                if(ret == ESP_OK)
+                {
+                    printf("wifi message store success!");
+                }
+            }
+        }
+
+
         if (evt->type == SC_TYPE_ESPTOUCH_V2) {
             ESP_ERROR_CHECK( esp_smartconfig_get_rvd_data(rvd_data, sizeof(rvd_data)) );
             ESP_LOGI(TAG, "RVD_DATA:");
@@ -95,12 +120,66 @@ void initialise_wifi(void)
     ESP_ERROR_CHECK( esp_wifi_start() );
 }
 
+esp_err_t clearWifiData()
+{
+    nvs_handle_t my_handle;
+    nvs_open("storage", NVS_READWRITE, &my_handle);
+    nvs_erase_key(my_handle,"ssid");
+    nvs_erase_key(my_handle,"password");
+
+    return ESP_OK;
+}
+
 static void smartconfig_example_task(void * parm)
 {
     EventBits_t uxBits;
     ESP_ERROR_CHECK( esp_smartconfig_set_type(SC_TYPE_ESPTOUCH) );
     smartconfig_start_config_t cfg = SMARTCONFIG_START_CONFIG_DEFAULT();
     ESP_ERROR_CHECK( esp_smartconfig_start(&cfg) );
+
+    nvs_handle_t my_handle;
+    esp_err_t ret = nvs_open("storage", NVS_READWRITE, &my_handle);
+
+    if (ret != ESP_OK) {
+        printf("Error (%s) opening NVS handle!\n", esp_err_to_name(ret));
+    } else {
+        printf("nvs open success!");
+        char str_ssid[33] = {0};
+        char str_password[65] = {0};
+        size_t ssidLength;
+        ret = nvs_get_str(my_handle, "ssid", NULL,&ssidLength);
+        if(ret == ESP_OK)
+        {
+            // printf("ret = %x\r\n",ret);
+            // printf("ssid size = %d\r\n",ssidLength);
+            ret = nvs_get_str(my_handle, "ssid", str_ssid,&ssidLength);
+            //printf("ret = %x\r\n",ret);
+            if(ret == ESP_OK)
+            {
+                printf("ssid = %s\r\n",str_ssid);
+                size_t passwordLength ;
+                nvs_get_str(my_handle, "password", NULL, &passwordLength);  //获取长度
+                ret = nvs_get_str(my_handle, "password", str_password,&passwordLength);
+                if(ret == ESP_OK)
+                {
+                    printf("password = %s\r\n",str_password);
+                    wifi_config_t wifi_config;
+                    bzero(&wifi_config, sizeof(wifi_config_t));
+                    memcpy(wifi_config.sta.ssid,str_ssid,ssidLength);
+                    memcpy(wifi_config.sta.password,str_password,passwordLength);
+
+                    ESP_ERROR_CHECK( esp_wifi_disconnect() );
+                    ESP_ERROR_CHECK( esp_wifi_set_config(WIFI_IF_STA, &wifi_config) );
+                    esp_wifi_connect();
+                }
+            }
+        }
+        
+
+        
+
+    }
+
     while (1) {
         uxBits = xEventGroupWaitBits(s_wifi_event_group, CONNECTED_BIT | ESPTOUCH_DONE_BIT, true, false, portMAX_DELAY);
         if(uxBits & CONNECTED_BIT) {

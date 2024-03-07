@@ -10,5 +10,6 @@
 #include "esp_log.h"
 
 void initialise_wifi(void);
+esp_err_t clearWifiData();
 
 #endif
