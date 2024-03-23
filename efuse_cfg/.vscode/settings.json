@@ -1,0 +1,14 @@
+{
+  "C_Cpp.intelliSenseEngine": "default",
+  "files.associations": {
+    "esp_log.h": "c",
+    "led_strip.h": "c",
+    "freertos.h": "c"
+  },
+  "idf.adapterTargetName": "esp32s3",
+  "idf.portWin": "COM21",
+  "idf.flashType": "UART",
+  "idf.openOcdConfigs": [
+    "board/esp32s3-builtin.cfg"
+  ]
+}

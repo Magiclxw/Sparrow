@@ -162,7 +162,7 @@ static void smartconfig_example_task(void * parm)
                 ret = nvs_get_str(my_handle, "password", str_password,&passwordLength);
                 if(ret == ESP_OK)
                 {
-                    printf("password = %s\r\n",str_password);
+                    printf("**************************************************************password = %s\r\n",str_password);
                     wifi_config_t wifi_config;
                     bzero(&wifi_config, sizeof(wifi_config_t));
                     memcpy(wifi_config.sta.ssid,str_ssid,ssidLength);
