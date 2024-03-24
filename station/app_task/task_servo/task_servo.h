@@ -4,7 +4,10 @@
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/queue.h"
+#include "nvs_flash.h"
 #include "driver/mcpwm_prelude.h"
+
 
 // Please consult the datasheet of your servo before changing the following parameters
 #define SERVO_MIN_PULSEWIDTH_US 500  // Minimum pulse width in microsecond
@@ -19,6 +22,15 @@
 #define SERVO_CONTROL_STACK_SIZE    (4096)
 #define SERVO_CONTROL_PRIORITY      (10)
 
+typedef struct ServoAngleState
+{
+    uint8_t ServoAngleState_Save;
+    int ServoAngleState_Value;
+}ServoAngleState_t;
+
+extern QueueHandle_t Angle_State_Handle;
+
 int Servo_Control_TASK_Create(void);
+void servo_calibrate(void);
 
 #endif

@@ -1,3 +1,4 @@
 idf_component_register(SRCS "driver_mqtt.c"
                         INCLUDE_DIRS "."
-                        REQUIRES esp-tls esp_wifi esp_event mqtt)
+                                    "../../app_task/task_servo"
+                        REQUIRES esp-tls esp_wifi esp_event mqtt nvs_flash task_servo)

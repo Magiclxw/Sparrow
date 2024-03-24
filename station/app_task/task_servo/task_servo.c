@@ -3,6 +3,9 @@
 
 
 TaskHandle_t Task_Servo_Handle = NULL;
+QueueHandle_t Angle_State_Handle = NULL;    //角度控制队列句柄
+
+mcpwm_cmpr_handle_t comparator = NULL;
 
 static void vTaskServoProcessing();
 
@@ -47,7 +50,7 @@ static void vTaskServoProcessing()
     ESP_ERROR_CHECK(mcpwm_operator_connect_timer(oper, timer));
 
     ESP_LOGI(TAG, "Create comparator and generator from the operator");
-    mcpwm_cmpr_handle_t comparator = NULL;
+    
     mcpwm_comparator_config_t comparator_config = {
         .flags.update_cmp_on_tez = true,
     };
@@ -74,19 +77,71 @@ static void vTaskServoProcessing()
     ESP_ERROR_CHECK(mcpwm_timer_enable(timer));
     ESP_ERROR_CHECK(mcpwm_timer_start_stop(timer, MCPWM_TIMER_START_NO_STOP));
 
+    ServoAngleState_t angle_state;
+
+    Angle_State_Handle = xQueueCreate(1,sizeof(ServoAngleState_t));
+
+    servo_calibrate();
+
     int angle = 0;
     int step = 4;
     while(1)
     {
-        ESP_LOGI(TAG, "Angle of rotation: %d", angle);
-        ESP_ERROR_CHECK(mcpwm_comparator_set_compare_value(comparator, example_angle_to_compare(angle)));
-        //Add delay, since it takes time for servo to rotate, usually 200ms/60degree rotation under 5V power supply
-        vTaskDelay(pdMS_TO_TICKS(500));
-        if ((angle + step) > 90 || (angle + step) < -90) {
-            step *= -1;
+        xQueueReceive(Angle_State_Handle,&angle_state,portMAX_DELAY);
+
+        ESP_LOGI(TAG, "Angle of rotation: %d", angle_state.ServoAngleState_Value);
+
+        if(angle_state.ServoAngleState_Value < -90 || angle_state.ServoAngleState_Value > 90)
+        {
+            continue;
         }
-        angle += step;
+
+        //数据不需保存
+        if(angle_state.ServoAngleState_Save == 0)
+        {
+            printf("servo control %d\r\n",angle_state.ServoAngleState_Value);
+            mcpwm_comparator_set_compare_value(comparator, example_angle_to_compare(angle_state.ServoAngleState_Value));
+        }
+        else
+        {
+            nvs_handle_t my_handle;
+            esp_err_t ret = nvs_open("storage", NVS_READWRITE, &my_handle);
+            if (ret != ESP_OK) {
+                printf("Error (%s) opening NVS handle!\n", esp_err_to_name(ret));
+            } else {
+                printf("save angle : %d\r\n",angle_state.ServoAngleState_Value);
+
+                ret = nvs_set_i16(my_handle,"angle",angle_state.ServoAngleState_Value);
+
+                if(ret == ESP_OK)
+                {
+
+                }
+            }
+        }
+
+        // ESP_ERROR_CHECK(mcpwm_comparator_set_compare_value(comparator, example_angle_to_compare(angle)));
+        // //Add delay, since it takes time for servo to rotate, usually 200ms/60degree rotation under 5V power supply
+        // vTaskDelay(pdMS_TO_TICKS(500));
+        // if ((angle + step) > 90 || (angle + step) < -90) {
+        //     step *= -1;
+        // }
+        // angle += step;
     }
 }
 
+/* 舵机校准 */
+void servo_calibrate(void)
+{
+    //-90°
+    ESP_ERROR_CHECK(mcpwm_comparator_set_compare_value(comparator, example_angle_to_compare(-90)));
+
+    vTaskDelay(pdMS_TO_TICKS(1000));
+    //90°
+    ESP_ERROR_CHECK(mcpwm_comparator_set_compare_value(comparator, example_angle_to_compare(90)));
+
+    vTaskDelay(pdMS_TO_TICKS(1000));
+    //0°
+    ESP_ERROR_CHECK(mcpwm_comparator_set_compare_value(comparator, example_angle_to_compare(0)));
+}
 

@@ -5,8 +5,12 @@ idf_component_register(SRCS "main.c"
                             "../app_task/task_servo/task_servo.c"
                             "../app_task/task_rtc/task_rtc.c"
                             "../app_task/task_battery/task_battery.c"
-                            
+                            "../drivers/drv_usb/drv_hid.c"
                     INCLUDE_DIRS "."
                                 "../drivers/drv_mqtt"
                                 "../drivers/wifi"
-                                "../app_task")
+                                "../drivers/drv_usb"
+                                "../app_task"
+                                "../app_task/task_servo"
+                                "../app_task/task_battery"
+                                "../app_task/task_rtc")

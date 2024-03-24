@@ -9,6 +9,7 @@
 #include "esp_log.h"
 #include "esp_system.h"
 #include "mqtt_client.h"
+#include "../../app_task/task_servo/task_servo.h"
 
 extern esp_mqtt_client_handle_t client;
 

@@ -1,5 +1,5 @@
 #include "task_battery.h"
-#include "drv_adc.h"
+#include "../../drivers/drv_adc/drv_adc.h"
 #include "driver_mqtt.h"
 #include "../../sys_config.h"
 
