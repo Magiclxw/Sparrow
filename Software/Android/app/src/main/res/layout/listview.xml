@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5EEFF">
+    <TextView
+        android:id="@+id/top1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="序号"
+        android:textColor="@color/black"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="20dp"
+        android:textSize="20sp"/>
+    <TextView
+        android:id="@+id/top2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="结果"
+        android:textColor="@color/black"
+        android:layout_alignLeft="@+id/top1"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="80dp"
+        android:textSize="20sp"/>
+    <TextView
+        android:id="@+id/top3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="方式"
+        android:textColor="@color/black"
+        android:layout_alignLeft="@+id/top2"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="100dp"
+        android:textSize="20sp"/>
+    <TextView
+        android:id="@+id/top4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="时间"
+        android:textColor="@color/black"
+        android:layout_alignLeft="@+id/top3"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="120dp"
+        android:textSize="20sp"/>
+    <RelativeLayout
+        android:id="@+id/top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="历史记录"
+            android:textSize="30sp"
+            android:textColor="@color/black"/>
+    </RelativeLayout>
+    <ListView
+        android:id="@+id/lv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/top"
+        android:layout_marginTop="70dp"
+        android:scrollbars="vertical">
+    </ListView>
+
+
+</RelativeLayout>
