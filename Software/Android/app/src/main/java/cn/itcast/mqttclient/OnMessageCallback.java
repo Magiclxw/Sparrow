@@ -18,17 +18,15 @@ public class OnMessageCallback implements MqttCallback {
     public void connectionLost(Throwable cause) {
         // 连接丢失后，一般在这里面进行重连
         System.out.println("连接断开，可以做重连");
-        String subTopic = "LockState";
-        String subTopic1="TH";
-        String subTopic2="LockorUnlock";
-        String pubTopic = "LockControl";
-        String broker = MainActivity.mqttweb;
+        String broker = MainActivity.mqttServer;
         String clientId = "Controller";
         MemoryPersistence persistence = new MemoryPersistence();
 
         try {
             client = new MqttClient(broker, clientId, persistence);
             MqttConnectOptions connOpts = new MqttConnectOptions();
+            connOpts.setUserName(MainActivity.userName);
+            connOpts.setPassword(MainActivity.password.toCharArray());
             connOpts.setCleanSession(true);
             // 设置回调
             client.setCallback(new OnMessageCallback());

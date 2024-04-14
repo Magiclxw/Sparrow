@@ -247,7 +247,7 @@
         android:id="@+id/history"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="历史记录"
+        android:text="工具"
         android:layout_alignTop="@+id/save_config"
         android:layout_marginTop="50dp"
         android:layout_marginLeft="50dp"

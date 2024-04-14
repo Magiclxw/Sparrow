@@ -33,14 +33,14 @@ import java.io.InputStream;
 import java.text.DateFormat;
 import java.util.Date;
 
-import cn.itcast.mqttclient.bottomnavigation.MainPage;
-import cn.itcast.mqttclient.bottomnavigation.MultiFunc;
-import cn.itcast.mqttclient.bottomnavigation.Settings;
-
-
 public class MainActivity extends AppCompatActivity{
-    static String mqttweb="ssl://j1aa1aff.ala.cn-hangzhou.emqxsl.cn:8883";
-    private String password = "asd13579";   //用户密码
+    static String mqttServer;//ssl://j1aa1aff.ala.cn-hangzhou.emqxsl.cn:8883";
+    public static String userName = "test";
+    public static String password = "asd13579";   //用户密码
+    public static  String SERVICE_UUID = "000000ff-0000-1000-8000-00805f9b34fb";//"49535343-fe7d-4ae5-8fa9-9fafd205e455";  //蓝牙通讯服务
+    public static  String READ_UUID = "0000ff01-0000-1000-8000-00805f9b34fb";//"49535343-1e4d-4bd9-ba61-23c647249616";  //读特征
+    public static  String WRITE_UUID = "0000ff01-0000-1000-8000-00805f9b34fb";//"49535343-8841-43f4-a8d4-ecbe34729bb3";  //写特征
+
 
     /* 主题 */
     private static String tp_set_wakeup_interval = "/settings/wakeup_interval";
@@ -58,11 +58,10 @@ public class MainActivity extends AppCompatActivity{
     private static NumberPicker numberPicker_wake_hour;
     private static NumberPicker numberPicker_wake_minute;
     private static NumberPicker numberPicker_wakeup_duragion;
-    private EditText editText;
-    private Context context;
-    String content,sendmessage;
 
-    static MqttClient client = null;
+    public static MqttClient client = null;
+
+    public BlueToothController blueToothController = new BlueToothController();
 
     public static Context mContext;
     @Override
@@ -70,7 +69,22 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mqttServer = SystemConfig.getMqttAddr(MainActivity.this);
+        userName = SystemConfig.getMqttUserName(MainActivity.this);
+        password = SystemConfig.getMqttPassword(MainActivity.this);
+        SERVICE_UUID = SystemConfig.getBleServiceUUID(MainActivity.this);
+        READ_UUID = SystemConfig.getBleReadUUID(MainActivity.this);
+        WRITE_UUID = SystemConfig.getBleWriteUUID(MainActivity.this);
+
+        if(mqttServer == null || mqttServer.equals("ssl://"))  mqttServer = "ssl://j1aa1aff.ala.cn-hangzhou.emqxsl.cn:8883";
+        if(userName == null)  userName = "test";
+        if(password == null) password = "asd13579";
+        if(SERVICE_UUID == null) SERVICE_UUID = "000000ff-0000-1000-8000-00805f9b34fb";
+        if(READ_UUID == null) READ_UUID = "0000ff01-0000-1000-8000-00805f9b34fb";
+        if(WRITE_UUID == null) WRITE_UUID = "0000ff01-0000-1000-8000-00805f9b34fb";
+
         mContext=getApplicationContext();
+
         //按键
         saveConfig = (Button) findViewById(R.id.save_config);
         history = (Button) findViewById(R.id.history);
@@ -98,15 +112,31 @@ public class MainActivity extends AppCompatActivity{
         //单选按钮
         power_contral = (RadioGroup)findViewById(R.id.rd_power_ctrl);
 
+        //蓝牙配置
+        if(!blueToothController.isSupportBlueTooth())
+        {
+            Toast.makeText(MainActivity.this,"不支持蓝牙",Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            if(!blueToothController.getBlueToothStatus())
+            {
+                Toast.makeText(MainActivity.this,"蓝牙未打开",Toast.LENGTH_SHORT).show();
+            }
+        }
+
+
+
         new Thread(new UpdateState()).start();
 
-        String broker = mqttweb;
+        String broker = mqttServer;
         String clientId = "Controller";
         MemoryPersistence persistence = new MemoryPersistence();
+
         try {
             client = new MqttClient(broker, clientId, persistence);
             MqttConnectOptions connOpts = new MqttConnectOptions();
-            connOpts.setUserName("test");
+            connOpts.setUserName(userName);
             connOpts.setPassword(password.toCharArray());
             connOpts.setCleanSession(true);
             // 设置回调
@@ -115,6 +145,7 @@ public class MainActivity extends AppCompatActivity{
             System.out.println("Connecting to broker: " + broker);
             try {
                 client.connect(connOpts);
+                Toast.makeText(MainActivity.this,"服务器连接成功",Toast.LENGTH_SHORT).show();
             } catch (MqttException e) {
                 Toast.makeText(MainActivity.this,"服务器连接失败",Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
@@ -154,8 +185,6 @@ public class MainActivity extends AppCompatActivity{
             } catch (MqttException e) {
                 e.printStackTrace();
             }
-
-
         } catch (MqttException me) {
             System.out.println("reason " + me.getReasonCode());
             System.out.println("msg " + me.getMessage());
@@ -164,6 +193,7 @@ public class MainActivity extends AppCompatActivity{
             System.out.println("excep " + me);
             me.printStackTrace();
         }
+
         saveConfig.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -197,6 +227,7 @@ public class MainActivity extends AppCompatActivity{
                 }
             }
         });
+
         history.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -205,6 +236,7 @@ public class MainActivity extends AppCompatActivity{
                 startActivity(intent);
             }
         });
+
         apply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -213,6 +245,7 @@ public class MainActivity extends AppCompatActivity{
                 startActivity(intent);
             }
         });
+
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -221,8 +254,8 @@ public class MainActivity extends AppCompatActivity{
                 startActivity(intent);
             }
         });
-
     }
+
     public static Handler handler=new Handler(){
         @SuppressLint("HandlerLeak")
         public void handleMessage(Message message){
@@ -287,26 +320,12 @@ public class MainActivity extends AppCompatActivity{
             }
         }
     };
-    public static void alarm(){
-        AlertDialog dialog;
-        AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.mContext)
-                .setTitle("通知")
-                .setIcon(R.mipmap.cycle)
-                .setMessage("收到呼叫")
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-        dialog=builder.create();
-        dialog.show();
-    }
+
 
     //设置舵机旋转角度
     public static void TurnAngle(int angle)
     {
-        if(angle > 90 || angle < 0) return;
+        if(angle > 90 || angle < -90) return;
 
         int qos = 1;
 

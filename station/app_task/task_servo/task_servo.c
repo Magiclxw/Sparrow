@@ -84,7 +84,7 @@ static void vTaskServoProcessing()
     servo_calibrate();
 
     int angle = 0;
-    int step = 4;
+    int step = 1;
     while(1)
     {
         xQueueReceive(Angle_State_Handle,&angle_state,portMAX_DELAY);
@@ -127,6 +127,7 @@ static void vTaskServoProcessing()
         //     step *= -1;
         // }
         // angle += step;
+        // ESP_LOGI(TAG, "Angle of rotation: %d", angle);
     }
 }
 

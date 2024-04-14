@@ -1,16 +1,26 @@
 package cn.itcast.mqttclient;
 
+import static cn.itcast.mqttclient.SystemConfig.getMqttAddr;
+import static cn.itcast.mqttclient.SystemConfig.getMqttPassword;
+import static cn.itcast.mqttclient.SystemConfig.getMqttUserName;
+import static cn.itcast.mqttclient.SystemConfig.setMqttAddr;
+import static cn.itcast.mqttclient.SystemConfig.setMqttPassword;
+import static cn.itcast.mqttclient.SystemConfig.setMqttUserName;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.NumberPicker;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class SettingsActivity extends AppCompatActivity {
+import cn.itcast.mqttclient.dialog.ServerDialog;
+import cn.itcast.mqttclient.dialog.ServoCfgDialog;
 
-    private Button back_to_zero,set_turn_angle,save_turn_angle;
+public class SettingsActivity extends AppCompatActivity {
+    private Button back_to_zero,set_turn_angle,save_turn_angle,btn_server_settings,btn_servo_cfg;
     private NumberPicker turn_angle;
 
     @SuppressLint("CutPasteId")
@@ -19,30 +29,21 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        back_to_zero = (Button) findViewById(R.id.btn_back_to_zero);
-        set_turn_angle = (Button) findViewById(R.id.btn_turn_angle);
-        save_turn_angle = (Button) findViewById(R.id.btn_save_turn_angle);
+        btn_server_settings = (Button) findViewById(R.id.btn_server_settings);
+        btn_servo_cfg = (Button) findViewById(R.id.btn_servo_cfg);
 
-        turn_angle = (NumberPicker) findViewById(R.id.np_angle);
-        turn_angle.setMaxValue(90);
-        turn_angle.setMinValue(0);
-
-        back_to_zero.setOnClickListener(new View.OnClickListener() {
+        btn_server_settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.TurnAngle(45);
+                final ServerDialog dialog = new ServerDialog(SettingsActivity.this);
+                dialog.show();
             }
         });
-        set_turn_angle.setOnClickListener(new View.OnClickListener() {
+        btn_servo_cfg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.TurnAngle(turn_angle.getValue());
-            }
-        });
-        save_turn_angle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MainActivity.SaveAngle();
+                final ServoCfgDialog dialog = new ServoCfgDialog(SettingsActivity.this);
+                dialog.show();
             }
         });
     }

@@ -46,7 +46,7 @@ public class ApplyJson extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.applylistview);
 
-        String broker = MainActivity.mqttweb;
+        String broker = MainActivity.mqttServer;
         String clientId = "Controller";
         MemoryPersistence persistence = new MemoryPersistence();
         try {

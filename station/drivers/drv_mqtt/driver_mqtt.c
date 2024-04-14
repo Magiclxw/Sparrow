@@ -84,6 +84,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
             if(angleState.ServoAngleState_Value <= 90 && angleState.ServoAngleState_Value >= -90)
             {
                 xQueueSend(Angle_State_Handle,&angleState,0);
+                memset(event->data,0,strlen(event->data));
             }
             else
             {
