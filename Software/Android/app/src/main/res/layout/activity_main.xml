@@ -244,7 +244,7 @@
         ></Button>
 
     <Button
-        android:id="@+id/history"
+        android:id="@+id/btn_tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="工具"
@@ -255,17 +255,6 @@
         android:background="@color/light_blue"
         ></Button>
 
-    <Button
-        android:id="@+id/apply"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="申请记录"
-        android:layout_alignTop="@+id/history"
-        android:layout_marginTop="50dp"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="50dp"
-        android:background="@color/light_blue"
-        ></Button>
 
     <Button
         android:id="@+id/btn_settings"
@@ -273,7 +262,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"
-        android:layout_alignTop="@+id/apply"
+        android:layout_alignTop="@+id/btn_tools"
         android:layout_marginTop="50dp"
         android:text="设置"
         ></Button>

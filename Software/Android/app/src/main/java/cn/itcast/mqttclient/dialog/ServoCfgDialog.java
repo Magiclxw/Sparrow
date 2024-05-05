@@ -1,11 +1,18 @@
 package cn.itcast.mqttclient.dialog;
 
+import static cn.itcast.mqttclient.MainActivity.client;
+import static cn.itcast.mqttclient.MainActivity.tp_cfg_angle;
+import static cn.itcast.mqttclient.MainActivity.tp_cfg_save_angle;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.NumberPicker;
+
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import cn.itcast.mqttclient.MainActivity;
 import cn.itcast.mqttclient.R;
@@ -43,25 +50,58 @@ public class ServoCfgDialog extends AlertDialog {
         btn_center_angle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.TurnAngle(0);
+                TurnAngle(0);
             }
         });
 
         btn_set_angle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.TurnAngle(np_angle.getValue()-90); //-90~90
+                TurnAngle(np_angle.getValue()-90); //-90~90
             }
         });
 
         btn_save_angle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.SaveAngle();
+                SaveAngle();
                 dismiss();
             }
         });
     }
 
+    //设置舵机旋转角度
+    public static void TurnAngle(int angle)
+    {
+        if(angle > 90 || angle < -90) return;
 
+        int qos = 1;
+
+        String turnAngle = String.valueOf(angle);
+
+        MqttMessage message = new MqttMessage(turnAngle.getBytes());
+        message.setQos(qos);
+        try {
+            client.publish(tp_cfg_angle, message);
+            System.out.println("Message published");
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+    //保存舵机旋转角度
+    public static void SaveAngle()
+    {
+        int qos = 1;
+
+        String saveFlag = "1";
+
+        MqttMessage message = new MqttMessage(saveFlag.getBytes());
+        message.setQos(qos);
+        try {
+            client.publish(tp_cfg_save_angle, message);
+            System.out.println("Message published");
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
 }

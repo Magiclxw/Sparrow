@@ -32,6 +32,8 @@
     "tusb.h": "c",
     "drv_hid.h": "c",
     "drv_adc.h": "c",
-    "task_servo.h": "c"
+    "task_servo.h": "c",
+    "stdlib.h": "c",
+    "inttypes.h": "c"
   }
 }

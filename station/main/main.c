@@ -21,6 +21,8 @@
 #include "task_rtc.h"
 #include "task_battery.h"
 #include "drv_hid.h"
+#include "drv_ble.h"
+#include "task_bluetooth.h"
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
@@ -37,6 +39,8 @@ void app_main(void)
     //clearWifiData();
     //wifi初始化
     initialise_wifi();
+    initBLE();
+    Bluetooth_Task_Create();
     //mqtt初始化，建立mqtt连接
     mqtt_app_start();
     //启动舵机线程
