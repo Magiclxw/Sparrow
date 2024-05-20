@@ -23,6 +23,7 @@
 #include "drv_hid.h"
 #include "drv_ble.h"
 #include "task_bluetooth.h"
+#include "task_led.h"
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
@@ -35,7 +36,8 @@ void app_main(void)
       ESP_ERROR_CHECK(nvs_flash_erase());
       ret = nvs_flash_init();
     }
-    //hid_test();
+    hid_test();
+    LED_Task_Create();
     //clearWifiData();
     //wifi初始化
     initialise_wifi();
@@ -49,5 +51,5 @@ void app_main(void)
     Battery_Task_Create();
 
     //启动RTC线程
-    //Rtc_Task_Create();
+    ////Rtc_Task_Create();
 }

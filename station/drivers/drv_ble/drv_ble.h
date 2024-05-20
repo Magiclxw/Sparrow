@@ -28,7 +28,7 @@ void initBLE();
 typedef struct BleData
 {
     uint8_t length;
-    uint8_t *data;
+    uint8_t data[100];
 }BleData_t;
 
 #endif

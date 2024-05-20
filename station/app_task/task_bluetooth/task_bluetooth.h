@@ -8,10 +8,15 @@
 #include "drv_ble.h"
 
 #define BLUETOOTH_TASK_STACK_SIZE   (8192)
-#define BLUETOOTH_TASK_PRIORITY     (9)
+#define BLUETOOTH_TASK_PRIORITY     (14)
 
 #define BLUETOOTH_REC_QUEUE_LENGTH  (10)
 #define BLUETOOTH_REC_QUEUE_SIZE    (sizeof(BleData_t))
+
+#define CMD_MOUSE_MOVE (0x01)
+#define CMD_MOUSE_CLICK (0x02)
+#define CMD_KEYBOARD_INPUT  (0x03)
+#define CMD_KEYBOARD_FUNC (0x04)
 
 int Bluetooth_Task_Create();
 

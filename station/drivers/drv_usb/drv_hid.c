@@ -123,18 +123,19 @@ static void mouse_draw_square_next_delta(int8_t *delta_x_ret, int8_t *delta_y_re
 void app_send_hid_demo(void)
 {
     // Keyboard output: Send key 'a/A' pressed and released
-    ESP_LOGI(TAG, "Sending Keyboard report");
+    //ESP_LOGI(TAG, "Sending Keyboard report");
     // uint8_t keycode[6] = {HID_KEY_CAPS_LOCK};
     // tud_hid_keyboard_report(HID_ITF_PROTOCOL_KEYBOARD, 0, keycode);
     // vTaskDelay(pdMS_TO_TICKS(50));
     // tud_hid_keyboard_report(HID_ITF_PROTOCOL_KEYBOARD, 0, NULL);
 
-    hid_input_char('b');
-    vTaskDelay(pdMS_TO_TICKS(100));
-    hid_mouse_move(50,0);
+     hid_input_char('b');
+    // vTaskDelay(pdMS_TO_TICKS(100));
+
+    //hid_mouse_move(50,0);
     //tud_hid_mouse_report(HID_ITF_PROTOCOL_MOUSE, MOUSE_BUTTON_RIGHT, 0, 0, 0, 0);
     // Mouse output: Move mouse cursor in square trajectory
-    ESP_LOGI(TAG, "Sending Mouse report");
+    //ESP_LOGI(TAG, "Sending Mouse report");
     // int8_t delta_x;
     // int8_t delta_y;
     // for (int i = 0; i < (DISTANCE_MAX / DELTA_SCALAR) * 4; i++) {
@@ -162,10 +163,37 @@ void hid_input_char(char c)
     tud_hid_keyboard_report(HID_ITF_PROTOCOL_KEYBOARD, 0, NULL);
 }
 
-/* 鼠标按键 */
-void hid_mouse_click(hid_mouse_button_bm_t button)
+void hid_input_func(uint8_t keyCode)
 {
-    tud_hid_mouse_report(HID_ITF_PROTOCOL_MOUSE, button, 0, 0, 0, 0);
+    uint8_t keycode[6] = {0};
+    uint8_t modifier = 0;
+
+    keycode[0] = keyCode;
+
+    tud_hid_keyboard_report(HID_ITF_PROTOCOL_KEYBOARD, modifier, keycode);
+
+    vTaskDelay(pdMS_TO_TICKS(50));
+
+    tud_hid_keyboard_report(HID_ITF_PROTOCOL_KEYBOARD, 0, NULL);
+}
+
+/* 鼠标按键 */
+void hid_mouse_click(hid_mouse_button_bm_t button, MouseClickState_e state)
+{
+    if(state == MouseClickState_Pressed)
+    {
+        tud_hid_mouse_report(HID_ITF_PROTOCOL_MOUSE, button, 0, 0, 0, 0);
+    }
+    else if(state == MouseClickState_Released)
+    {
+        tud_hid_mouse_report(HID_ITF_PROTOCOL_MOUSE, 0, 0, 0, 0, 0);
+    }
+    else
+    {
+        tud_hid_mouse_report(HID_ITF_PROTOCOL_MOUSE, button, 0, 0, 0, 0);
+        vTaskDelay(pdMS_TO_TICKS(100));
+        tud_hid_mouse_report(HID_ITF_PROTOCOL_MOUSE, 0, 0, 0, 0, 0);
+    }
 }
 
 /* 鼠标向相对位置移动 */
@@ -198,15 +226,14 @@ void hid_test(void)
     ESP_ERROR_CHECK(tinyusb_driver_install(&tusb_cfg));
     ESP_LOGI(TAG, "USB initialization DONE");
 
-    while (1) {
-        if (tud_mounted()) {
-            static bool send_hid_data = true;
-            if (send_hid_data) {
-                app_send_hid_demo();
-            }
-            break;
-        }
-        //vTaskDelay(pdMS_TO_TICKS(100));
-        break;
-    }
+    // while (1) {
+    //     if (tud_mounted()) {
+    //         static bool send_hid_data = true;
+    //         if (send_hid_data) {
+    //             app_send_hid_demo();
+    //         }
+    //         send_hid_data = !gpio_get_level(APP_BUTTON);
+    //     }
+    //     vTaskDelay(pdMS_TO_TICKS(100));
+    // }
 }

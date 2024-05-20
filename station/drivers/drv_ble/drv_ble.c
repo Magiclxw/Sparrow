@@ -7,6 +7,7 @@ BleData_t ble_rec_data;
 
 ///Declare the static function
 static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_if, esp_ble_gatts_cb_param_t *param);
+static bool compareCheckSum(uint8_t *data, uint8_t length);
 
 #define GATTS_SERVICE_UUID_TEST_A   0x00FF
 #define GATTS_CHAR_UUID_TEST_A      0xFF01
@@ -314,10 +315,11 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
             esp_log_buffer_hex(GATTS_TAG, param->write.value, param->write.len);
             //记录长度
             ble_rec_data.length = param->write.len;
-            //记录地址
-            ble_rec_data.data = &param->write.value;
+            //拷贝数据
+            //ble_rec_data.data = param->write.value;
+            memcpy(ble_rec_data.data, param->write.value, param->write.len);
 
-            if(Bluetooth_Queue_Handle != NULL)
+            if(Bluetooth_Queue_Handle != NULL && compareCheckSum(param->write.value,ble_rec_data.length))
             {
                 xQueueSend(Bluetooth_Queue_Handle,&ble_rec_data,0);
             }
@@ -494,6 +496,24 @@ static void gatts_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_
     } while (0);
 }
 
+static bool compareCheckSum(uint8_t *data, uint8_t length)
+{
+    uint8_t checkSum = 0;
+
+    for(int i = 0; i < length-3; i++)
+    {
+        checkSum += data[i];
+    }
+
+    if(checkSum == data[length-3])
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
 
 void initBLE()
 {

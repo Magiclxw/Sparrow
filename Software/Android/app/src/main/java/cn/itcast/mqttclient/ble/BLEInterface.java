@@ -10,16 +10,20 @@ public class BLEInterface {
 
     private static final char CMD_MOUSE_MOVE = 0x01;
     private static final char CMD_MOUSE_CLICK = 0x02;
+    private static final char CMD_KEYBOARD_INPUT = 0x03;    //按键输入
+    private static final char CMD_KEYBOARD_FUNC = 0x04;     //功能键输入
 
 
-    public static int MOUSE_LEFT_BUTTON = 0;
-    public static int MOUSE_RIGHT_BUTTON = 1;
-    public static int MOUSE_MID_BUTTON = 2;
+    public static int MOUSE_LEFT_BUTTON = 1;
+    public static int MOUSE_RIGHT_BUTTON = 2;
+    public static int MOUSE_MID_BUTTON = 3;
 
     public static int MOUSE_KEY_PRESSED = 0;
     public static int MOUSE_KEY_RELEASED = 1;
-    public static int MOUSE_KEY_CLICKED = 3;
+    public static int MOUSE_KEY_CLICKED = 2;
 
+    //功能按键
+    public static byte HID_KEY_BACKSPACE = 0x2A;
     /**
      * 计算校验和
      * @param data  校验数据
@@ -69,6 +73,33 @@ public class BLEInterface {
         data[5] = (byte) CalcCheckSum(data,5);
         data[6] = (byte)CMD_STOP_H;
         data[7] = (byte)CMD_STOP_L;
+        MainActivity.bleManager.sendCmd(data);
+    }
+
+    public static void cmdKeyboardInput(byte key)
+    {
+        byte data[] = new byte[7];
+        data[0] = (byte) CMD_START_H;
+        data[1] = (byte)CMD_START_L;
+        data[2] = CMD_KEYBOARD_INPUT;
+        data[3] = key;
+        data[4] = (byte) CalcCheckSum(data,4);
+        data[5] = (byte)CMD_STOP_H;
+        data[6] = (byte)CMD_STOP_L;
+        MainActivity.bleManager.sendCmd(data);
+
+    }
+
+    public static void cmdKeyboardFunc(byte func)
+    {
+        byte data[] = new byte[7];
+        data[0] = (byte) CMD_START_H;
+        data[1] = (byte)CMD_START_L;
+        data[2] = CMD_KEYBOARD_FUNC;
+        data[3] = func;
+        data[4] = (byte) CalcCheckSum(data,4);
+        data[5] = (byte)CMD_STOP_H;
+        data[6] = (byte)CMD_STOP_L;
         MainActivity.bleManager.sendCmd(data);
     }
 }
