@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="KeyboardLinearLayout">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_marginVertical">4dp</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="KeyboardLinearLayout_F">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="DefaultButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginHorizontal">2dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <!--        <item name="android:paddingLeft">0dp</item>-->
+        <!--        <item name="android:paddingTop">0dp</item>-->
+        <!--        <item name="android:paddingRight">0dp</item>-->
+        <!--        <item name="android:paddingBottom">0dp</item>-->
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+    </style>
+
+    <style name="ShiftButton" parent="DefaultButton">
+        <!--        <item name="android:paddingLeft">0dp</item>-->
+        <!--        <item name="android:paddingTop">0dp</item>-->
+        <!--        <item name="android:paddingRight">0dp</item>-->
+        <!--        <item name="android:paddingBottom">0dp</item>-->
+        <!--        <item name="android:gravity">end</item>-->
+    </style>
+</resources>

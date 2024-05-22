@@ -70,7 +70,7 @@ static void blueToothDataHandler(uint8_t *data)
         }
         case CMD_KEYBOARD_FUNC:
         {
-            hid_input_func(data[3]);
+            hid_input_func(data[3],data[4]);
             ESP_LOGI(TAG, " key %c\r\n",data[3]);
             break;
         }

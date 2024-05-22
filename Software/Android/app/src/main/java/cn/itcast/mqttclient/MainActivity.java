@@ -5,12 +5,16 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.accessibilityservice.AccessibilityService;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -92,7 +96,7 @@ import cn.itcast.mqttclient.util.TypeConversion;
     private static final int BT_OPENED = 0x0D;
     private static final int BT_CLOSED = 0x0E;
 
-    private Button saveConfig,btn_tools,apply,settings;
+    private Button saveConfig,btn_tools,apply,settings,Btn_test;
 
     static TextView connectState,powerState,powerValue;
     private static RadioGroup power_contral;
@@ -134,7 +138,7 @@ import cn.itcast.mqttclient.util.TypeConversion;
         saveConfig = (Button) findViewById(R.id.save_config);
         btn_tools = (Button) findViewById(R.id.btn_tools);
         settings = (Button)findViewById(R.id.btn_settings);
-
+        Btn_test = (Button) findViewById(R.id.btn_test);
 
         //数字选择器
         numberPicker_wake_hour = (NumberPicker)findViewById(R.id.wakeup_interval_hour);
@@ -265,6 +269,12 @@ import cn.itcast.mqttclient.util.TypeConversion;
                 } catch (MqttException e) {
                     e.printStackTrace();
                 }
+            }
+        });
+        Btn_test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getTextFromClip(MainActivity.this);
             }
         });
 
@@ -693,5 +703,20 @@ import cn.itcast.mqttclient.util.TypeConversion;
             Toast.makeText(MainActivity.this, "再次返回退出", Toast.LENGTH_LONG).show();
             quitFlag++;
         }
+    }
+    public static void getTextFromClip(Context context){
+      ClipboardManager clipboardManager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+      //判断剪切版时候有内容
+      if(!clipboardManager.hasPrimaryClip())
+          return;
+      ClipData clipData = clipboardManager.getPrimaryClip();
+      //获取 ClipDescription
+      ClipDescription clipDescription = clipboardManager.getPrimaryClipDescription();
+      //获取 lable
+      String lable = clipDescription.getLabel().toString();
+      //获取 text
+      String text = clipData.getItemAt(0).getText().toString();
+
+      System.out.println(text);
     }
 }

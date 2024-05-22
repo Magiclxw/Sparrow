@@ -23,7 +23,7 @@ public class MouseActivity extends AppCompatActivity {
     private EditText et_keyboard;
     private Button btn_Left,btn_Right;
     public View view_TouchPad;
-    private final static long CLICK_INTERVAL = 300;
+    private final static long CLICK_INTERVAL = 100;
     private int touchFlag = 0;
     private float startPosX,startPosY,stopPosX,stopPosY;
     long firstClickStart,firstClickStop;
@@ -59,8 +59,8 @@ public class MouseActivity extends AppCompatActivity {
                 //软键盘删除按键按下
                 if (i == 67)
                 {
-                    BLEInterface.cmdKeyboardFunc(BLEInterface.HID_KEY_BACKSPACE);
-                }yhggg
+                    BLEInterface.cmdKeyboardFunc((byte)0,BLEInterface.HID_KEY_BACKSPACE);
+                }
                 return false;
             }
         });
@@ -145,7 +145,9 @@ public class MouseActivity extends AppCompatActivity {
                             poY.setText("" + y);
                             if(SystemClock.uptimeMillis() - firstClickStart > CLICK_INTERVAL)   //满足单击事件
                             {
-                                BLEInterface.cmdMouseMove((byte)((x-startPosX)/5),(byte)((y-startPosY)/5));
+                                BLEInterface.cmdMouseMove((byte)((x-startPosX)),(byte)((y-startPosY)));
+                                startPosX = x;
+                                startPosY = y;
                             }
                             break;
                     }

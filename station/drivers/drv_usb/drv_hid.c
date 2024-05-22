@@ -163,10 +163,9 @@ void hid_input_char(char c)
     tud_hid_keyboard_report(HID_ITF_PROTOCOL_KEYBOARD, 0, NULL);
 }
 
-void hid_input_func(uint8_t keyCode)
+void hid_input_func(uint8_t modifier,uint8_t keyCode)
 {
     uint8_t keycode[6] = {0};
-    uint8_t modifier = 0;
 
     keycode[0] = keyCode;
 

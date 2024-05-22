@@ -90,16 +90,17 @@ public class BLEInterface {
 
     }
 
-    public static void cmdKeyboardFunc(byte func)
+    public static void cmdKeyboardFunc(byte modifier,byte key)
     {
-        byte data[] = new byte[7];
+        byte data[] = new byte[8];
         data[0] = (byte) CMD_START_H;
         data[1] = (byte)CMD_START_L;
         data[2] = CMD_KEYBOARD_FUNC;
-        data[3] = func;
-        data[4] = (byte) CalcCheckSum(data,4);
-        data[5] = (byte)CMD_STOP_H;
-        data[6] = (byte)CMD_STOP_L;
+        data[3] = modifier;
+        data[4] = key;
+        data[5] = (byte) CalcCheckSum(data,5);
+        data[6] = (byte)CMD_STOP_H;
+        data[7] = (byte)CMD_STOP_L;
         MainActivity.bleManager.sendCmd(data);
     }
 }

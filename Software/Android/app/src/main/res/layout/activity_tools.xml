@@ -8,4 +8,12 @@
         android:layout_height="wrap_content"
         android:text="鼠标"
         ></Button>
+
+    <Button
+        android:id="@+id/btn_keyboard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/btn_mouse"
+        android:text="键盘"
+        ></Button>
 </RelativeLayout>
