@@ -1,7 +1,7 @@
 #include "drv_hid.h"
 #include "driver/gpio.h"
 
-#define TUSB_DESC_TOTAL_LEN      (TUD_CONFIG_DESC_LEN + CFG_TUD_HID * TUD_HID_DESC_LEN)
+#define TUSB_DESC_TOTAL_LEN      (TUD_CONFIG_DESC_LEN + CFG_TUD_HID * TUD_HID_INOUT_DESC_LEN)
 
 #define APP_BUTTON (GPIO_NUM_0) // Use BOOT signal by default
 static const char *TAG = "example";
@@ -14,9 +14,15 @@ uint8_t const conv_table[128][2] =  { HID_ASCII_TO_KEYCODE };
  */
 const uint8_t hid_report_descriptor[] = {
     TUD_HID_REPORT_DESC_KEYBOARD(HID_REPORT_ID(HID_ITF_PROTOCOL_KEYBOARD) ),
-    TUD_HID_REPORT_DESC_MOUSE(HID_REPORT_ID(HID_ITF_PROTOCOL_MOUSE) )
+    TUD_HID_REPORT_DESC_MOUSE(HID_REPORT_ID(HID_ITF_PROTOCOL_MOUSE) ),
+    TUD_HID_REPORT_DESC_GENERIC_INOUT(63,HID_REPORT_ID(3)),
+    
 };
-
+uint8_t const desc_hid_report[] = {
+ 
+    TUD_HID_REPORT_DESC_GENERIC_INOUT(63, HID_REPORT_ID(3))
+ 
+};
 /**
  * @brief String descriptor
  */
@@ -29,6 +35,8 @@ const char* hid_string_descriptor[5] = {
     "Example HID interface",  // 4: HID
 };
 
+
+
 /**
  * @brief Configuration descriptor
  *
@@ -39,7 +47,9 @@ static const uint8_t hid_configuration_descriptor[] = {
     TUD_CONFIG_DESCRIPTOR(1, 1, 0, TUSB_DESC_TOTAL_LEN, TUSB_DESC_CONFIG_ATT_REMOTE_WAKEUP, 100),
 
     // Interface number, string index, boot protocol, report descriptor len, EP In address, size & polling interval
-    TUD_HID_DESCRIPTOR(0, 4, false, sizeof(hid_report_descriptor), 0x81, 16, 10),
+    //TUD_HID_DESCRIPTOR(0, 4, false, sizeof(hid_report_descriptor), 0x81, 16, 10),
+
+    TUD_HID_INOUT_DESCRIPTOR(0,0,HID_ITF_PROTOCOL_NONE,sizeof(hid_report_descriptor), 0x01, 0x81, 64, 10),
 };
 
 /********* TinyUSB HID callbacks ***************/
@@ -83,42 +93,6 @@ typedef enum {
     MOUSE_DIR_MAX,
 } mouse_dir_t;
 
-
-
-#define DISTANCE_MAX        125
-#define DELTA_SCALAR        5
-
-static void mouse_draw_square_next_delta(int8_t *delta_x_ret, int8_t *delta_y_ret)
-{
-    static mouse_dir_t cur_dir = MOUSE_DIR_RIGHT;
-    static uint32_t distance = 0;
-
-    // Calculate next delta
-    if (cur_dir == MOUSE_DIR_RIGHT) {
-        *delta_x_ret = DELTA_SCALAR;
-        *delta_y_ret = 0;
-    } else if (cur_dir == MOUSE_DIR_DOWN) {
-        *delta_x_ret = 0;
-        *delta_y_ret = DELTA_SCALAR;
-    } else if (cur_dir == MOUSE_DIR_LEFT) {
-        *delta_x_ret = -DELTA_SCALAR;
-        *delta_y_ret = 0;
-    } else if (cur_dir == MOUSE_DIR_UP) {
-        *delta_x_ret = 0;
-        *delta_y_ret = -DELTA_SCALAR;
-    }
-
-    // Update cumulative distance for current direction
-    distance += DELTA_SCALAR;
-    // Check if we need to change direction
-    if (distance >= DISTANCE_MAX) {
-        distance = 0;
-        cur_dir++;
-        if (cur_dir == MOUSE_DIR_MAX) {
-            cur_dir = 0;
-        }
-    }
-}
 
 void app_send_hid_demo(void)
 {
@@ -192,6 +166,18 @@ void hid_mouse_click(hid_mouse_button_bm_t button, MouseClickState_e state)
         tud_hid_mouse_report(HID_ITF_PROTOCOL_MOUSE, button, 0, 0, 0, 0);
         vTaskDelay(pdMS_TO_TICKS(100));
         tud_hid_mouse_report(HID_ITF_PROTOCOL_MOUSE, 0, 0, 0, 0, 0);
+    }
+}
+
+void hid_data_send(uint8_t data[], uint8_t length)
+{
+    uint8_t reportData[63] = {0};
+
+    if (tud_hid_ready())
+    {
+        //memcpy(reportData, data, length);
+        tud_hid_report(3,reportData,63);
+        
     }
 }
 

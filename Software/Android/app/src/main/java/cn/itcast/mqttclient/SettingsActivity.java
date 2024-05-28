@@ -1,26 +1,20 @@
 package cn.itcast.mqttclient;
 
-import static cn.itcast.mqttclient.SystemConfig.getMqttAddr;
-import static cn.itcast.mqttclient.SystemConfig.getMqttPassword;
-import static cn.itcast.mqttclient.SystemConfig.getMqttUserName;
-import static cn.itcast.mqttclient.SystemConfig.setMqttAddr;
-import static cn.itcast.mqttclient.SystemConfig.setMqttPassword;
-import static cn.itcast.mqttclient.SystemConfig.setMqttUserName;
-
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.NumberPicker;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import cn.itcast.mqttclient.dialog.ServerDialog;
 import cn.itcast.mqttclient.dialog.ServoCfgDialog;
+import cn.itcast.mqttclient.settingsActivity.SmartCfgActivity;
 
 public class SettingsActivity extends AppCompatActivity {
-    private Button back_to_zero,set_turn_angle,save_turn_angle,btn_server_settings,btn_servo_cfg;
+    private Button btn_server_settings,btn_servo_cfg, btn_smart_cfg;
     private NumberPicker turn_angle;
 
     @SuppressLint("CutPasteId")
@@ -31,6 +25,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         btn_server_settings = (Button) findViewById(R.id.btn_server_settings);
         btn_servo_cfg = (Button) findViewById(R.id.btn_servo_cfg);
+        btn_smart_cfg = (Button) findViewById(R.id.btn_smart_cfg);
 
         btn_server_settings.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,7 +41,16 @@ public class SettingsActivity extends AppCompatActivity {
                 dialog.show();
             }
         });
-    }
+        btn_smart_cfg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.setClass(SettingsActivity.this, SmartCfgActivity.class);
+                startActivity(intent);
+            }
+        });
 
+
+    }
 
 }

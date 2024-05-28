@@ -40,6 +40,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.itcast.mqttclient.ble.BLEInterface;
 import cn.itcast.mqttclient.ble.BLEManager;
 import cn.itcast.mqttclient.ble.OnBleConnectListener;
 import cn.itcast.mqttclient.ble.OnDeviceSearchListener;
@@ -274,7 +275,12 @@ import cn.itcast.mqttclient.util.TypeConversion;
         Btn_test.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getTextFromClip(MainActivity.this);
+                //getTextFromClip(MainActivity.this);
+                byte data[] = new byte[3];
+                data[0] = 0x01;
+                data[1] = 0x02;
+                data[2] = 0x03;
+                BLEInterface.cmdHidDataSend(data,(byte) 3);
             }
         });
 
@@ -297,6 +303,12 @@ import cn.itcast.mqttclient.util.TypeConversion;
                 startActivity(intent);
             }
         });
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_USER_PRESENT);
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        LockScreenReceiver receiver = new LockScreenReceiver();
+        registerReceiver(receiver, filter);
     }
 
     @SuppressLint("HandlerLeak")
@@ -413,6 +425,7 @@ import cn.itcast.mqttclient.util.TypeConversion;
 
                 case DISCONNECT_SUCCESS:
                     Log.d(TAG, "断开成功");
+                    searchBtDevice();//重新建立连接
                     break;
 
                 case SEND_FAILURE: //发送失败
@@ -719,4 +732,25 @@ import cn.itcast.mqttclient.util.TypeConversion;
 
       System.out.println(text);
     }
+    public class LockScreenReceiver extends BroadcastReceiver {
+
+      @Override
+      public void onReceive(Context context, Intent intent) {
+          if (intent.getAction().equals(Intent.ACTION_USER_PRESENT)) {
+              // 屏幕解锁
+              // 在这里处理解锁事件
+              BLEInterface.cmdKeyboardFunc((byte)0,(byte)0x28);
+          } else if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+              // 屏幕锁屏
+              // 在这里处理锁屏事件
+              BLEInterface.cmdKeyboardFunc((byte)0,(byte)0x28);
+          }
+      }
+    }
 }
+
+
+
+
+
+

@@ -36,6 +36,14 @@
     "stdlib.h": "c",
     "inttypes.h": "c",
     "array": "c",
-    "string": "c"
+    "string": "c",
+    "*.tcc": "c",
+    "compare": "c",
+    "concepts": "c",
+    "system_error": "c",
+    "type_traits": "c",
+    "cmath": "c",
+    "limits": "c",
+    "new": "c"
   }
 }

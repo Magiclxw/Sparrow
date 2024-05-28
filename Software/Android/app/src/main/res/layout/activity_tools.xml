@@ -16,4 +16,11 @@
         android:layout_toRightOf="@+id/btn_mouse"
         android:text="键盘"
         ></Button>
+
+    <EditText
+        android:id="@+id/et_test"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        ></EditText>
 </RelativeLayout>

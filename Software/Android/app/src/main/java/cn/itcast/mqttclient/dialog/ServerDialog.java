@@ -1,5 +1,6 @@
 package cn.itcast.mqttclient.dialog;
 
+import static androidx.core.content.ContextCompat.getSystemService;
 import static cn.itcast.mqttclient.SystemConfig.getMqttAddr;
 import static cn.itcast.mqttclient.SystemConfig.getMqttPassword;
 import static cn.itcast.mqttclient.SystemConfig.getMqttUserName;
@@ -10,7 +11,9 @@ import static cn.itcast.mqttclient.SystemConfig.setMqttUserName;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -23,7 +26,6 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import cn.itcast.mqttclient.MainActivity;
 import cn.itcast.mqttclient.OnMessageCallback;
 import cn.itcast.mqttclient.R;
-import cn.itcast.mqttclient.SettingsActivity;
 
 public class ServerDialog extends AlertDialog {
     private EditText et_mqtt_addr,et_username,et_password;
@@ -60,6 +62,7 @@ public class ServerDialog extends AlertDialog {
 
     private void initEvent()
     {
+
         btn_server_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

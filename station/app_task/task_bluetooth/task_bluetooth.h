@@ -17,6 +17,7 @@
 #define CMD_MOUSE_CLICK (0x02)
 #define CMD_KEYBOARD_INPUT  (0x03)
 #define CMD_KEYBOARD_FUNC (0x04)
+#define CMD_HID_DATA_SEND   (0x05)
 
 int Bluetooth_Task_Create();
 

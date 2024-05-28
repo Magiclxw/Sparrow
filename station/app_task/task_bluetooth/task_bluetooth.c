@@ -1,6 +1,7 @@
 #include "task_bluetooth.h"
 #include "esp_log.h"
 #include "drv_hid.h"
+#include "drv_led.h"
 #include "../../sys_config.h"
 
 TaskHandle_t Bluetooth_Task__Handle = NULL;
@@ -72,6 +73,15 @@ static void blueToothDataHandler(uint8_t *data)
         {
             hid_input_func(data[3],data[4]);
             ESP_LOGI(TAG, " key %c\r\n",data[3]);
+            break;
+        }
+        case CMD_HID_DATA_SEND:
+        {
+            //ESP_LOGI(TAG, " hid \r\n");
+            hid_data_send(data[4],data[3]);
+            setLed(1,0,1);
+            vTaskDelay(pdMS_TO_TICKS(1000));
+            setLed(1,1,1);
             break;
         }
     }

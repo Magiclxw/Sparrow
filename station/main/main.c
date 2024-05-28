@@ -36,9 +36,9 @@ void app_main(void)
       ESP_ERROR_CHECK(nvs_flash_erase());
       ret = nvs_flash_init();
     }
-    hid_test();
+    //hid_test();
     LED_Task_Create();
-    //clearWifiData();
+    clearWifiData();
     //wifi初始化
     initialise_wifi();
     initBLE();
