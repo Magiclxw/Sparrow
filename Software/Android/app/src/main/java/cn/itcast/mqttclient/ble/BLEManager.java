@@ -199,8 +199,9 @@ public class BLEManager  {
 
             if(newState == BluetoothGatt.STATE_CONNECTED){
                 Log.w(TAG,"连接成功");
-                //连接成功去发现服务
-                gatt.discoverServices();
+
+                mBluetoothGatt.requestMtu(500);
+
                 //设置发现服务超时时间
                 mHandler.postDelayed(serviceDiscoverOutTimeRunnable,MAX_CONNECT_TIME);
 
@@ -370,6 +371,8 @@ public class BLEManager  {
                 //MTU默认取的是23，当收到 onMtuChanged 后，会根据传递的值修改MTU，注意由于传输用掉3字节，因此传递的值需要减3。
                 //mtu - 3
                 Log.w(TAG,"设置MTU成功，新的MTU值：" + (mtu-3) + ",status" + status);
+                //连接成功去发现服务
+                gatt.discoverServices();
                 if(onBleConnectListener != null){
                     onBleConnectListener.onMTUSetSuccess("设置后新的MTU值 = " + (mtu-3) + "   status = " + status,mtu - 3);  //MTU设置成功
                 }
@@ -423,7 +426,8 @@ public class BLEManager  {
             {
                 mBluetoothGatt = bluetoothDevice.connectGatt(context,false,bluetoothGattCallback);
             }
-           // mBluetoothGatt = bluetoothDevice.connectGatt(context,false,bluetoothGattCallback);
+
+            //mBluetoothGatt = bluetoothDevice.connectGatt(context,false,bluetoothGattCallback);
             mBluetoothGatt.connect();
             isConnectIng = true;
 

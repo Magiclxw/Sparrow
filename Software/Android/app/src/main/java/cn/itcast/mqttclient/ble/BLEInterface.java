@@ -13,6 +13,9 @@ public class BLEInterface {
     private static final char CMD_KEYBOARD_INPUT = 0x03;    //按键输入
     private static final char CMD_KEYBOARD_FUNC = 0x04;     //功能键输入
     private static final char CMD_HID_DATA_SEND = 0x05;
+    private static final char CMD_CFG_SET_SERVER = 0x06;
+    private static final char CMD_CFG_SET_USERNAME = 0x07;
+    private static final char CMD_CFG_SET_PASSWORD = 0x08;
 
     public static int MOUSE_LEFT_BUTTON = 1;
     public static int MOUSE_RIGHT_BUTTON = 2;
@@ -120,4 +123,56 @@ public class BLEInterface {
         data[3+length+2] = (byte)CMD_STOP_L;
         MainActivity.bleManager.sendCmd(data);
     }
+
+    public static void cmdSetServerAddr(byte addr[], byte length)
+    {
+        byte data[] = new byte[7+length];
+        data[0] = (byte) CMD_START_H;
+        data[1] = (byte)CMD_START_L;
+        data[2] = CMD_CFG_SET_SERVER;
+        data[3] = length;
+        for(byte i = 0; i < length; i++)
+        {
+            data[i+4] = addr[i];
+        }
+        data[4+length] = (byte) CalcCheckSum(data,4+length);
+        data[4+length+1] = (byte)CMD_STOP_H;
+        data[4+length+2] = (byte)CMD_STOP_L;
+        MainActivity.bleManager.sendCmd(data);
+    }
+
+    public static void cmdSetServerUsername(byte username[], byte length)
+    {
+        byte data[] = new byte[7+length];
+        data[0] = (byte) CMD_START_H;
+        data[1] = (byte)CMD_START_L;
+        data[2] = CMD_CFG_SET_USERNAME;
+        data[3] = length;
+        for(byte i = 0; i < length; i++)
+        {
+            data[i+4] = username[i];
+        }
+        data[4+length] = (byte) CalcCheckSum(data,4+length);
+        data[4+length+1] = (byte)CMD_STOP_H;
+        data[4+length+2] = (byte)CMD_STOP_L;
+        MainActivity.bleManager.sendCmd(data);
+    }
+
+    public static void cmdSetServerPassword(byte password[], byte length)
+    {
+        byte data[] = new byte[7+length];
+        data[0] = (byte) CMD_START_H;
+        data[1] = (byte)CMD_START_L;
+        data[2] = CMD_CFG_SET_PASSWORD;
+        data[3] = length;
+        for(byte i = 0; i < length; i++)
+        {
+            data[i+4] = password[i];
+        }
+        data[4+length] = (byte) CalcCheckSum(data,4+length);
+        data[4+length+1] = (byte)CMD_STOP_H;
+        data[4+length+2] = (byte)CMD_STOP_L;
+        MainActivity.bleManager.sendCmd(data);
+    }
+
 }

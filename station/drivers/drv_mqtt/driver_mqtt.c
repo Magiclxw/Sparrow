@@ -1,8 +1,12 @@
 #include "driver_mqtt.h"
+#include "esp_sleep.h"
+#include "../../main/systemInfo.h"
 
 static const char *TAG = "MQTT station";
 
 esp_mqtt_client_handle_t client = NULL;
+
+static uint16_t s_powerOnTimes = 0;
 
 static void log_error_if_nonzero(const char *message, int error_code)
 {
@@ -30,8 +34,6 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     switch ((esp_mqtt_event_id_t)event_id) {
     case MQTT_EVENT_CONNECTED:
         ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
-        msg_id = esp_mqtt_client_subscribe(client, "/topic/qos0", 1);
-        ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
 
         msg_id = esp_mqtt_client_subscribe(client, "/settings/start_interval", 0);
         ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
@@ -53,7 +55,18 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         //订阅舵机角度保存主题
         msg_id = esp_mqtt_client_subscribe(client, "/config/save_angle", 0);
         ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+        int times = 0;
+        sysInfoGetPowerOnTimes(&times);
+        char powerOnTimes[5] = {0};
+        sprintf(powerOnTimes, "%d", times);
+        msg_id = esp_mqtt_client_publish(client, "/topic/power_on_times", powerOnTimes, 5, 0, 1);
+
+        vTaskDelay(pdMS_TO_TICKS(100));
+
+        esp_deep_sleep(1000000LL * 3600);
         break;
+
+
     case MQTT_EVENT_DISCONNECTED:
         ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
         break;

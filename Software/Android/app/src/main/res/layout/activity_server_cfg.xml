@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    tools:context=".settingsActivity.ServerCfgActivity">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -83,21 +85,21 @@
                 android:id="@+id/btn_server_save"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
+                android:layout_marginLeft="20dp"
                 android:layout_marginRight="50dp"
                 android:layout_weight="1"
-                android:text="保存"
+                android:text="保存至手机"
                 ></Button>
 
             <Button
-                android:id="@+id/btn_server_cancel"
+                android:id="@+id/btn_server_save_to_sparrow"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="50dp"
-                android:layout_marginLeft="50dp"
                 android:layout_weight="1"
-                android:text="取消"
+                android:layout_marginRight="20dp"
+                android:text="保存至Sparrow"
                 ></Button>
+
         </LinearLayout>
     </LinearLayout>
 

@@ -2,6 +2,8 @@
 
 #define GATTS_TAG "GATTS_DEMO"
 
+uint16_t spp_conn_id = 0xffff;
+
 QueueHandle_t Bluetooth_Queue_Handle = NULL;
 BleData_t ble_rec_data;
 
@@ -513,6 +515,12 @@ static bool compareCheckSum(uint8_t *data, uint8_t length)
     {
         return false;
     }
+}
+
+void belSendData(uint8_t *data, uint8_t length)
+{
+    esp_ble_gatts_send_indicate(gl_profile_tab[0].gatts_if, gl_profile_tab[0].conn_id, gl_profile_tab[0].char_handle,
+                                                length, data, false);
 }
 
 void initBLE()

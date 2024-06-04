@@ -1,5 +1,6 @@
 #include "drv_hid.h"
 #include "driver/gpio.h"
+#include "drv_ble.h"
 
 #define TUSB_DESC_TOTAL_LEN      (TUD_CONFIG_DESC_LEN + CFG_TUD_HID * TUD_HID_INOUT_DESC_LEN)
 
@@ -12,17 +13,20 @@ uint8_t const conv_table[128][2] =  { HID_ASCII_TO_KEYCODE };
  * In this example we implement Keyboard + Mouse HID device,
  * so we must define both report descriptors
  */
-const uint8_t hid_report_descriptor[] = {
+const uint8_t hid_report_descriptor0[] = {
     TUD_HID_REPORT_DESC_KEYBOARD(HID_REPORT_ID(HID_ITF_PROTOCOL_KEYBOARD) ),
     TUD_HID_REPORT_DESC_MOUSE(HID_REPORT_ID(HID_ITF_PROTOCOL_MOUSE) ),
-    TUD_HID_REPORT_DESC_GENERIC_INOUT(63,HID_REPORT_ID(3)),
-    
 };
-uint8_t const desc_hid_report[] = {
- 
-    TUD_HID_REPORT_DESC_GENERIC_INOUT(63, HID_REPORT_ID(3))
- 
+
+const uint8_t hid_report_descriptor1[] = {
+    TUD_HID_REPORT_DESC_GENERIC_INOUT(63,HID_REPORT_ID(1)),
+    TUD_HID_REPORT_DESC_GENERIC_INOUT(63,HID_REPORT_ID(2)),
 };
+
+const uint8_t hid_report_descriptor2[] = {
+    TUD_HID_REPORT_DESC_GENERIC_INOUT(63,HID_REPORT_ID(4)),
+};
+
 /**
  * @brief String descriptor
  */
@@ -34,8 +38,6 @@ const char* hid_string_descriptor[5] = {
     "123456",              // 3: Serials, should use chip ID
     "Example HID interface",  // 4: HID
 };
-
-
 
 /**
  * @brief Configuration descriptor
@@ -49,8 +51,10 @@ static const uint8_t hid_configuration_descriptor[] = {
     // Interface number, string index, boot protocol, report descriptor len, EP In address, size & polling interval
     //TUD_HID_DESCRIPTOR(0, 4, false, sizeof(hid_report_descriptor), 0x81, 16, 10),
 
-    TUD_HID_INOUT_DESCRIPTOR(0,0,HID_ITF_PROTOCOL_NONE,sizeof(hid_report_descriptor), 0x01, 0x81, 64, 10),
+    TUD_HID_INOUT_DESCRIPTOR(0,0,HID_ITF_PROTOCOL_NONE,sizeof(hid_report_descriptor1), 0x02, 0x81, CFG_TUD_HID_EP_BUFSIZE, 10),
+    //TUD_HID_INOUT_DESCRIPTOR(1,0,HID_ITF_PROTOCOL_NONE,sizeof(hid_report_descriptor2), 0x84, 0x81, CFG_TUD_HID_EP_BUFSIZE, 10),
 };
+
 
 /********* TinyUSB HID callbacks ***************/
 
@@ -58,8 +62,8 @@ static const uint8_t hid_configuration_descriptor[] = {
 // Application return pointer to descriptor, whose contents must exist long enough for transfer to complete
 uint8_t const *tud_hid_descriptor_report_cb(uint8_t instance)
 {
-    // We use only one interface and one HID report descriptor, so we can ignore parameter 'instance'
-    return hid_report_descriptor;
+    //We use only one interface and one HID report descriptor, so we can ignore parameter 'instance'
+    return hid_report_descriptor1;
 }
 
 
@@ -81,6 +85,8 @@ uint16_t tud_hid_get_report_cb(uint8_t instance, uint8_t report_id, hid_report_t
 // received data on OUT endpoint ( Report ID = 0, Type = 0 )
 void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id, hid_report_type_t report_type, uint8_t const* buffer, uint16_t bufsize)
 {
+    //device_recv_data(buffer, bufsize);
+    hid_data_upload(buffer,bufsize);
 }
 
 /********* Application ***************/
@@ -176,9 +182,14 @@ void hid_data_send(uint8_t data[], uint8_t length)
     if (tud_hid_ready())
     {
         //memcpy(reportData, data, length);
-        tud_hid_report(3,reportData,63);
+        tud_hid_report(1,reportData,63);
         
     }
+}
+
+void hid_data_upload(uint8_t data[], uint8_t length)
+{
+    belSendData(data,length);
 }
 
 /* 鼠标向相对位置移动 */

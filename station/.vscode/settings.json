@@ -44,6 +44,9 @@
     "type_traits": "c",
     "cmath": "c",
     "limits": "c",
-    "new": "c"
+    "new": "c",
+    "hid_device.h": "c",
+    "systeminfo.h": "c",
+    "sstream": "c"
   }
 }

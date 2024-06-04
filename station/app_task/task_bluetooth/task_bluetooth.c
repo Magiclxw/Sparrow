@@ -2,6 +2,7 @@
 #include "esp_log.h"
 #include "drv_hid.h"
 #include "drv_led.h"
+#include "drv_nvs.h"
 #include "../../sys_config.h"
 
 TaskHandle_t Bluetooth_Task__Handle = NULL;
@@ -27,6 +28,8 @@ void Bluetooth_Task()
 {
     BleData_t bleData;
 
+    initBLE();
+    //创建队列
     Bluetooth_Queue_Handle = xQueueCreate(BLUETOOTH_REC_QUEUE_LENGTH,BLUETOOTH_REC_QUEUE_SIZE);
 
     while (1)
@@ -58,7 +61,7 @@ static void blueToothDataHandler(uint8_t *data)
         //鼠标点击
         case CMD_MOUSE_CLICK:
         {
-            hid_mouse_click(data[3],data[4]);
+            //hid_mouse_click(data[3],data[4]);
             ESP_LOGI(TAG, " CLICKED\r\n");
             break;
         }
@@ -69,12 +72,14 @@ static void blueToothDataHandler(uint8_t *data)
             ESP_LOGI(TAG, " key %c\r\n",data[3]);
             break;
         }
+        //键盘功能键
         case CMD_KEYBOARD_FUNC:
         {
             hid_input_func(data[3],data[4]);
             ESP_LOGI(TAG, " key %c\r\n",data[3]);
             break;
         }
+        //发送HID数据
         case CMD_HID_DATA_SEND:
         {
             //ESP_LOGI(TAG, " hid \r\n");
@@ -82,6 +87,65 @@ static void blueToothDataHandler(uint8_t *data)
             setLed(1,0,1);
             vTaskDelay(pdMS_TO_TICKS(1000));
             setLed(1,1,1);
+            break;
+        }
+        //配置服务器地址
+        case CMD_CFG_SET_SERVER:
+        {
+            uint16_t dataLen = 0;
+            char server_address[100] = {0};
+
+            dataLen = data[3];
+
+            for(uint16_t i = 0; i < dataLen; i++)
+            {
+                server_address[i] = data[4 + i];
+            }
+
+            ESP_LOGI(TAG,"server_address = %s\n", server_address);
+
+            // esp_err_t ret = nvsOpen(USER_NAMESPACE_0, NVS_READWRITE);
+
+            // if(ret == ESP_OK)
+            // {
+            //     ret = nvsSetStr(SERVER_ADDRESS, server_address);
+
+            //     ret = nvsCommit();
+
+            //     nvsClose();
+            // }
+
+            break;
+        }
+        case CMD_CFG_SET_USERNAME:
+        {
+            uint16_t dataLen = 0;
+            char server_username[100] = {0};
+
+            dataLen = data[3];
+
+            for(uint16_t i = 0; i < dataLen; i++)
+            {
+                server_username[i] = data[4 + i];
+            }
+
+            ESP_LOGI(TAG,"server_username = %s\n", server_username);
+
+            break;
+        }
+        case CMD_CFG_SET_PASSWORD:
+        {
+            uint16_t dataLen = 0;
+            char server_password[100] = {0};
+
+            dataLen = data[3];
+
+            for(uint16_t i = 0; i < dataLen; i++)
+            {
+                server_password[i] = data[4 + i];
+            }
+
+            ESP_LOGI(TAG,"server_password = %s\n", server_password);
             break;
         }
     }

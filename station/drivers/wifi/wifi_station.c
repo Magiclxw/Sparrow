@@ -11,6 +11,7 @@
 #include "nvs_flash.h"
 #include "esp_netif.h"
 #include "esp_smartconfig.h"
+#include "../drv_nvs/drv_nvs.h"
 
 /* FreeRTOS event group to signal when we are connected & ready to make a request */
 static EventGroupHandle_t s_wifi_event_group;
@@ -60,26 +61,21 @@ static void event_handler(void* arg, esp_event_base_t event_base,
         ESP_LOGI(TAG, "SSID:%s", ssid);
         ESP_LOGI(TAG, "PASSWORD:%s", password);
 
-        nvs_handle_t my_handle;
-        esp_err_t ret = nvs_open("storage", NVS_READWRITE, &my_handle);
-        if (ret != ESP_OK) {
-            printf("Error (%s) opening NVS handle!\n", esp_err_to_name(ret));
-        } else {
+        esp_err_t ret = nvsOpen(USER_NAMESPACE_0, NVS_READWRITE);
 
-            ret = nvs_set_str(my_handle,"ssid",(char*)ssid);
+        ret = nvsSetStr("ssid",(char*)ssid);
+
+        if(ret == ESP_OK)
+        {
+            ret = nvsSetStr("password",(char*)password);
+
+            ret = nvsCommit();
+
+            nvsClose();
 
             if(ret == ESP_OK)
             {
-                ret = nvs_set_str(my_handle,"password",(char*)password);
-
-                ret = nvs_commit(my_handle);
-
-                nvs_close(my_handle);
-
-                if(ret == ESP_OK)
-                {
-                    printf("wifi message store success!");
-                }
+                printf("wifi message store success!");
             }
         }
 
@@ -122,12 +118,15 @@ void initialise_wifi(void)
 
 esp_err_t clearWifiData()
 {
-    nvs_handle_t my_handle;
-    nvs_open("storage", NVS_READWRITE, &my_handle);
-    nvs_erase_key(my_handle,"ssid");
-    nvs_erase_key(my_handle,"password");
+    esp_err_t ret = nvsOpen(USER_NAMESPACE_0, NVS_READWRITE);
 
-    return ESP_OK;
+    ret = nvsEraseKey("ssid");
+
+    ret = nvsEraseKey("password");
+
+    nvsClose();
+
+    return ret;
 }
 
 static void smartconfig_example_task(void * parm)
@@ -137,47 +136,41 @@ static void smartconfig_example_task(void * parm)
     smartconfig_start_config_t cfg = SMARTCONFIG_START_CONFIG_DEFAULT();
     ESP_ERROR_CHECK( esp_smartconfig_start(&cfg) );
 
-    nvs_handle_t my_handle;
-    esp_err_t ret = nvs_open("storage", NVS_READWRITE, &my_handle);
+    char str_ssid[33] = {0};
+    char str_password[65] = {0};
+    size_t ssidLength;
 
-    if (ret != ESP_OK) {
-        printf("Error (%s) opening NVS handle!\n", esp_err_to_name(ret));
-    } else {
-        printf("nvs open success!");
-        char str_ssid[33] = {0};
-        char str_password[65] = {0};
-        size_t ssidLength;
-        ret = nvs_get_str(my_handle, "ssid", NULL,&ssidLength);
+    esp_err_t ret = nvsOpen(USER_NAMESPACE_0, NVS_READWRITE);
+
+    ret = nvsGetStr("ssid", NULL,&ssidLength);
+
+    if(ret == ESP_OK)
+    {
+        // printf("ret = %x\r\n",ret);
+        // printf("ssid size = %d\r\n",ssidLength);
+        ret = nvsGetStr("ssid", str_ssid,&ssidLength);
+        //printf("ret = %x\r\n",ret);
         if(ret == ESP_OK)
         {
-            // printf("ret = %x\r\n",ret);
-            // printf("ssid size = %d\r\n",ssidLength);
-            ret = nvs_get_str(my_handle, "ssid", str_ssid,&ssidLength);
-            //printf("ret = %x\r\n",ret);
+            printf("ssid = %s\r\n",str_ssid);
+            size_t passwordLength ;
+            nvsGetStr("password", NULL, &passwordLength);  //获取长度
+            ret = nvsGetStr("password", str_password, &passwordLength);
+
+            nvsClose();
+
             if(ret == ESP_OK)
             {
-                printf("ssid = %s\r\n",str_ssid);
-                size_t passwordLength ;
-                nvs_get_str(my_handle, "password", NULL, &passwordLength);  //获取长度
-                ret = nvs_get_str(my_handle, "password", str_password,&passwordLength);
-                if(ret == ESP_OK)
-                {
-                    printf("**************************************************************password = %s\r\n",str_password);
-                    wifi_config_t wifi_config;
-                    bzero(&wifi_config, sizeof(wifi_config_t));
-                    memcpy(wifi_config.sta.ssid,str_ssid,ssidLength);
-                    memcpy(wifi_config.sta.password,str_password,passwordLength);
+                wifi_config_t wifi_config;
+                bzero(&wifi_config, sizeof(wifi_config_t));
+                memcpy(wifi_config.sta.ssid,str_ssid,ssidLength);
+                memcpy(wifi_config.sta.password,str_password,passwordLength);
 
-                    ESP_ERROR_CHECK( esp_wifi_disconnect() );
-                    ESP_ERROR_CHECK( esp_wifi_set_config(WIFI_IF_STA, &wifi_config) );
-                    esp_wifi_connect();
-                }
+                ESP_ERROR_CHECK( esp_wifi_disconnect() );
+                ESP_ERROR_CHECK( esp_wifi_set_config(WIFI_IF_STA, &wifi_config) );
+                esp_wifi_connect();
             }
         }
-        
-
-        
-
     }
 
     while (1) {

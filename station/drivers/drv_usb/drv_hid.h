@@ -21,5 +21,6 @@ void hid_input_func(uint8_t modifier,uint8_t keyCode);
 void hid_mouse_click(hid_mouse_button_bm_t button, MouseClickState_e state);
 void hid_mouse_move(uint8_t x,uint8_t y);
 void hid_data_send(uint8_t data[], uint8_t length);
+void hid_data_upload(uint8_t data[], uint8_t length);
 
 #endif

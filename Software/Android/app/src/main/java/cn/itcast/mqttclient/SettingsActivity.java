@@ -9,8 +9,8 @@ import android.widget.NumberPicker;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import cn.itcast.mqttclient.dialog.ServerDialog;
 import cn.itcast.mqttclient.dialog.ServoCfgDialog;
+import cn.itcast.mqttclient.settingsActivity.ServerCfgActivity;
 import cn.itcast.mqttclient.settingsActivity.SmartCfgActivity;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -30,8 +30,9 @@ public class SettingsActivity extends AppCompatActivity {
         btn_server_settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final ServerDialog dialog = new ServerDialog(SettingsActivity.this);
-                dialog.show();
+                Intent intent = new Intent();
+                intent.setClass(SettingsActivity.this, ServerCfgActivity.class);
+                startActivity(intent);
             }
         });
         btn_servo_cfg.setOnClickListener(new View.OnClickListener() {

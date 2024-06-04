@@ -126,12 +126,36 @@ import cn.itcast.mqttclient.util.TypeConversion;
         READ_UUID = SystemConfig.getBleReadUUID(MainActivity.this);
         WRITE_UUID = SystemConfig.getBleWriteUUID(MainActivity.this);
 
-        if(mqttServer == null || mqttServer.equals("ssl://"))  mqttServer = "ssl://j1aa1aff.ala.cn-hangzhou.emqxsl.cn:8883";
-        if(userName == null)  userName = "test";
-        if(password == null) password = "asd13579";
-        if(SERVICE_UUID == null) SERVICE_UUID = "000000ff-0000-1000-8000-00805f9b34fb";
-        if(READ_UUID == null) READ_UUID = "0000ff01-0000-1000-8000-00805f9b34fb";
-        if(WRITE_UUID == null) WRITE_UUID = "0000ff01-0000-1000-8000-00805f9b34fb";
+        if(mqttServer == null || mqttServer.equals("ssl://"))
+        {
+            mqttServer = "ssl://j1aa1aff.ala.cn-hangzhou.emqxsl.cn:8883";
+            SystemConfig.setMqttAddr(this,mqttServer);
+        }
+        if(userName == null)
+        {
+            userName = "test";
+            SystemConfig.setMqttUserName(this,userName);
+        }
+        if(password == null)
+        {
+            password = "asd13579";
+            SystemConfig.setMqttPassword(this,password);
+        }
+        if(SERVICE_UUID == null)
+        {
+            SERVICE_UUID = "000000ff-0000-1000-8000-00805f9b34fb";
+            SystemConfig.setBleServiceUUID(this,SERVICE_UUID);
+        }
+        if(READ_UUID == null)
+        {
+            READ_UUID = "0000ff01-0000-1000-8000-00805f9b34fb";
+            SystemConfig.setBleReadUUID(this,READ_UUID);
+        }
+        if(WRITE_UUID == null)
+        {
+            WRITE_UUID = "0000ff01-0000-1000-8000-00805f9b34fb";
+            SystemConfig.setBleReadUUID(this,WRITE_UUID);
+        }
 
         mContext=getApplicationContext();
 

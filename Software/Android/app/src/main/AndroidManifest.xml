@@ -21,6 +21,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MQTTClient">
         <activity
+            android:name=".settingsActivity.ServerCfgActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".settingsActivity.SmartCfgActivity"
             android:exported="false">
             <meta-data

@@ -24,32 +24,50 @@
 #include "drv_ble.h"
 #include "task_bluetooth.h"
 #include "task_led.h"
+#include "drv_nvs.h"
+#include "systemInfo.h"
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
 
 void app_main(void)
 {
-    //Initialize NVS
-    esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-      ESP_ERROR_CHECK(nvs_flash_erase());
-      ret = nvs_flash_init();
-    }
-    //hid_test();
-    LED_Task_Create();
-    clearWifiData();
-    //wifi初始化
-    initialise_wifi();
-    initBLE();
-    Bluetooth_Task_Create();
-    //mqtt初始化，建立mqtt连接
-    mqtt_app_start();
-    //启动舵机线程
-    Servo_Control_TASK_Create();
-    //创建电源线程
-    Battery_Task_Create();
+  static uint16_t powerOnTimes = 0;
+  // //Initialize NVS
+  // esp_err_t ret = nvs_flash_init();
+  // if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+  //   ESP_ERROR_CHECK(nvs_flash_erase());
+  //   ret = nvs_flash_init();
+  // }
+  initNvs();
 
-    //启动RTC线程
-    ////Rtc_Task_Create();
+  //hid_test();
+  LED_Task_Create();
+  //clearWifiData();
+  //wifi初始化
+  initialise_wifi();
+  //mqtt初始化，建立mqtt连接
+  mqtt_app_start();
+
+  vTaskDelay(pdMS_TO_TICKS(100));
+
+  sysInfoGetPowerOnTimes(&powerOnTimes);
+
+  printf("powerOnTimes = %d\r\n",powerOnTimes);
+
+  powerOnTimes++;
+
+  sysInfoSetPowerOnTimes(powerOnTimes);
+
+  //initBLE();
+  Bluetooth_Task_Create();
+  
+  
+  //启动舵机线程
+  Servo_Control_TASK_Create();
+  //创建电源线程
+  Battery_Task_Create();
+
+  //启动RTC线程
+  ////Rtc_Task_Create();
 }
