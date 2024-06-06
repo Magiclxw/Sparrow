@@ -1,4 +1,4 @@
-idf_component_register(SRCS "main.c"
+idf_component_register(SRCS "startup.c" "main.c"
                             "systemInfo.c"
                             "../drivers/wifi/wifi_station.c"
                             "../drivers/drv_mqtt/driver_mqtt.c"

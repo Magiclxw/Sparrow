@@ -13,6 +13,8 @@
 
 extern esp_mqtt_client_handle_t client;
 
+extern SemaphoreHandle_t preStartupSemaphore;
+
 void mqtt_app_start(void);
 
 #endif

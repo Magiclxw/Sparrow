@@ -50,40 +50,41 @@ void Bluetooth_Task()
 static void blueToothDataHandler(uint8_t *data)
 {
     uint8_t cmd = data[2];
+    uint8_t dataLen = data[3];
     switch (cmd)
     {
         //鼠标移动
         case CMD_MOUSE_MOVE:
         {
-            hid_mouse_move(data[3],data[4]);
+            hid_mouse_move(data[4],data[5]);
             break;
         }
         //鼠标点击
         case CMD_MOUSE_CLICK:
         {
-            //hid_mouse_click(data[3],data[4]);
+            //hid_mouse_click(data[4],data[5]);
             ESP_LOGI(TAG, " CLICKED\r\n");
             break;
         }
         //键盘输入
         case CMD_KEYBOARD_INPUT:
         {
-            hid_input_char(data[3]);
-            ESP_LOGI(TAG, " key %c\r\n",data[3]);
+            hid_input_char(data[4]);
+            ESP_LOGI(TAG, " key %c\r\n",data[4]);
             break;
         }
         //键盘功能键
         case CMD_KEYBOARD_FUNC:
         {
-            hid_input_func(data[3],data[4]);
-            ESP_LOGI(TAG, " key %c\r\n",data[3]);
+            hid_input_func(data[4],data[5]);
+            ESP_LOGI(TAG, " key %c\r\n",data[4]);
             break;
         }
         //发送HID数据
         case CMD_HID_DATA_SEND:
         {
             //ESP_LOGI(TAG, " hid \r\n");
-            hid_data_send(data[4],data[3]);
+            hid_data_send(data[4], dataLen);
             setLed(1,0,1);
             vTaskDelay(pdMS_TO_TICKS(1000));
             setLed(1,1,1);
@@ -92,10 +93,7 @@ static void blueToothDataHandler(uint8_t *data)
         //配置服务器地址
         case CMD_CFG_SET_SERVER:
         {
-            uint16_t dataLen = 0;
             char server_address[100] = {0};
-
-            dataLen = data[3];
 
             for(uint16_t i = 0; i < dataLen; i++)
             {
@@ -119,12 +117,8 @@ static void blueToothDataHandler(uint8_t *data)
         }
         case CMD_CFG_SET_USERNAME:
         {
-            uint16_t dataLen = 0;
             char server_username[100] = {0};
-
-            dataLen = data[3];
-
-            for(uint16_t i = 0; i < dataLen; i++)
+            for(uint8_t i = 0; i < dataLen; i++)
             {
                 server_username[i] = data[4 + i];
             }
@@ -135,12 +129,8 @@ static void blueToothDataHandler(uint8_t *data)
         }
         case CMD_CFG_SET_PASSWORD:
         {
-            uint16_t dataLen = 0;
             char server_password[100] = {0};
-
-            dataLen = data[3];
-
-            for(uint16_t i = 0; i < dataLen; i++)
+            for(uint8_t i = 0; i < dataLen; i++)
             {
                 server_password[i] = data[4 + i];
             }

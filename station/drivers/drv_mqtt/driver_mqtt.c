@@ -63,7 +63,9 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 
         vTaskDelay(pdMS_TO_TICKS(100));
 
-        esp_deep_sleep(1000000LL * 3600);
+        xSemaphoreGive(preStartupSemaphore);
+
+        //esp_deep_sleep(1000000LL * 3600);
         break;
 
 
@@ -96,7 +98,11 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
             printf("angleState.ServoAngleState_Value = %d\r\n", angleState.ServoAngleState_Value);
             if(angleState.ServoAngleState_Value <= 90 && angleState.ServoAngleState_Value >= -90)
             {
-                xQueueSend(Angle_State_Handle,&angleState,0);
+                if(Angle_State_Handle != NULL)
+                {
+                    xQueueSend(Angle_State_Handle,&angleState,0);
+                }
+                
                 memset(event->data,0,strlen(event->data));
             }
             else

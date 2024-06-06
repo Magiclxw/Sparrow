@@ -5,7 +5,7 @@
     "board/esp32s3-builtin.cfg"
   ],
   "idf.flashType": "UART",
-  "idf.portWin": "COM18",
+  "idf.portWin": "COM6",
   "files.associations": {
     "mqtt_client.h": "c",
     "wifi.h": "c",
@@ -47,6 +47,13 @@
     "new": "c",
     "hid_device.h": "c",
     "systeminfo.h": "c",
-    "sstream": "c"
+    "sstream": "c",
+    "task_battery.h": "c",
+    "driver_mqtt.h": "c",
+    "semphr.h": "c",
+    "task_rtc.h": "c",
+    "task_led.h": "c",
+    "startup.h": "c",
+    "drv_ble.h": "c"
   }
 }
