@@ -4,4 +4,4 @@ idf_component_register(SRCS "task_battery.c"
                         INCLUDE_DIRS "."
                                      "../../drivers/drv_adc"
                                      "../../drivers/drv_mqtt"
-                        REQUIRES esp_hw_support esp_adc esp_event mqtt driver nvs_flash)
+                        REQUIRES esp_hw_support esp_adc esp_event mqtt driver nvs_flash json)

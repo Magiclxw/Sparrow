@@ -2,31 +2,18 @@ package cn.itcast.mqttclient;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import cn.itcast.mqttclient.toolsActivity.KeyboardActivity;
+import cn.itcast.mqttclient.toolsActivity.MouseActivity;
+import cn.itcast.mqttclient.toolsActivity.PCPassword;
 
 public class ToolsActivity extends AppCompatActivity {
 
-    Button btn_mouse,btn_keyboard;
+    Button btn_mouse, btn_keyboard, tools_btn_pc_password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +22,7 @@ public class ToolsActivity extends AppCompatActivity {
 
         btn_mouse = (Button) findViewById(R.id.btn_mouse);
         btn_keyboard = (Button) findViewById(R.id.btn_keyboard);
+        tools_btn_pc_password = (Button) findViewById(R.id.tools_btn_password);
 
         btn_mouse.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,6 +37,14 @@ public class ToolsActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent();
                 intent.setClass(ToolsActivity.this, KeyboardActivity.class);
+                startActivity(intent);
+            }
+        });
+        tools_btn_pc_password.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.setClass(ToolsActivity.this, PCPassword.class);
                 startActivity(intent);
             }
         });

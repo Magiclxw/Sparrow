@@ -1,5 +1,14 @@
   package cn.itcast.mqttclient;
 
+import static cn.itcast.mqttclient.util.JsonHandler.analysisAppRetainedSettings;
+import static cn.itcast.mqttclient.util.JsonHandler.generateAppRetainedSettings;
+import static cn.itcast.mqttclient.util.JsonHandler.getLedCtrl;
+import static cn.itcast.mqttclient.util.JsonHandler.getPcPassword;
+import static cn.itcast.mqttclient.util.JsonHandler.getPcPasswordCtrl;
+import static cn.itcast.mqttclient.util.JsonHandler.getPcPasswordWait;
+import static cn.itcast.mqttclient.util.JsonHandler.getPowerOnOFF;
+import static cn.itcast.mqttclient.util.JsonHandler.getWakeupInterval;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,12 +30,14 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.NumberPicker;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -74,13 +85,14 @@ import cn.itcast.mqttclient.util.TypeConversion;
     private List<String> deniedPermissionList = new ArrayList<>();
 
     /* 主题 */
-    public static String tp_set_wakeup_interval = "/settings/wakeup_interval";
-    public static String tp_set_wakeup_duration = "/settings/wakeup_duration";
-    public static String tp_set_power_on_off  = "/settings/power_on_off";
-    public static String tp_sta_connect_status = "/state/connect_status";
-    public static String tp_sta_power = "/state/power";
-    public static String tp_cfg_angle = "/config/angle";
-    public static String tp_cfg_save_angle = "/config/save_angle";
+    public static String MQTT_TOPIC_APP_RETAINED_SETTINGS = "/settings/app_config/retained";
+    public static String MQTT_TOPIC_APP_DISRETAINED_SETTINGS = "/settings/app_config/disretained";
+    public static String MQTT_TOPIC_DEVICE_RETAINED_SETTINGS  = "/settings/device_config/retained";
+    public static String MQTT_TOPIC_DEVICE_DISRETAINED_SETTINGS = "/settings/device_config/disretained";
+    public static String MQTT_TOPIC_DEVICE_RETAINED_STATE = "/state/device_config/retained";
+    public static String MQTT_TOPIC_DEVICE_DISRETAINED_STATE = "/state/device_config/disretained";
+    public static String MQTT_TOPIC_DEVICE_RETAINED_STATISTICS = "/statistics/device_config/retained";
+    public static String MQTT_TOPIC_DEVICE_DISRETAINED_STATISTICS = "/statistics/device_config/disretained";
 
     private static final int CONNECT_SUCCESS = 0x01;
     private static final int CONNECT_FAILURE = 0x02;
@@ -101,6 +113,7 @@ import cn.itcast.mqttclient.util.TypeConversion;
 
     static TextView connectState,powerState,powerValue;
     private static RadioGroup power_contral;
+    private static RadioButton rb_no_ctrl,rb_power_on,rb_power_off;
     private static NumberPicker numberPicker_wake_hour;
     private static NumberPicker numberPicker_wake_minute;
     private static NumberPicker numberPicker_wakeup_duragion;
@@ -157,7 +170,7 @@ import cn.itcast.mqttclient.util.TypeConversion;
             SystemConfig.setBleReadUUID(this,WRITE_UUID);
         }
 
-        mContext=getApplicationContext();
+        mContext = getApplicationContext();
 
         //按键
         saveConfig = (Button) findViewById(R.id.save_config);
@@ -185,6 +198,9 @@ import cn.itcast.mqttclient.util.TypeConversion;
 
         //单选按钮
         power_contral = (RadioGroup)findViewById(R.id.rd_power_ctrl);
+        rb_no_ctrl = (RadioButton) findViewById(R.id.radio_no_exe);
+        rb_power_on = (RadioButton) findViewById(R.id.radio_power_on);
+        rb_power_off = (RadioButton) findViewById(R.id.radio_power_off);
 
         //蓝牙配置
         //iniListener();
@@ -221,39 +237,58 @@ import cn.itcast.mqttclient.util.TypeConversion;
             }
             //订阅唤醒间隔主题
             try {
-                client.subscribe(tp_set_wakeup_interval);
+                client.subscribe(MQTT_TOPIC_APP_RETAINED_SETTINGS);
 
             } catch (MqttException e) {
                 e.printStackTrace();
             }
             //订阅唤醒时长主题
             try {
-                client.subscribe(tp_set_wakeup_duration);
+                client.subscribe(MQTT_TOPIC_APP_DISRETAINED_SETTINGS);
 
             } catch (MqttException e) {
                 e.printStackTrace();
             }
             //订阅电源控制主题
             try {
-                client.subscribe(tp_set_power_on_off);
+                client.subscribe(MQTT_TOPIC_DEVICE_RETAINED_SETTINGS);
 
             } catch (MqttException e) {
                 e.printStackTrace();
             }
             //订阅连接状态主题
             try {
-                client.subscribe(tp_sta_connect_status);
+                client.subscribe(MQTT_TOPIC_DEVICE_DISRETAINED_SETTINGS);
 
             } catch (MqttException e) {
                 e.printStackTrace();
             }
             //订阅电源状态主题
             try {
-                client.subscribe(tp_sta_power);
+                client.subscribe(MQTT_TOPIC_DEVICE_RETAINED_STATE);
 
             } catch (MqttException e) {
                 e.printStackTrace();
             }
+            try {
+                client.subscribe(MQTT_TOPIC_DEVICE_DISRETAINED_STATE);
+
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+            try {
+                client.subscribe(MQTT_TOPIC_DEVICE_RETAINED_STATISTICS);
+
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+            try {
+                client.subscribe(MQTT_TOPIC_DEVICE_DISRETAINED_STATISTICS);
+
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+
         } catch (MqttException me) {
             System.out.println("reason " + me.getReasonCode());
             System.out.println("msg " + me.getMessage());
@@ -267,29 +302,23 @@ import cn.itcast.mqttclient.util.TypeConversion;
             @Override
             public void onClick(View v) {
                 int qos = 1;
+                int checkedRadioButton;
                 String wake_up_interval = String.valueOf(numberPicker_wake_hour.getValue()*60 + numberPicker_wake_minute.getValue());
-                String wake_up_duration = String.valueOf(numberPicker_wakeup_duragion.getValue());
-                String power_ctrl = String.valueOf(power_contral.getCheckedRadioButtonId());
 
-                MqttMessage message = new MqttMessage(wake_up_interval.getBytes());
+                //查找被选中的RadioButton
+                for(checkedRadioButton = 0 ;checkedRadioButton < power_contral.getChildCount();checkedRadioButton++) {
+                    RadioButton rb = (RadioButton) power_contral.getChildAt(checkedRadioButton);
+                    if (rb.isChecked()) {
+                        break;
+                    }
+                }
+
+                String jsonData = generateAppRetainedSettings(Integer.parseInt(wake_up_interval), checkedRadioButton, getPcPassword(), getPcPasswordCtrl(), getPcPasswordWait(), getLedCtrl());
+
+                MqttMessage message = new MqttMessage(jsonData.getBytes());
                 message.setQos(qos);
                 try {
-                    client.publish(tp_set_wakeup_interval, message);
-                    System.out.println("Message published");
-                } catch (MqttException e) {
-                    e.printStackTrace();
-                }
-                message.setPayload(wake_up_duration.getBytes());
-                try {
-                    client.publish(tp_set_wakeup_duration, message);
-                    System.out.println("Message published");
-                } catch (MqttException e) {
-                    e.printStackTrace();
-                }
-
-                message.setPayload(power_ctrl.getBytes());
-                try {
-                    client.publish(tp_set_power_on_off, message);
+                    client.publish(MQTT_TOPIC_APP_RETAINED_SETTINGS, message);
                     System.out.println("Message published");
                 } catch (MqttException e) {
                     e.printStackTrace();
@@ -340,62 +369,54 @@ import cn.itcast.mqttclient.util.TypeConversion;
         @Override
         public void handleMessage(Message message){
             Bundle bundle=message.getData();
-            String interval = bundle.getString(tp_set_wakeup_interval);
-            String duration = bundle.getString(tp_set_wakeup_duration);
-            String power_ctrl = bundle.getString(tp_set_power_on_off);
-            String connect_status = bundle.getString(tp_sta_connect_status);
-            String power_state = bundle.getString(tp_sta_power);
-            String angle = bundle.getString(tp_cfg_angle);
-            String save_angle = bundle.getString(tp_cfg_save_angle);
 
-            if(interval != null){
-                int rec_interval = Integer.parseInt(interval);
-                numberPicker_wake_hour.setValue(rec_interval/60);   //小时
-                numberPicker_wake_minute.setValue(rec_interval%60); //分钟
+            String appRetainedSettings = bundle.getString(MQTT_TOPIC_APP_RETAINED_SETTINGS);
+            String appDisretainedSettings = bundle.getString(MQTT_TOPIC_APP_DISRETAINED_SETTINGS);
+            String deviceRetainedSettings = bundle.getString(MQTT_TOPIC_DEVICE_RETAINED_SETTINGS);
+            String deviceDisretainedSettings = bundle.getString(MQTT_TOPIC_DEVICE_DISRETAINED_SETTINGS);
+            String deviceRetainedState = bundle.getString(MQTT_TOPIC_DEVICE_RETAINED_STATE);
+            String deviceDisretainedState = bundle.getString(MQTT_TOPIC_DEVICE_DISRETAINED_STATE);
+            String deviceRetainedStatistics = bundle.getString(MQTT_TOPIC_DEVICE_RETAINED_STATISTICS);
+            String deviceDisretainedStatistics = bundle.getString(MQTT_TOPIC_DEVICE_DISRETAINED_STATISTICS);
+
+            if(appRetainedSettings != null){
+                analysisAppRetainedSettings(appRetainedSettings);
+
+                numberPicker_wake_hour.setValue(getWakeupInterval() / 60);
+                numberPicker_wake_minute.setValue(getWakeupInterval() % 60);
+                switch (getPowerOnOFF())
+                {
+                    case 0:
+                    {
+                        rb_no_ctrl.setChecked(true);
+                        break;
+                    }
+                    case 1:
+                    {
+                        rb_power_on.setChecked(true);
+                        break;
+                    }
+                    case 2:
+                    {
+                        rb_power_off.setChecked(true);
+                    }
+                }
             }
-            if(duration != null)
+            if(appDisretainedSettings != null)
             {
-                int rec_duration = Integer.parseInt(duration);
-                numberPicker_wakeup_duragion.setValue(rec_duration);
+
             }
-            if(power_ctrl != null)
+            if(deviceRetainedSettings != null)
             {
-                int rec_id = Integer.parseInt(power_ctrl);
-                power_contral.check(rec_id);
+
             }
-            if(connect_status != null)
+            if(deviceDisretainedSettings != null)
             {
-                if(connect_status.equals("0"))
-                {
-                    connectState.setText("未连接");
-                }
-                else if(connect_status.equals("1"))
-                {
-                    connectState.setText("已连接");
-                }
+
             }
-            if(power_state != null)
+            if(deviceRetainedState != null)
             {
-                if(power_state.equals("0"))
-                {
-                    powerState.setText("无状态");
-                }
-                else if(power_state.equals("1"))
-                {
-                    powerState.setText("USB供电");
-                }
-                else if(power_state.equals("2"))
-                {
-                    powerState.setText("电池供电");
-                }
-                else if(power_state.equals("3"))
-                {
-                    powerState.setText("电压过低");
-                }
-                else if(power_state.equals("4"))
-                {
-                    powerState.setText("异常");
-                }
+
             }
         }
     };
@@ -450,6 +471,7 @@ import cn.itcast.mqttclient.util.TypeConversion;
                 case DISCONNECT_SUCCESS:
                     Log.d(TAG, "断开成功");
                     searchBtDevice();//重新建立连接
+                    //startConnectionMonitoring();
                     break;
 
                 case SEND_FAILURE: //发送失败
@@ -481,6 +503,9 @@ import cn.itcast.mqttclient.util.TypeConversion;
 
                 case BT_OPENED:
                     Log.d(TAG, "系统蓝牙已打开");
+                    break;
+                case DISCOVERY_OUT_TIME:
+                    searchBtDevice();
                     break;
             }
 

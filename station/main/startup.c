@@ -26,11 +26,13 @@ void preStartup()
 
 void midStartup()
 {
-    LED_Task_Create();
+    //esp_deep_sleep(1000000LL * 3600);
 }
 
 void postStartup()
 {
+    LED_Task_Create();
+
     Bluetooth_Task_Create();
 
     //启动舵机线程

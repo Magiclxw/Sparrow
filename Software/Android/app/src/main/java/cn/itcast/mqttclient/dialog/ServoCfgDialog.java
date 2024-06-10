@@ -1,8 +1,8 @@
 package cn.itcast.mqttclient.dialog;
 
+import static cn.itcast.mqttclient.MainActivity.MQTT_TOPIC_APP_DISRETAINED_SETTINGS;
+import static cn.itcast.mqttclient.MainActivity.MQTT_TOPIC_APP_RETAINED_SETTINGS;
 import static cn.itcast.mqttclient.MainActivity.client;
-import static cn.itcast.mqttclient.MainActivity.tp_cfg_angle;
-import static cn.itcast.mqttclient.MainActivity.tp_cfg_save_angle;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -82,7 +82,7 @@ public class ServoCfgDialog extends AlertDialog {
         MqttMessage message = new MqttMessage(turnAngle.getBytes());
         message.setQos(qos);
         try {
-            client.publish(tp_cfg_angle, message);
+            client.publish(MQTT_TOPIC_APP_RETAINED_SETTINGS, message);
             System.out.println("Message published");
         } catch (MqttException e) {
             e.printStackTrace();
@@ -98,7 +98,7 @@ public class ServoCfgDialog extends AlertDialog {
         MqttMessage message = new MqttMessage(saveFlag.getBytes());
         message.setQos(qos);
         try {
-            client.publish(tp_cfg_save_angle, message);
+            client.publish(MQTT_TOPIC_APP_DISRETAINED_SETTINGS, message);
             System.out.println("Message published");
         } catch (MqttException e) {
             e.printStackTrace();

@@ -1,6 +1,7 @@
 #include "driver_mqtt.h"
 #include "esp_sleep.h"
 #include "../../main/systemInfo.h"
+#include "../drv_json/drv_jsonHandler.h"
 
 static const char *TAG = "MQTT station";
 
@@ -34,38 +35,23 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     switch ((esp_mqtt_event_id_t)event_id) {
     case MQTT_EVENT_CONNECTED:
         ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
-
-        msg_id = esp_mqtt_client_subscribe(client, "/settings/start_interval", 0);
+        //订阅app端发送的保留设置数据
+        msg_id = esp_mqtt_client_subscribe(client, MQTT_TOPIC_APP_RETAINED_SETTINGS, 0);
         ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
 
-        msg_id = esp_mqtt_client_subscribe(client, "/settings/power_on_time", 0);
+        msg_id = esp_mqtt_client_subscribe(client, MQTT_TOPIC_APP_DISRETAINED_SETTINGS, 0);
         ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
 
-        msg_id = esp_mqtt_client_subscribe(client, "/settings/power_on_times", 0);
-        ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+        // int times = 0;
+        // sysInfoGetPowerOnTimes(&times);
+        // char powerOnTimes[5] = {0};
+        // sprintf(powerOnTimes, "%d", times);
+        // msg_id = esp_mqtt_client_publish(client, "/topic/power_on_times", powerOnTimes, 5, 0, 1);
 
-        msg_id = esp_mqtt_client_subscribe(client, "/settings/power_off_time", 0);
-        ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
-
-        msg_id = esp_mqtt_client_subscribe(client, "/settings/power_off_times", 0);
-        ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
-        //订阅舵机转动角度主题
-        msg_id = esp_mqtt_client_subscribe(client, "/config/angle", 0);
-        ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
-        //订阅舵机角度保存主题
-        msg_id = esp_mqtt_client_subscribe(client, "/config/save_angle", 0);
-        ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
-        int times = 0;
-        sysInfoGetPowerOnTimes(&times);
-        char powerOnTimes[5] = {0};
-        sprintf(powerOnTimes, "%d", times);
-        msg_id = esp_mqtt_client_publish(client, "/topic/power_on_times", powerOnTimes, 5, 0, 1);
-
-        vTaskDelay(pdMS_TO_TICKS(100));
+        // vTaskDelay(pdMS_TO_TICKS(100));
 
         xSemaphoreGive(preStartupSemaphore);
-
-        //esp_deep_sleep(1000000LL * 3600);
+        
         break;
 
 
@@ -89,26 +75,31 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
         printf("DATA=%.*s\r\n", event->data_len, event->data);
 
-        if(strcmp("/config/angle",event->topic))
-        {
-            ServoAngleState_t angleState;
-            printf("compare ok\r\n");
-            angleState.ServoAngleState_Save = 0;
-            angleState.ServoAngleState_Value = atoi(event->data);
-            printf("angleState.ServoAngleState_Value = %d\r\n", angleState.ServoAngleState_Value);
-            if(angleState.ServoAngleState_Value <= 90 && angleState.ServoAngleState_Value >= -90)
-            {
-                if(Angle_State_Handle != NULL)
-                {
-                    xQueueSend(Angle_State_Handle,&angleState,0);
-                }
+        // if(strcmp("/config/angle",event->topic))
+        // {
+        //     ServoAngleState_t angleState;
+        //     printf("compare ok\r\n");
+        //     angleState.ServoAngleState_Save = 0;
+        //     angleState.ServoAngleState_Value = atoi(event->data);
+        //     printf("angleState.ServoAngleState_Value = %d\r\n", angleState.ServoAngleState_Value);
+        //     if(angleState.ServoAngleState_Value <= 90 && angleState.ServoAngleState_Value >= -90)
+        //     {
+        //         if(Angle_State_Handle != NULL)
+        //         {
+        //             xQueueSend(Angle_State_Handle,&angleState,0);
+        //         }
                 
-                memset(event->data,0,strlen(event->data));
-            }
-            else
-            {
-                memset(event->data,0,strlen(event->data));
-            }
+        //         memset(event->data,0,strlen(event->data));
+        //     }
+        //     else
+        //     {
+        //         memset(event->data,0,strlen(event->data));
+        //     }
+        // }
+
+        if(memcmp(MQTT_TOPIC_APP_RETAINED_SETTINGS,event->topic,event->topic_len) == 0)
+        {
+            setAppRetainedSettings(event->data);
         }
         break;
     case MQTT_EVENT_ERROR:

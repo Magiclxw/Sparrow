@@ -17,10 +17,13 @@
         android:text="键盘"
         ></Button>
 
-    <EditText
-        android:id="@+id/et_test"
-        android:layout_width="100dp"
+    <Button
+        android:id="@+id/tools_btn_password"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        ></EditText>
+        android:layout_toRightOf="@+id/btn_keyboard"
+        android:text="开机密码"
+        ></Button>
+
+
 </RelativeLayout>

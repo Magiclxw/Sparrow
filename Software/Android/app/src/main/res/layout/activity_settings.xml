@@ -32,7 +32,14 @@
             android:textSize="25dp"
             ></Button>
 
-
+        <Button
+            android:id="@+id/btn_led_ctrl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LED控制"
+            android:layout_marginTop="150dp"
+            android:textSize="25dp"
+            ></Button>
 
     </RelativeLayout>
 

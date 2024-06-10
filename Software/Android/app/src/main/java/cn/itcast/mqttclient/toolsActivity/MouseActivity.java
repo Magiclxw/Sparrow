@@ -1,4 +1,4 @@
-package cn.itcast.mqttclient;
+package cn.itcast.mqttclient.toolsActivity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,8 +13,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import cn.itcast.mqttclient.R;
 import cn.itcast.mqttclient.ble.BLEInterface;
 
 public class MouseActivity extends AppCompatActivity {

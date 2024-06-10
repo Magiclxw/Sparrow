@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cn.itcast.mqttclient">
+    package="cn.itcast.mqttclient" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
@@ -19,31 +19,38 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/cycle"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MQTTClient">
+        android:theme="@style/Theme.MQTTClient" >
+        <activity
+            android:name=".toolsActivity.PCPassword"
+            android:exported="false" >
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <activity
             android:name=".settingsActivity.ServerCfgActivity"
-            android:exported="false">
+            android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".settingsActivity.SmartCfgActivity"
-            android:exported="false">
+            android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".KeyboardActivity"
-            android:exported="false">
+            android:name=".toolsActivity.KeyboardActivity"
+            android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".MouseActivity"
-            android:exported="false">
+            android:name=".toolsActivity.MouseActivity"
+            android:exported="false" >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -51,7 +58,7 @@
         <activity android:name=".ToolsActivity" />
         <activity android:name=".ApplyJson" />
         <activity android:name=".SettingsActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

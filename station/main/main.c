@@ -13,16 +13,12 @@
 #include "esp_system.h"
 #include "esp_event.h"
 #include "esp_log.h"
-
-
 #include "drv_hid.h"
 #include "drv_ble.h"
-
 #include "task_led.h"
 #include "drv_nvs.h"
 #include "systemInfo.h"
 #include "startup.h"
-
 #include "lwip/err.h"
 #include "lwip/sys.h"
 

@@ -1,14 +1,13 @@
-package cn.itcast.mqttclient;
+package cn.itcast.mqttclient.toolsActivity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 
+import cn.itcast.mqttclient.R;
 import cn.itcast.mqttclient.ble.BLEInterface;
 
 public class KeyboardActivity extends AppCompatActivity {
