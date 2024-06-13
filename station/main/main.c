@@ -25,7 +25,6 @@
 void app_main(void)
 {
   static uint16_t powerOnTimes = 0;
-
   preStartup();
 
   vTaskDelay(pdMS_TO_TICKS(100));

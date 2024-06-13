@@ -1,4 +1,16 @@
 dependencies:
+  espressif/cmake_utilities:
+    component_hash: 351350613ceafba240b761b4ea991e0f231ac7a9f59a9ee901f751bddc0bb18f
+    source:
+      service_url: https://api.components.espressif.com/
+      type: service
+    version: 0.5.3
+  espressif/esp_lcd_ili9341:
+    component_hash: c6b96c14fa22ab9b80251812f7dbd7dd1b255ccd68abb0cef97a276df711a4ec
+    source:
+      service_url: https://api.components.espressif.com/
+      type: service
+    version: 2.0.0
   espressif/esp_tinyusb:
     component_hash: f151d680d6847bfcfd5d8eb6d1c3ff926c208e6b963b2e83643a141bc70baa15
     source:
@@ -6,16 +18,22 @@ dependencies:
       type: service
     version: 1.4.4
   espressif/tinyusb:
-    component_hash: a01cfb210e3bca8f046ca55b3aeb6b4329c22345ca2479e29d1ce7dc267abe65
+    component_hash: 214989d502fc168241a4a4f83b097d8ac44a93cd6f1787b4ac10069a8b3bebd3
     source:
       service_url: https://api.components.espressif.com/
       type: service
-    version: 0.15.0~5
+    version: 0.15.0~10
   idf:
     component_hash: null
     source:
       type: idf
     version: 5.1.2
-manifest_hash: 197f3f316c343eaed71c7b92f992ffa56cc344af83672d854857fbf93b3de5ab
+  lvgl/lvgl:
+    component_hash: d7c1ac037ae6e85d94897f807d6e7ba0946a83e720074fc95a4f6241da9f9f53
+    source:
+      service_url: https://api.components.espressif.com/
+      type: service
+    version: 8.4.0
+manifest_hash: 71e1a52235068fe6f7e0b28ed4722b2df7c2af48fe336e9d0f86c1909a92c304
 target: esp32s3
 version: 1.0.0

@@ -200,6 +200,24 @@ static void const* _find_desc(void const *beg, void const *end, uint_fast8_t des
   return cur;
 }
 
+/** Find the first descriptor of two given types
+ *
+ * @param[in] beg        The head of descriptor byte array.
+ * @param[in] end        The tail of descriptor byte array.
+ * @param[in] desc_type_0 The first target descriptor type.
+ * @param[in] desc_type_1 The second target descriptor type.
+ *
+ * @return The pointer for interface descriptor.
+ * @retval end   did not found interface descriptor */
+static void const* _find_desc_2_type(void const *beg, void const *end, uint_fast8_t desc_type_0, uint_fast8_t desc_type_1)
+{
+  void const *cur = beg;
+  while ((cur < end) && (desc_type_0 != tu_desc_type(cur)) && (desc_type_1 != tu_desc_type(cur))) {
+    cur = tu_desc_next(cur);
+  }
+  return cur;
+}
+
 /** Find the first descriptor specified by the arguments
  *
  * @param[in] beg        The head of descriptor byte array.
@@ -226,6 +244,10 @@ static void const* _find_desc_3(void const *beg, void const *end,
 }
 
 /** Return the next interface descriptor which has another interface number.
+ *  If there are multiple VC interfaces, there will be an IAD descriptor before
+ *  the next interface descriptor. Check both the IAD descriptor and the interface
+ *  descriptor.
+ *  3.1 Descriptor Layout Overview
  *
  * @param[in] beg     The head of descriptor byte array.
  * @param[in] end     The tail of descriptor byte array.
@@ -238,7 +260,7 @@ static void const* _next_desc_itf(void const *beg, void const *end)
   uint_fast8_t itfnum = ((tusb_desc_interface_t const*)cur)->bInterfaceNumber;
   while ((cur < end) &&
          (itfnum == ((tusb_desc_interface_t const*)cur)->bInterfaceNumber)) {
-    cur = _find_desc(tu_desc_next(cur), end, TUSB_DESC_INTERFACE);
+    cur = _find_desc_2_type(tu_desc_next(cur), end, TUSB_DESC_INTERFACE, TUSB_DESC_INTERFACE_ASSOCIATION);
   }
   return cur;
 }
@@ -322,7 +344,7 @@ static inline void const *_find_desc_format(void const *beg, void const *end, ui
     if ((fmt == VIDEO_CS_ITF_VS_FORMAT_UNCOMPRESSED ||
          fmt == VIDEO_CS_ITF_VS_FORMAT_MJPEG ||
          fmt == VIDEO_CS_ITF_VS_FORMAT_DV ||
-         fmt == VIDEO_CS_ITF_VS_FRAME_FRAME_BASED) &&
+         fmt == VIDEO_CS_ITF_VS_FORMAT_FRAME_BASED) &&
         fmtnum == p[3]) {
       return cur;
     }
@@ -386,6 +408,10 @@ static bool _update_streaming_parameters(videod_streaming_interface_t const *stm
       break;
   case VIDEO_CS_ITF_VS_FORMAT_MJPEG:
       break;
+
+    case VIDEO_CS_ITF_VS_FORMAT_FRAME_BASED:
+      break;
+
     default: return false;
   }
 
@@ -409,6 +435,11 @@ static bool _update_streaming_parameters(videod_streaming_interface_t const *stm
       case VIDEO_CS_ITF_VS_FORMAT_MJPEG:
         frame_size = (uint_fast32_t)frm->wWidth * frm->wHeight * 16 / 8; /* YUV422 */
         break;
+
+      case VIDEO_CS_ITF_VS_FORMAT_FRAME_BASED:
+        frame_size = (uint_fast32_t)frm->wWidth * frm->wHeight * 16 / 8; /* YUV422 */
+        break;
+
       default: break;
     }
     param->dwMaxVideoFrameSize = frame_size;
@@ -485,13 +516,19 @@ static bool _negotiate_streaming_parameters(videod_streaming_interface_t const *
         break;
       case VIDEO_REQUEST_GET_DEF:
         switch (fmt->bDescriptorSubType) {
-        case VIDEO_CS_ITF_VS_FORMAT_UNCOMPRESSED:
-          frmnum = fmt->uncompressed.bDefaultFrameIndex;
-          break;
-        case VIDEO_CS_ITF_VS_FORMAT_MJPEG:
-          frmnum = fmt->mjpeg.bDefaultFrameIndex;
-          break;
-        default: return false;
+          case VIDEO_CS_ITF_VS_FORMAT_UNCOMPRESSED:
+            frmnum = fmt->uncompressed.bDefaultFrameIndex;
+            break;
+
+          case VIDEO_CS_ITF_VS_FORMAT_MJPEG:
+            frmnum = fmt->mjpeg.bDefaultFrameIndex;
+            break;
+
+          case VIDEO_CS_ITF_VS_FORMAT_FRAME_BASED:
+            frmnum = fmt->frame_based.bDefaultFrameIndex;
+            break;
+
+          default: return false;
         }
         break;
       default: return false;
@@ -507,6 +544,11 @@ static bool _negotiate_streaming_parameters(videod_streaming_interface_t const *
       case VIDEO_CS_ITF_VS_FORMAT_MJPEG:
         frame_size = (uint_fast32_t)frm->wWidth * frm->wHeight * 16 / 8; /* YUV422 */
         break;
+
+      case VIDEO_CS_ITF_VS_FORMAT_FRAME_BASED:
+        frame_size = (uint_fast32_t)frm->wWidth * frm->wHeight * 16 / 8; /* YUV422 */
+        break;
+
       default: return false;
     }
     param->dwMaxVideoFrameSize = frame_size;
@@ -520,7 +562,8 @@ static bool _negotiate_streaming_parameters(videod_streaming_interface_t const *
     tusb_desc_cs_video_fmt_t const *fmt = _find_desc_format(tu_desc_next(vs), end, fmtnum);
     tusb_desc_cs_video_frm_t const *frm = _find_desc_frame(tu_desc_next(fmt), end, frmnum);
 
-    uint_fast32_t interval, interval_ms;
+    uint_fast32_t interval = 0;
+    uint_fast32_t interval_ms = 0;
     switch (request) {
       case VIDEO_REQUEST_GET_MAX:
         {
@@ -1206,7 +1249,7 @@ uint16_t videod_open(uint8_t rhport, tusb_desc_interface_t const * itf_desc, uin
        * host may not issue set_interface so open the streaming interface here. */
       uint8_t const *sbeg = (uint8_t const*)itf_desc + stm->desc.beg;
       uint8_t const *send = (uint8_t const*)itf_desc + stm->desc.end;
-      if (end == _find_desc_itf(sbeg, send, _desc_itfnum(sbeg), 1)) {
+      if (send == _find_desc_itf(sbeg, send, _desc_itfnum(sbeg), 1)) {
         TU_VERIFY(_open_vs_itf(rhport, stm, 0), 0);
       }
     }
