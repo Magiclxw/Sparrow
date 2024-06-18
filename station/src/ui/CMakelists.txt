@@ -1,0 +1,12 @@
+idf_component_register(SRCS "ui_startPage.c"
+                            "deviceBinding.c"
+                            "ui.c"
+                            "ui_Screen1.c"
+                            "ui_Screen2.c"
+                            "ui_Screen3.c"
+                            "../../drivers/drv_button/drv_button.c"
+                        INCLUDE_DIRS "."
+                                     ".""../../managed_components"
+                                     "../components"
+                                     "../../drivers/drv_button"
+                        REQUIRES   esp_event driver lvgl__lvgl esp_lcd hal lwip)

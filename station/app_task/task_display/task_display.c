@@ -1,4 +1,7 @@
 #include "task_display.h"
+#include "deviceBinding.h"
+#include "../../drivers/drv_button/drv_button.h"
+#include "ui.h"
 
 TaskHandle_t s_lcdTaskHandle = NULL;
 
@@ -186,9 +189,11 @@ static void displayTask()
     ESP_ERROR_CHECK(esp_timer_create(&lvgl_tick_timer_args, &lvgl_tick_timer));
     ESP_ERROR_CHECK(esp_timer_start_periodic(lvgl_tick_timer, EXAMPLE_LVGL_TICK_PERIOD_MS * 1000));
 
-    ESP_LOGI(TAG, "Display LVGL Meter Widget");
-    example_lvgl_demo_ui(disp);
+    dBObjToButtonInit();
 
+    //example_lvgl_demo_ui(disp);
+    //ui_startPageInit(disp);
+    ui_init();
     while (1) {
         // raise the task priority of LVGL and/or reduce the handler period can improve the performance
         vTaskDelay(pdMS_TO_TICKS(10));

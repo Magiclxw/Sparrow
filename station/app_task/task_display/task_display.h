@@ -13,6 +13,7 @@
 #include "drv_lcd.h"
 #include "esp_timer.h"
 #include "esp_lcd_ili9341.h"
+#include "../src/ui/ui_startPage.h"
 
 #define LCD_TASK_STACK_SIZE (4096)
 #define LCD_TASK_PRIORITY   (10)

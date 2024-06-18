@@ -12,6 +12,7 @@
 #include "esp_netif.h"
 #include "esp_smartconfig.h"
 #include "../drv_nvs/drv_nvs.h"
+#include "esp_netif_sntp.h"
 
 /* FreeRTOS event group to signal when we are connected & ready to make a request */
 static EventGroupHandle_t s_wifi_event_group;
@@ -114,6 +115,9 @@ void initialise_wifi(void)
 
     ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_STA) );
     ESP_ERROR_CHECK( esp_wifi_start() );
+
+    esp_sntp_config_t config = ESP_NETIF_SNTP_DEFAULT_CONFIG("pool.ntp.org");
+    esp_netif_sntp_init(&config);
 }
 
 esp_err_t clearWifiData()

@@ -8,6 +8,7 @@
 #include "task_rtc.h"
 #include "task_battery.h"
 #include "task_display.h"
+#include "drv_hid.h"
 
 SemaphoreHandle_t preStartupSemaphore;
 
@@ -22,6 +23,7 @@ void preStartup()
     //mqtt初始化，建立mqtt连接
     mqtt_app_start();
 
+    hid_test();
     //xSemaphoreTake(preStartupSemaphore,portMAX_DELAY);
 }
 

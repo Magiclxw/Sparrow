@@ -8,6 +8,7 @@
 #include "esp_wifi.h"
 #include "esp_event.h"
 #include "esp_log.h"
+#include "esp_sntp.h"
 
 void initialise_wifi(void);
 esp_err_t clearWifiData();

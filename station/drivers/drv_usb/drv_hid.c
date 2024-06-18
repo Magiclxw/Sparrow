@@ -1,6 +1,7 @@
 #include "drv_hid.h"
 #include "driver/gpio.h"
 #include "drv_ble.h"
+#include "drv_led.h"
 
 #define TUSB_DESC_TOTAL_LEN      (TUD_CONFIG_DESC_LEN + CFG_TUD_HID * TUD_HID_INOUT_DESC_LEN)
 
@@ -16,6 +17,7 @@ uint8_t const conv_table[128][2] =  { HID_ASCII_TO_KEYCODE };
 const uint8_t hid_report_descriptor0[] = {
     TUD_HID_REPORT_DESC_KEYBOARD(HID_REPORT_ID(HID_ITF_PROTOCOL_KEYBOARD) ),
     TUD_HID_REPORT_DESC_MOUSE(HID_REPORT_ID(HID_ITF_PROTOCOL_MOUSE) ),
+    TUD_HID_REPORT_DESC_GENERIC_INOUT(63,HID_REPORT_ID(4)),
 };
 
 const uint8_t hid_report_descriptor1[] = {
@@ -51,7 +53,7 @@ static const uint8_t hid_configuration_descriptor[] = {
     // Interface number, string index, boot protocol, report descriptor len, EP In address, size & polling interval
     //TUD_HID_DESCRIPTOR(0, 4, false, sizeof(hid_report_descriptor), 0x81, 16, 10),
 
-    TUD_HID_INOUT_DESCRIPTOR(0,0,HID_ITF_PROTOCOL_NONE,sizeof(hid_report_descriptor1), 0x02, 0x81, CFG_TUD_HID_EP_BUFSIZE, 10),
+    TUD_HID_INOUT_DESCRIPTOR(0,4,HID_ITF_PROTOCOL_NONE,sizeof(hid_report_descriptor0), 0X04, 0x84, CFG_TUD_HID_EP_BUFSIZE, 10),
     //TUD_HID_INOUT_DESCRIPTOR(1,0,HID_ITF_PROTOCOL_NONE,sizeof(hid_report_descriptor2), 0x84, 0x81, CFG_TUD_HID_EP_BUFSIZE, 10),
 };
 
@@ -63,7 +65,7 @@ static const uint8_t hid_configuration_descriptor[] = {
 uint8_t const *tud_hid_descriptor_report_cb(uint8_t instance)
 {
     //We use only one interface and one HID report descriptor, so we can ignore parameter 'instance'
-    return hid_report_descriptor1;
+    return hid_report_descriptor0;
 }
 
 
@@ -86,7 +88,12 @@ uint16_t tud_hid_get_report_cb(uint8_t instance, uint8_t report_id, hid_report_t
 void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id, hid_report_type_t report_type, uint8_t const* buffer, uint16_t bufsize)
 {
     //device_recv_data(buffer, bufsize);
-    hid_data_upload(buffer,bufsize);
+    //hid_data_upload(buffer,bufsize);
+    if(report_id == 0)
+    {
+        setLed(1,0,1);
+    }
+    
 }
 
 /********* Application ***************/
@@ -182,7 +189,7 @@ void hid_data_send(uint8_t data[], uint8_t length)
     if (tud_hid_ready())
     {
         //memcpy(reportData, data, length);
-        tud_hid_report(1,reportData,63);
+        tud_hid_report(4,reportData,63);
         
     }
 }
