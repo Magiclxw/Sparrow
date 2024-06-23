@@ -10,6 +10,7 @@ public class JsonHandler {
     private final static String JSON_KEY_PC_PASSWORD_CTRL = "pc_password_ctrl";
     private final static String JSON_KEY_PC_PASSWORD_WAIT = "pc_password_wait";
     private final static String JSON_KEY_LED_CTRL = "led_ctrl";
+    private final static String JSON_KEY_TOOLS_TOKEN = "tools_token";
 
 
     private final static String JSON_KEY_TURN_ANGLE = "turn_angle";
@@ -37,6 +38,7 @@ public class JsonHandler {
     private static int pcPasswordCtrl = 0;
     private static int pcPasswordWait = 0;
     private static int ledCtrl = 0;
+    private static int toolsToken = 0;
 
     private static int turnAngle = 0;
     private static int saveAngle = 0;
@@ -67,13 +69,14 @@ public class JsonHandler {
             pcPasswordCtrl = jsonObject.getInt(JSON_KEY_PC_PASSWORD_CTRL);
             pcPasswordWait = jsonObject.getInt(JSON_KEY_PC_PASSWORD_WAIT);
             ledCtrl = jsonObject.getInt(JSON_KEY_LED_CTRL);
+            toolsToken = jsonObject.getInt(JSON_KEY_TOOLS_TOKEN);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    public static String generateAppRetainedSettings(int wakeupInterval, int powerOnOFF, String pcPassword, int pcPasswordCtrl, int pcPasswordWait, int ledCtrl)
+    public static String generateAppRetainedSettings(int wakeupInterval, int powerOnOFF, String pcPassword, int pcPasswordCtrl, int pcPasswordWait, int ledCtrl, int token)
     {
         String jsonString = "null";
 
@@ -86,6 +89,7 @@ public class JsonHandler {
             jsonObject.put(JSON_KEY_PC_PASSWORD_CTRL, pcPasswordCtrl);
             jsonObject.put(JSON_KEY_PC_PASSWORD_WAIT, pcPasswordWait);
             jsonObject.put(JSON_KEY_LED_CTRL, ledCtrl);
+            jsonObject.put(JSON_KEY_TOOLS_TOKEN, token);
 
             jsonString = jsonObject.toString();
 
@@ -124,5 +128,10 @@ public class JsonHandler {
     public static int getLedCtrl()
     {
         return ledCtrl;
+    }
+
+    public static int getToken()
+    {
+        return toolsToken;
     }
 }

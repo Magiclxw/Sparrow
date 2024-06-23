@@ -7,6 +7,7 @@
 
 TaskHandle_t Bluetooth_Task__Handle = NULL;
 
+static uint8_t hidData[63] = {0};
 
 const static char *TAG = "task_bluetooth";
 
@@ -84,10 +85,17 @@ static void blueToothDataHandler(uint8_t *data)
         case CMD_HID_DATA_SEND:
         {
             //ESP_LOGI(TAG, " hid \r\n");
-            hid_data_send(data[4], dataLen);
-            setLed(1,0,1);
-            vTaskDelay(pdMS_TO_TICKS(1000));
-            setLed(1,1,1);
+            
+            for(uint8_t i = 0; i < dataLen; i++)
+            {
+                hidData[i] = data[4 + i];
+            }
+            hid_data_send(hidData, dataLen);
+            // ESP_LOGI(TAG, " hid %s\r\n",data);
+            // ESP_LOGI(TAG, " len %d\r\n",dataLen);
+            // setLed(1,0,1);
+            // vTaskDelay(pdMS_TO_TICKS(1000));
+            // setLed(1,1,1);
             break;
         }
         //配置服务器地址

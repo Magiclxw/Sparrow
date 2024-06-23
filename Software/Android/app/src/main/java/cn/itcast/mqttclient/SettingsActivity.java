@@ -8,6 +8,7 @@ import static cn.itcast.mqttclient.util.JsonHandler.getPcPassword;
 import static cn.itcast.mqttclient.util.JsonHandler.getPcPasswordCtrl;
 import static cn.itcast.mqttclient.util.JsonHandler.getPcPasswordWait;
 import static cn.itcast.mqttclient.util.JsonHandler.getPowerOnOFF;
+import static cn.itcast.mqttclient.util.JsonHandler.getToken;
 import static cn.itcast.mqttclient.util.JsonHandler.getWakeupInterval;
 
 import android.annotation.SuppressLint;
@@ -83,7 +84,7 @@ public class SettingsActivity extends AppCompatActivity {
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                String jsonData = generateAppRetainedSettings(getWakeupInterval(), getPowerOnOFF(), getPcPassword(), getPcPasswordCtrl(), getPcPasswordWait(), ledCtrlIndex);
+                                String jsonData = generateAppRetainedSettings(getWakeupInterval(), getPowerOnOFF(), getPcPassword(), getPcPasswordCtrl(), getPcPasswordWait(), ledCtrlIndex, getToken());
                                 MqttMessage message = new MqttMessage(jsonData.getBytes());
                                 message.setQos(1);
                                 try {

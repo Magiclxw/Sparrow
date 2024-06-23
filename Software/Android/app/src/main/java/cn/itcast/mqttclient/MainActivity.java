@@ -7,6 +7,7 @@ import static cn.itcast.mqttclient.util.JsonHandler.getPcPassword;
 import static cn.itcast.mqttclient.util.JsonHandler.getPcPasswordCtrl;
 import static cn.itcast.mqttclient.util.JsonHandler.getPcPasswordWait;
 import static cn.itcast.mqttclient.util.JsonHandler.getPowerOnOFF;
+import static cn.itcast.mqttclient.util.JsonHandler.getToken;
 import static cn.itcast.mqttclient.util.JsonHandler.getWakeupInterval;
 
 import androidx.annotation.NonNull;
@@ -313,7 +314,7 @@ import cn.itcast.mqttclient.util.TypeConversion;
                     }
                 }
 
-                String jsonData = generateAppRetainedSettings(Integer.parseInt(wake_up_interval), checkedRadioButton, getPcPassword(), getPcPasswordCtrl(), getPcPasswordWait(), getLedCtrl());
+                String jsonData = generateAppRetainedSettings(Integer.parseInt(wake_up_interval), checkedRadioButton, getPcPassword(), getPcPasswordCtrl(), getPcPasswordWait(), getLedCtrl(), getToken());
 
                 MqttMessage message = new MqttMessage(jsonData.getBytes());
                 message.setQos(qos);

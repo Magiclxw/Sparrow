@@ -23,7 +23,8 @@ void preStartup()
     //mqtt初始化，建立mqtt连接
     mqtt_app_start();
 
-    hid_test();
+    //hid_test();
+
     //xSemaphoreTake(preStartupSemaphore,portMAX_DELAY);
 }
 
@@ -42,8 +43,8 @@ void postStartup()
     //启动舵机线程
     Servo_Control_TASK_Create();
     //创建电源线程
-    Battery_Task_Create();
+    //Battery_Task_Create();
 
     //启动RTC线程
-    ////Rtc_Task_Create();
+    //Rtc_Task_Create();
 }

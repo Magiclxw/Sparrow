@@ -17,7 +17,7 @@ uint8_t const conv_table[128][2] =  { HID_ASCII_TO_KEYCODE };
 const uint8_t hid_report_descriptor0[] = {
     TUD_HID_REPORT_DESC_KEYBOARD(HID_REPORT_ID(HID_ITF_PROTOCOL_KEYBOARD) ),
     TUD_HID_REPORT_DESC_MOUSE(HID_REPORT_ID(HID_ITF_PROTOCOL_MOUSE) ),
-    TUD_HID_REPORT_DESC_GENERIC_INOUT(63,HID_REPORT_ID(4)),
+    TUD_HID_REPORT_DESC_GENERIC_INOUT(63,HID_REPORT_ID(3)),
 };
 
 const uint8_t hid_report_descriptor1[] = {
@@ -26,7 +26,7 @@ const uint8_t hid_report_descriptor1[] = {
 };
 
 const uint8_t hid_report_descriptor2[] = {
-    TUD_HID_REPORT_DESC_GENERIC_INOUT(63,HID_REPORT_ID(4)),
+    TUD_HID_REPORT_DESC_GENERIC_INOUT(63,HID_REPORT_ID(3)),
 };
 
 /**
@@ -184,12 +184,28 @@ void hid_mouse_click(hid_mouse_button_bm_t button, MouseClickState_e state)
 
 void hid_data_send(uint8_t data[], uint8_t length)
 {
-    uint8_t reportData[63] = {0};
+      //uint8_t reportData[63] = {0};
+
+
+    // for(uint8_t i = 0; i < length; i++)
+    // {
+    //     reportData[i] = data[i];
+    // }
+    // ESP_LOGI(TAG, "data : %s",reportData);
 
     if (tud_hid_ready())
     {
         //memcpy(reportData, data, length);
-        tud_hid_report(4,reportData,63);
+        // for(uint8_t i = 0; i < length; i++)
+        // {
+        //     reportData[i] = data[i];
+        // }
+        // ESP_LOGI(TAG, "data : %s",reportData);
+        //for(uint8_t i=0; i < 100; i++)
+        {
+            tud_hid_report(3,data,63);
+        }
+        
         
     }
 }

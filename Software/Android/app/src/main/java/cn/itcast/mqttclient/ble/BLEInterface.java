@@ -109,18 +109,18 @@ public class BLEInterface {
 
     public static void cmdHidDataSend(byte message[],byte length)
     {
-        byte data[] = new byte[6+length];
+        byte data[] = new byte[7+length];
         data[0] = (byte) CMD_START_H;
         data[1] = (byte)CMD_START_L;
         data[2] = CMD_HID_DATA_SEND;
         data[3] = length;
         for(byte i = 0; i < length; i++)
         {
-            data[i+3] = message[i];
+            data[i+4] = message[i];
         }
-        data[3+length] = (byte) CalcCheckSum(data,3+length);
-        data[3+length+1] = (byte)CMD_STOP_H;
-        data[3+length+2] = (byte)CMD_STOP_L;
+        data[4+length] = (byte) CalcCheckSum(data,4+length);
+        data[4+length+1] = (byte)CMD_STOP_H;
+        data[4+length+2] = (byte)CMD_STOP_L;
         MainActivity.bleManager.sendCmd(data);
     }
 

@@ -1,4 +1,5 @@
 #include "drv_jsonHandler.h"
+#include "drv_nvs.h"
 
 static AppRetainedSettingsStruct s_appRetainedSettings = {0};
 static AppDisretainedSettingsStruct s_appDisretainedSettings = {0};
@@ -21,6 +22,7 @@ esp_err_t setAppRetainedSettings(char *data)
     cJSON *jsonPCPasswordCtrl = NULL;
     cJSON *jsonPCPasswordWait = NULL;
     cJSON *jsonLed = NULL;
+    cJSON *jsonToken = NULL;
 
     jsonData = cJSON_Parse(data);
 
@@ -71,12 +73,23 @@ esp_err_t setAppRetainedSettings(char *data)
         return ESP_FAIL;
     }
 
+    jsonToken = cJSON_GetObjectItem(jsonData, JSON_KEY_TOOLS_TOKEN);
+
+    if(jsonToken == NULL)
+    {
+        return ESP_FAIL;
+    }
+
     s_appRetainedSettings.wakeupInterval = jsonWakeupInterval->valueint;
     s_appRetainedSettings.powerCtrl = jsonPowerCtrl->valueint;
     strcpy(s_appRetainedSettings.password, jsonPCPassword->valuestring);
     s_appRetainedSettings.passwordCtrl = jsonPCPasswordCtrl->valueint;
     s_appRetainedSettings.passwordWait = jsonPCPasswordWait->valueint;
     s_appRetainedSettings.ledCtrl = jsonLed->valueint;
+    s_appRetainedSettings.toolsToken = jsonToken->valueint;
+
+    //保存配置
+    nvsSaveValue(USER_NAMESPACE_0, NVS_READWRITE, JSON_KEY_TOOLS_TOKEN, s_appRetainedSettings.toolsToken);
 
     return ESP_OK;
 }

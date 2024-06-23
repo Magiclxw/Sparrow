@@ -8,6 +8,7 @@ import static cn.itcast.mqttclient.util.JsonHandler.getPcPassword;
 import static cn.itcast.mqttclient.util.JsonHandler.getPcPasswordCtrl;
 import static cn.itcast.mqttclient.util.JsonHandler.getPcPasswordWait;
 import static cn.itcast.mqttclient.util.JsonHandler.getPowerOnOFF;
+import static cn.itcast.mqttclient.util.JsonHandler.getToken;
 import static cn.itcast.mqttclient.util.JsonHandler.getWakeupInterval;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -45,7 +46,7 @@ public class PCPassword extends AppCompatActivity {
             public void onClick(View view) {
                 String password = String.valueOf(et_password.getText());
                 int waitTime = np_password_wait_time.getValue();
-                String jsonData = generateAppRetainedSettings(getWakeupInterval(), getPowerOnOFF(), password, 1, waitTime, getLedCtrl());
+                String jsonData = generateAppRetainedSettings(getWakeupInterval(), getPowerOnOFF(), password, 1, waitTime, getLedCtrl(), getToken());
 
                 MqttMessage message = new MqttMessage(jsonData.getBytes());
                 message.setQos(1);
@@ -63,7 +64,7 @@ public class PCPassword extends AppCompatActivity {
             public void onClick(View view) {
                 String password = String.valueOf(et_password.getText());
                 int waitTime = np_password_wait_time.getValue();
-                String jsonData = generateAppRetainedSettings(getWakeupInterval(), getPowerOnOFF(), password, 0, waitTime, getLedCtrl());
+                String jsonData = generateAppRetainedSettings(getWakeupInterval(), getPowerOnOFF(), password, 0, waitTime, getLedCtrl(), getToken());
 
                 MqttMessage message = new MqttMessage(jsonData.getBytes());
                 message.setQos(1);

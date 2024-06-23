@@ -25,5 +25,12 @@
         android:text="开机密码"
         ></Button>
 
+    <Button
+        android:id="@+id/tools_btn_token"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/tools_btn_password"
+        android:text="手机令牌"
+        ></Button>
 
 </RelativeLayout>

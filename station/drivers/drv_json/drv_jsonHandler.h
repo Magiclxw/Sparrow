@@ -13,6 +13,7 @@
 #define JSON_KEY_PC_PASSWORD_CTRL           "pc_password_ctrl"
 #define JSON_KEY_PC_PASSWORD_WAIT           "pc_password_wait"
 #define JSON_KEY_LED_CTRL                   "led_ctrl"
+#define JSON_KEY_TOOLS_TOKEN                "tools_token"
 
 #define JSON_KEY_TURN_ANGLE                 "turn_angle"
 #define JSON_KEY_SAVE_ANGLE                 "save_angle"
@@ -57,6 +58,7 @@ typedef struct appRetainedSettingsStruct
     uint8_t passwordCtrl;      //电脑开机密码控制
     uint16_t passwordWait;     //电脑开机密码等待时间
     uint8_t ledCtrl;            //led控制
+    uint8_t toolsToken;         //令牌功能
 }AppRetainedSettingsStruct;
 
 typedef struct appDisretainedSettingsStruct

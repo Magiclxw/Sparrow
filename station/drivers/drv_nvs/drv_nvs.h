@@ -17,5 +17,6 @@ esp_err_t nvsGetStr(const char* key, char* out_value, size_t* length);
 esp_err_t nvsSetStr(const char* key, const char* value);
 esp_err_t nvsCommit();
 esp_err_t nvsEraseKey(const char* key);
+esp_err_t nvsSaveValue(const char* namespace_name, nvs_open_mode_t open_mode, const char* key, const char* value);
 
 #endif

@@ -43,3 +43,22 @@ esp_err_t nvsEraseKey(const char* key)
 {
     return nvs_erase_key(s_nvsHandle, key);
 }
+
+esp_err_t nvsSaveValue(const char* namespace_name, nvs_open_mode_t open_mode, const char* key, const char* value)
+{
+    esp_err_t ret = ESP_OK;
+
+    ret = nvsOpen(namespace_name, open_mode);
+
+    if(ret != ESP_OK) return ret;
+
+    ret = nvsSetStr(key, value);
+
+    if(ret != ESP_OK) return ret;
+
+    ret = nvsCommit();
+
+    if(ret != ESP_OK) return ret;
+
+    nvsClose();
+}

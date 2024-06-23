@@ -16,7 +16,7 @@
 #define EXAMPLE_LCD_BK_LIGHT_ON_LEVEL  1
 #define EXAMPLE_LCD_BK_LIGHT_OFF_LEVEL !EXAMPLE_LCD_BK_LIGHT_ON_LEVEL
 #define EXAMPLE_PIN_NUM_SCLK           2
-#define EXAMPLE_PIN_NUM_MOSI           3
+#define EXAMPLE_PIN_NUM_MOSI           (6)//3
 #define EXAMPLE_PIN_NUM_MISO           -1
 #define EXAMPLE_PIN_NUM_LCD_DC         1
 #define EXAMPLE_PIN_NUM_LCD_RST        45
