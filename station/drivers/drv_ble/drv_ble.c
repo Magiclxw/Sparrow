@@ -140,6 +140,7 @@ static prepare_type_env_t a_prepare_write_env;
 
 void example_write_event_env(esp_gatt_if_t gatts_if, prepare_type_env_t *prepare_write_env, esp_ble_gatts_cb_param_t *param);
 void example_exec_write_event_env(prepare_type_env_t *prepare_write_env, esp_ble_gatts_cb_param_t *param);
+static void belSendData(uint8_t *data, uint8_t length);
 
 static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param)
 {
@@ -515,6 +516,40 @@ static bool compareCheckSum(uint8_t *data, uint8_t length)
     {
         return false;
     }
+}
+
+static uint8_t generateCheckSum(uint8_t data[], uint8_t length)
+{
+    uint8_t checkSum = 0;
+
+    for(uint8_t i = 0; i< length; i++)
+    {
+        checkSum += data[i];
+    }
+
+    return checkSum;
+}
+
+void bleSendProtocol(uint8_t cmd, uint8_t data[], uint8_t length)
+{
+    uint8_t transData[100];
+    uint8_t len = data[0];
+
+    transData[0] = BLE_PROTOCOL_START_H;
+    transData[1] = BLE_PROTOCOL_START_L;
+    transData[2] = cmd;
+    transData[3] = len;
+
+    for(uint8_t i = 0; i < len; i++)
+    {
+        transData[4+i] = data[i+1];
+    }
+    transData[4 + len] = generateCheckSum(&transData, len + 4);
+
+    transData[4 + len + 1] = BLE_PROTOCOL_STOP_H;
+    transData[4 + len + 2] = BLE_PROTOCOL_STOP_L;
+
+    belSendData(&transData, len + 4 + 3);
 }
 
 void belSendData(uint8_t *data, uint8_t length)

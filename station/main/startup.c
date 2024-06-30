@@ -23,7 +23,7 @@ void preStartup()
     //mqtt初始化，建立mqtt连接
     mqtt_app_start();
 
-    //hid_test();
+    hid_test();
 
     //xSemaphoreTake(preStartupSemaphore,portMAX_DELAY);
 }

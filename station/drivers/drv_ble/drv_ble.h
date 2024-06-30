@@ -23,13 +23,28 @@
 
 extern QueueHandle_t Bluetooth_Queue_Handle;
 
+#define BLE_PROTOCOL_START_H    (0xA5)
+#define BLE_PROTOCOL_START_L    (0x5A)
+#define BLE_PROTOCOL_STOP_H     (0xF0)
+#define BLE_PROTOCOL_STOP_L     (0x0F)
+
 typedef struct BleData
 {
     uint8_t length;
     uint8_t data[100];
 }BleData_t;
 
+typedef struct bleTransDataStruct
+{
+    uint8_t start[2];
+    uint8_t cmd;
+    uint8_t length;
+    uint8_t data[100];
+    uint8_t checksum;
+    uint8_t stop[2];
+}BleTransDataStruct;
+
 void initBLE();
-void belSendData(uint8_t *data, uint8_t length);
+void bleSendProtocol(uint8_t cmd, uint8_t data[], uint8_t length);
 
 #endif

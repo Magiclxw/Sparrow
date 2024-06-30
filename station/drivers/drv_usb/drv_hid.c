@@ -2,6 +2,7 @@
 #include "driver/gpio.h"
 #include "drv_ble.h"
 #include "drv_led.h"
+#include "task_bluetooth.h"
 
 #define TUSB_DESC_TOTAL_LEN      (TUD_CONFIG_DESC_LEN + CFG_TUD_HID * TUD_HID_INOUT_DESC_LEN)
 
@@ -57,6 +58,7 @@ static const uint8_t hid_configuration_descriptor[] = {
     //TUD_HID_INOUT_DESCRIPTOR(1,0,HID_ITF_PROTOCOL_NONE,sizeof(hid_report_descriptor2), 0x84, 0x81, CFG_TUD_HID_EP_BUFSIZE, 10),
 };
 
+static void hidReceiveProtocol(uint8_t data[], uint8_t len);
 
 /********* TinyUSB HID callbacks ***************/
 
@@ -87,10 +89,14 @@ uint16_t tud_hid_get_report_cb(uint8_t instance, uint8_t report_id, hid_report_t
 // received data on OUT endpoint ( Report ID = 0, Type = 0 )
 void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id, hid_report_type_t report_type, uint8_t const* buffer, uint16_t bufsize)
 {
-    //device_recv_data(buffer, bufsize);
-    //hid_data_upload(buffer,bufsize);
+    //第一个字节是report id， 从第二个字节开始发送
+    //hid_data_upload(buffer[1],bufsize);
+    hidReceiveProtocol(&buffer[1],bufsize);
+
     if(report_id == 0)
     {
+        setLed(0,1,1);
+        vTaskDelay(pdMS_TO_TICKS(500));
         setLed(1,0,1);
     }
     
@@ -182,6 +188,58 @@ void hid_mouse_click(hid_mouse_button_bm_t button, MouseClickState_e state)
     }
 }
 
+static uint8_t hidGenerateChecksum(uint8_t data[], uint8_t len)
+{
+    uint8_t checksum = 0;
+    for(uint8_t i = 0; i < len; i++)
+    {
+        checksum += data[i];
+    }
+    return checksum;
+}
+
+void hidSendProtocol(uint8_t cmd, uint8_t data[], uint8_t len)
+{
+    uint8_t reportData[63] = {0};
+    uint8_t checksum = 0;
+
+    reportData[0] = HID_PROTOCOL_START_H;
+    reportData[1] = HID_PROTOCOL_START_L;
+    reportData[2] = cmd;
+    reportData[3] = len;
+    for(uint8_t i = 0; i < len; i++)
+    {
+        reportData[i+4] = data[i];
+    }
+
+    checksum = hidGenerateChecksum(reportData, len+4);
+
+    reportData[59] = checksum;
+    reportData[60] = HID_PROTOCOL_STOP_H;
+    reportData[61] = HID_PROTOCOL_STOP_L;
+
+    if (tud_hid_ready())
+    {
+        tud_hid_report(3,reportData,63);
+    }
+}
+
+void hidReceiveProtocol(uint8_t data[], uint8_t len)
+{
+    if (data[0] == 0xC0 && data[1] == 0x0C)
+    {
+        if (data[2] == 0x01)
+        {
+            bleSendProtocol(CMD_HID_SEND_TEXT_START, &data[3], len);
+        }
+        else if (data[2] == 0x02)
+        {
+            bleSendProtocol(CMD_HID_SEND_TEXT_START, &data[3], len);
+        }
+
+    }
+}
+
 void hid_data_send(uint8_t data[], uint8_t length)
 {
       //uint8_t reportData[63] = {0};
@@ -205,15 +263,13 @@ void hid_data_send(uint8_t data[], uint8_t length)
         {
             tud_hid_report(3,data,63);
         }
-        
-        
     }
 }
 
-void hid_data_upload(uint8_t data[], uint8_t length)
-{
-    belSendData(data,length);
-}
+// void hid_data_upload(uint8_t data[], uint8_t length)
+// {
+//     belSendData(data,length);
+// }
 
 /* 鼠标向相对位置移动 */
 void hid_mouse_move(uint8_t x,uint8_t y)

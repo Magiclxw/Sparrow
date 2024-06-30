@@ -61,4 +61,6 @@ esp_err_t nvsSaveValue(const char* namespace_name, nvs_open_mode_t open_mode, co
     if(ret != ESP_OK) return ret;
 
     nvsClose();
+    
+    return ret;
 }

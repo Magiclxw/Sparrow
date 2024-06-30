@@ -21,6 +21,8 @@
 #define CMD_CFG_SET_SERVER          (0x06)
 #define CMD_CFG_SET_USERNAME        (0x07) 
 #define CMD_CFG_SET_PASSWORD        (0x08)
+#define CMD_HID_SEND_TEXT_START     (0x09)
+#define CMD_HID_SEND_TEXT           (0x0A)
 
 
 int Bluetooth_Task_Create();

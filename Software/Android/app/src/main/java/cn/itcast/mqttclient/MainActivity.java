@@ -58,6 +58,7 @@ import cn.itcast.mqttclient.ble.OnBleConnectListener;
 import cn.itcast.mqttclient.ble.OnDeviceSearchListener;
 import cn.itcast.mqttclient.permission.PermissionListener;
 import cn.itcast.mqttclient.permission.PermissionRequestList;
+import cn.itcast.mqttclient.toolsActivity.UploadTextActivity;
 import cn.itcast.mqttclient.util.TypeConversion;
 
 
@@ -73,6 +74,10 @@ import cn.itcast.mqttclient.util.TypeConversion;
     public static  String SERVICE_UUID = "000000ff-0000-1000-8000-00805f9b34fb";//"49535343-fe7d-4ae5-8fa9-9fafd205e455";  //蓝牙通讯服务
     public static  String READ_UUID = "0000ff01-0000-1000-8000-00805f9b34fb";//"49535343-1e4d-4bd9-ba61-23c647249616";  //读特征
     public static  String WRITE_UUID = "0000ff01-0000-1000-8000-00805f9b34fb";//"49535343-8841-43f4-a8d4-ecbe34729bb3";  //写特征
+
+    public static int bleDataRecFlag = 0;
+    public static byte bleRecData[];
+
 
     //动态申请权限
     private String[] requestPermissionArray = new String[]{
@@ -139,6 +144,8 @@ import cn.itcast.mqttclient.util.TypeConversion;
         SERVICE_UUID = SystemConfig.getBleServiceUUID(MainActivity.this);
         READ_UUID = SystemConfig.getBleReadUUID(MainActivity.this);
         WRITE_UUID = SystemConfig.getBleWriteUUID(MainActivity.this);
+
+        bleRecData = new byte[1024];
 
         if(mqttServer == null || mqttServer.equals("ssl://"))
         {
@@ -330,11 +337,22 @@ import cn.itcast.mqttclient.util.TypeConversion;
             @Override
             public void onClick(View view) {
                 //getTextFromClip(MainActivity.this);
-                byte data[] = new byte[3];
-                data[0] = 0x01;
-                data[1] = 0x02;
-                data[2] = 0x03;
-                BLEInterface.cmdHidDataSend(data,(byte) 3);
+                short data[] = new short[30];
+//                data[0] = 0xC0;
+//                data[1] = 0x0C;
+//                data[2] = 0x01;
+//                data[3] = 0x02;
+//                data[4] = 0x00;
+//                data[5] = 0x01;
+//                data[6] = 0x04;
+//                data[7] = 0xED;
+//                data[8] = 0xDE;
+//                data[9] = 0x01;
+//                for(int i=0; i< 30; i++)
+//                {
+//                    data[i] = (short) i;
+//                }
+//            BLEInterface.cmdHidDataSend(data,(byte) 30);
             }
         });
 
@@ -681,6 +699,9 @@ import cn.itcast.mqttclient.util.TypeConversion;
               message.what = RECEIVE_SUCCESS;
               message.obj = msg;
               mHandler.sendMessage(message);
+              System.out.println("main rec data");
+              bleRecData = msg;
+              bleDataRecFlag = 1;
           }
 
           @Override

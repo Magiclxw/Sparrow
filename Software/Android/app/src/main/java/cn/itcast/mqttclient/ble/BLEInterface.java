@@ -16,6 +16,8 @@ public class BLEInterface {
     private static final char CMD_CFG_SET_SERVER = 0x06;
     private static final char CMD_CFG_SET_USERNAME = 0x07;
     private static final char CMD_CFG_SET_PASSWORD = 0x08;
+    private static final char CMD_HID_SEND_TEXT_START = 0x09;
+    private static final char CMD_HID_SEND_TEXT = 0x0A;
 
     public static int MOUSE_LEFT_BUTTON = 1;
     public static int MOUSE_RIGHT_BUTTON = 2;
@@ -107,7 +109,7 @@ public class BLEInterface {
         MainActivity.bleManager.sendCmd(data);
     }
 
-    public static void cmdHidDataSend(byte message[],byte length)
+    public static void cmdHidDataSend(short message[],byte length)
     {
         byte data[] = new byte[7+length];
         data[0] = (byte) CMD_START_H;
@@ -116,11 +118,48 @@ public class BLEInterface {
         data[3] = length;
         for(byte i = 0; i < length; i++)
         {
-            data[i+4] = message[i];
+            data[i+4] =(byte) message[i];
         }
         data[4+length] = (byte) CalcCheckSum(data,4+length);
         data[4+length+1] = (byte)CMD_STOP_H;
         data[4+length+2] = (byte)CMD_STOP_L;
+        MainActivity.bleManager.sendCmd(data);
+    }
+
+    public static void cmdHidSendTextStart(int frameLength, byte cmdLen)
+    {
+        byte data[] = new byte[9];
+        data[0] = (byte) CMD_START_H;
+        data[1] = (byte)CMD_START_L;
+        data[2] = CMD_HID_SEND_TEXT_START;
+        data[3] = cmdLen;
+        data[4] = (byte) (frameLength>>8);
+        data[5] = (byte) frameLength;
+        data[6] = (byte) CalcCheckSum(data,6);
+        data[7] = (byte)CMD_STOP_H;
+        data[8] = (byte)CMD_STOP_L;
+        MainActivity.bleManager.sendCmd(data);
+    }
+
+    public static void cmdHidSendText(int frameIndex, byte dataLen, byte frameData[])
+    {
+        byte data[] = new byte[dataLen + 7];
+        data[0] = (byte) CMD_START_H;
+        data[1] = (byte)CMD_START_L;
+        data[2] = CMD_HID_SEND_TEXT;
+
+        data[3] = (byte) dataLen;
+        /***************** data ***************/
+        data[4] = (byte) (frameIndex>>8);
+        data[5] = (byte) frameIndex;
+        for(int i = 0; i < dataLen-2; i++)
+        {
+            data[6+i] = frameData[i];
+        }
+        /***************************************/
+        data[4 + dataLen] = (byte) CalcCheckSum(data,dataLen + 4);
+        data[4 + dataLen + 1] = (byte)CMD_STOP_H;
+        data[4 + dataLen + 2] = (byte)CMD_STOP_L;
         MainActivity.bleManager.sendCmd(data);
     }
 

@@ -82,22 +82,22 @@ static void blueToothDataHandler(uint8_t *data)
             break;
         }
         //发送HID数据
-        case CMD_HID_DATA_SEND:
-        {
-            //ESP_LOGI(TAG, " hid \r\n");
+        // case CMD_HID_DATA_SEND:
+        // {
+        //     //ESP_LOGI(TAG, " hid \r\n");
             
-            for(uint8_t i = 0; i < dataLen; i++)
-            {
-                hidData[i] = data[4 + i];
-            }
-            hid_data_send(hidData, dataLen);
-            // ESP_LOGI(TAG, " hid %s\r\n",data);
-            // ESP_LOGI(TAG, " len %d\r\n",dataLen);
-            // setLed(1,0,1);
-            // vTaskDelay(pdMS_TO_TICKS(1000));
-            // setLed(1,1,1);
-            break;
-        }
+        //     for(uint8_t i = 0; i < dataLen; i++)
+        //     {
+        //         hidData[i] = data[4 + i];
+        //     }
+        //     hid_data_send(hidData, dataLen);
+        //     // ESP_LOGI(TAG, " hid %s\r\n",data);
+        //     // ESP_LOGI(TAG, " len %d\r\n",dataLen);
+        //     // setLed(1,0,1);
+        //     // vTaskDelay(pdMS_TO_TICKS(1000));
+        //     // setLed(1,1,1);
+        //     break;
+        // }
         //配置服务器地址
         case CMD_CFG_SET_SERVER:
         {
@@ -144,6 +144,28 @@ static void blueToothDataHandler(uint8_t *data)
             }
 
             ESP_LOGI(TAG,"server_password = %s\n", server_password);
+            break;
+        }
+        case CMD_HID_SEND_TEXT_START:
+        {
+            for(uint8_t i = 0; i < dataLen; i++)
+            {
+                hidData[i] = data[4 + i];
+            }
+
+            hidSendProtocol(HID_PROTOCOL_CMD_TEXT_START ,hidData, dataLen);
+            //hid_data_send(hidData, dataLen);
+            //ESP_LOGI(TAG,"hid text = %s\n", &data[5]);
+            break;
+        }
+        case CMD_HID_SEND_TEXT:
+        {
+            for(uint8_t i = 0; i < dataLen; i++)
+            {
+                hidData[i] = data[4 + i];
+            }
+
+            hidSendProtocol(HID_PROTOCOL_CMD_TEXT, hidData, dataLen);
             break;
         }
     }

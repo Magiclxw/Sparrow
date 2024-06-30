@@ -123,7 +123,9 @@ void ui_Screen2_screen_init(void)
     ui_Label9 = lv_label_create(ui_Screen2);
     lv_obj_set_width(ui_Label9, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Label9, LV_SIZE_CONTENT);    /// 1
-    lv_label_set_text(ui_Label9, "hello");
+    lv_obj_set_style_text_font(ui_Label9, &lv_font_simsun_16_cjk, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_label_set_text(ui_Label9, "你好");
+
 
     lv_obj_add_event_cb(ui_Screen2, ui_event_Screen2, LV_EVENT_ALL, NULL);
 

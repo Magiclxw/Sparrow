@@ -33,4 +33,12 @@
         android:text="手机令牌"
         ></Button>
 
+    <Button
+        android:id="@+id/tools_btn_upload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="上传文本"
+        ></Button>
+
 </RelativeLayout>
