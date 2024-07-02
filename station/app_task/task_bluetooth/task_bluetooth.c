@@ -48,10 +48,34 @@ void Bluetooth_Task()
     
 }
 
+uint8_t compareCheckSum(uint8_t data[] ,uint8_t length)
+{
+    uint8_t checksum = 0;
+
+    for (uint8_t i = 0; i < length; i++)
+    {
+        checksum += data[i];
+    }
+
+    if (checksum == data[length])
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
 static void blueToothDataHandler(uint8_t *data)
 {
     uint8_t cmd = data[2];
     uint8_t dataLen = data[3];
+
+    uint8_t result = compareCheckSum(data, dataLen + 4);
+
+    if(result == 0) return;
+
     switch (cmd)
     {
         //鼠标移动

@@ -16,6 +16,17 @@
 #define HID_PROTOCOL_CMD_TEXT_START   (0x01)
 #define HID_PROTOCOL_CMD_TEXT         (0x02)
 
+#define DESC_STR_MAX 20
+#define USBD_VID 0x2E8A /* Raspberry Pi */
+#define USBD_PID 0x000A /* Raspberry Pi Pico SDK CDC */
+#define USBD_STR_0 0x00
+#define USBD_STR_MANUF 0x01
+#define USBD_STR_PRODUCT 0x02
+#define USBD_STR_SERIAL 0x03
+#define USBD_STR_SERIAL_LEN 17
+#define USBD_STR_CDC 0x04
+
+
 typedef enum MouseClickState
 {
     MouseClickState_Pressed = 0,

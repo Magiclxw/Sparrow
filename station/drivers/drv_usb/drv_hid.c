@@ -4,7 +4,7 @@
 #include "drv_led.h"
 #include "task_bluetooth.h"
 
-#define TUSB_DESC_TOTAL_LEN      (TUD_CONFIG_DESC_LEN + CFG_TUD_HID * TUD_HID_INOUT_DESC_LEN)
+#define TUSB_DESC_TOTAL_LEN      (TUD_CONFIG_DESC_LEN + TUD_CDC_DESC_LEN + TUD_HID_INOUT_DESC_LEN)
 
 #define APP_BUTTON (GPIO_NUM_0) // Use BOOT signal by default
 static const char *TAG = "example";
@@ -40,6 +40,7 @@ const char* hid_string_descriptor[5] = {
     "TinyUSB Device",      // 2: Product
     "123456",              // 3: Serials, should use chip ID
     "Example HID interface",  // 4: HID
+    "cdc", // 5:
 };
 
 /**
@@ -49,13 +50,12 @@ const char* hid_string_descriptor[5] = {
  */
 static const uint8_t hid_configuration_descriptor[] = {
     // Configuration number, interface count, string index, total length, attribute, power in mA
-    TUD_CONFIG_DESCRIPTOR(1, 1, 0, TUSB_DESC_TOTAL_LEN, TUSB_DESC_CONFIG_ATT_REMOTE_WAKEUP, 100),
-
+    TUD_CONFIG_DESCRIPTOR(1, 3, 0, TUSB_DESC_TOTAL_LEN, TUSB_DESC_CONFIG_ATT_REMOTE_WAKEUP, 100),
+    TUD_CDC_DESCRIPTOR(0, 5, 0x81, 8, 0x01, 0x82, 64),
     // Interface number, string index, boot protocol, report descriptor len, EP In address, size & polling interval
-    //TUD_HID_DESCRIPTOR(0, 4, false, sizeof(hid_report_descriptor), 0x81, 16, 10),
+    TUD_HID_INOUT_DESCRIPTOR(2,4,HID_ITF_PROTOCOL_NONE,sizeof(hid_report_descriptor0), 0X04, 0x84, CFG_TUD_HID_EP_BUFSIZE, 10),
 
-    TUD_HID_INOUT_DESCRIPTOR(0,4,HID_ITF_PROTOCOL_NONE,sizeof(hid_report_descriptor0), 0X04, 0x84, CFG_TUD_HID_EP_BUFSIZE, 10),
-    //TUD_HID_INOUT_DESCRIPTOR(1,0,HID_ITF_PROTOCOL_NONE,sizeof(hid_report_descriptor2), 0x84, 0x81, CFG_TUD_HID_EP_BUFSIZE, 10),
+    
 };
 
 static void hidReceiveProtocol(uint8_t data[], uint8_t len);
@@ -101,6 +101,15 @@ void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id, hid_report_type_
     }
     
 }
+
+void tud_cdc_rx_cb(uint8_t itf)
+{
+    setLed(0,1,1);
+    vTaskDelay(pdMS_TO_TICKS(500));
+    setLed(1,0,1);
+}
+
+
 
 /********* Application ***************/
 
@@ -234,42 +243,12 @@ void hidReceiveProtocol(uint8_t data[], uint8_t len)
         }
         else if (data[2] == 0x02)
         {
-            bleSendProtocol(CMD_HID_SEND_TEXT_START, &data[3], len);
+            bleSendProtocol(CMD_HID_SEND_TEXT, &data[3], len);
         }
 
     }
 }
 
-void hid_data_send(uint8_t data[], uint8_t length)
-{
-      //uint8_t reportData[63] = {0};
-
-
-    // for(uint8_t i = 0; i < length; i++)
-    // {
-    //     reportData[i] = data[i];
-    // }
-    // ESP_LOGI(TAG, "data : %s",reportData);
-
-    if (tud_hid_ready())
-    {
-        //memcpy(reportData, data, length);
-        // for(uint8_t i = 0; i < length; i++)
-        // {
-        //     reportData[i] = data[i];
-        // }
-        // ESP_LOGI(TAG, "data : %s",reportData);
-        //for(uint8_t i=0; i < 100; i++)
-        {
-            tud_hid_report(3,data,63);
-        }
-    }
-}
-
-// void hid_data_upload(uint8_t data[], uint8_t length)
-// {
-//     belSendData(data,length);
-// }
 
 /* 鼠标向相对位置移动 */
 void hid_mouse_move(uint8_t x,uint8_t y)
@@ -310,5 +289,12 @@ void hid_test(void)
     //         send_hid_data = !gpio_get_level(APP_BUTTON);
     //     }
     //     vTaskDelay(pdMS_TO_TICKS(100));
+    // }
+    // while (1)
+    // {
+    //     char data[12] = "hello world\r\n";
+    //     //tud_cdc_write_str(data);
+    //     tud_cdc_write(data, sizeof(data));
+    //     vTaskDelay(pdMS_TO_TICKS(1000));
     // }
 }
