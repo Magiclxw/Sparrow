@@ -181,7 +181,7 @@ public class MouseActivity extends AppCompatActivity {
             String text = et_keyboard.getText().toString();
             if (text.isEmpty() == false)
             {
-                BLEInterface.cmdKeyboardInput((byte)text.charAt(0));
+                //BLEInterface.cmdKeyboardInput((byte)text.charAt(0));
                 et_keyboard.setText("");
             }
         }

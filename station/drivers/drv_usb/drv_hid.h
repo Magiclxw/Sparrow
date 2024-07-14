@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/queue.h"
 #include "tinyusb.h"
 #include "class/hid/hid_device.h"
 #include "esp_log.h"
@@ -13,8 +14,15 @@
 #define HID_PROTOCOL_STOP_H      (0xED)
 #define HID_PROTOCOL_STOP_L      (0xDE)
 
+#define SERIAL_PROTOCOL_START_H  (0xD0)
+#define SERIAL_PROTOCOL_START_L  (0x0D)
+#define SERIAL_PROTOCOL_STOP_H   (0xED)
+#define SERIAL_PROTOCOL_STOP_L   (0xDE)
+
 #define HID_PROTOCOL_CMD_TEXT_START   (0x01)
 #define HID_PROTOCOL_CMD_TEXT         (0x02)
+#define CDC_PROTOCOL_CMD_FILE_START   (0x03)
+#define CDC_PROTOCOL_CMD_FILE         (0x04)
 
 #define DESC_STR_MAX 20
 #define USBD_VID 0x2E8A /* Raspberry Pi */
@@ -42,5 +50,6 @@ void hid_mouse_move(uint8_t x,uint8_t y);
 void hid_data_send(uint8_t data[], uint8_t length);
 void hid_data_upload(uint8_t data[], uint8_t length);
 void hidSendProtocol(uint8_t cmd, uint8_t data[], uint8_t len);
+void cdcSendProtocol(uint8_t cmd, uint8_t data[], uint16_t len);
 
 #endif

@@ -58,6 +58,7 @@ import cn.itcast.mqttclient.ble.OnBleConnectListener;
 import cn.itcast.mqttclient.ble.OnDeviceSearchListener;
 import cn.itcast.mqttclient.permission.PermissionListener;
 import cn.itcast.mqttclient.permission.PermissionRequestList;
+import cn.itcast.mqttclient.toolsActivity.UploadFileActivity;
 import cn.itcast.mqttclient.toolsActivity.UploadTextActivity;
 import cn.itcast.mqttclient.util.TypeConversion;
 
@@ -513,7 +514,7 @@ import cn.itcast.mqttclient.util.TypeConversion;
                 case RECEIVE_SUCCESS:  //接收成功
                     byte[] recBufSuc = (byte[]) msg.obj;
                     String receiveResult = TypeConversion.bytes2HexString(recBufSuc,recBufSuc.length);
-                    Toast.makeText(MainActivity.this,"接收数据成功，长度" + recBufSuc.length + "--> " + receiveResult,Toast.LENGTH_LONG);;
+                    System.out.println("main rec data");
                     break;
 
                 case BT_CLOSED:
@@ -699,7 +700,6 @@ import cn.itcast.mqttclient.util.TypeConversion;
               message.what = RECEIVE_SUCCESS;
               message.obj = msg;
               mHandler.sendMessage(message);
-              System.out.println("main rec data");
               bleRecData = msg;
               bleDataRecFlag = 1;
           }

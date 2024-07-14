@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_Form_MainWindow_t {
-    QByteArrayData data[99];
-    char stringdata0[2133];
+    QByteArrayData data[103];
+    char stringdata0[2167];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -102,34 +102,38 @@ QT_MOC_LITERAL(67, 996, 8), // "uint8_t*"
 QT_MOC_LITERAL(68, 1005, 7), // "flashId"
 QT_MOC_LITERAL(69, 1013, 10), // "ch9329_ver"
 QT_MOC_LITERAL(70, 1024, 9), // "fpm383cSN"
-QT_MOC_LITERAL(71, 1034, 15), // "Slot_ShowWindow"
-QT_MOC_LITERAL(72, 1050, 9), // "Slot_Exit"
-QT_MOC_LITERAL(73, 1060, 47), // "on_listWidget_task_1_customCo..."
-QT_MOC_LITERAL(74, 1108, 52), // "on_listWidget_table_state_cus..."
-QT_MOC_LITERAL(75, 1161, 47), // "on_listWidget_task_2_customCo..."
-QT_MOC_LITERAL(76, 1209, 47), // "on_listWidget_task_3_customCo..."
-QT_MOC_LITERAL(77, 1257, 47), // "on_listWidget_task_4_customCo..."
-QT_MOC_LITERAL(78, 1305, 47), // "on_listWidget_task_5_customCo..."
-QT_MOC_LITERAL(79, 1353, 56), // "on_listWidget_table_state_key..."
-QT_MOC_LITERAL(80, 1410, 47), // "on_listWidget_task_6_customCo..."
-QT_MOC_LITERAL(81, 1458, 50), // "on_listWidget_hidwindow_custo..."
-QT_MOC_LITERAL(82, 1509, 38), // "on_pushButton_chat_copy_answe..."
-QT_MOC_LITERAL(83, 1548, 39), // "on_pushButton_action_play_pau..."
-QT_MOC_LITERAL(84, 1588, 39), // "on_pushButton_action_calculat..."
-QT_MOC_LITERAL(85, 1628, 33), // "on_pushButton_action_chat_cli..."
-QT_MOC_LITERAL(86, 1662, 37), // "on_pushButton_action_computer..."
-QT_MOC_LITERAL(87, 1700, 34), // "on_pushButton_action_email_cl..."
-QT_MOC_LITERAL(88, 1735, 37), // "on_pushButton_action_explorer..."
-QT_MOC_LITERAL(89, 1773, 33), // "on_pushButton_action_mute_cli..."
-QT_MOC_LITERAL(90, 1807, 34), // "on_pushButton_action_power_cl..."
-QT_MOC_LITERAL(91, 1842, 40), // "on_pushButton_action_screen_s..."
-QT_MOC_LITERAL(92, 1883, 34), // "on_pushButton_action_sleep_cl..."
-QT_MOC_LITERAL(93, 1918, 35), // "on_pushButton_action_weakup_c..."
-QT_MOC_LITERAL(94, 1954, 35), // "on_pushButton_RGB_next_page_c..."
-QT_MOC_LITERAL(95, 1990, 35), // "on_pushButton_RGB_last_page_c..."
-QT_MOC_LITERAL(96, 2026, 38), // "on_pushButton_get_hardware_ms..."
-QT_MOC_LITERAL(97, 2065, 38), // "on_pushButton_get_firmware_ms..."
-QT_MOC_LITERAL(98, 2104, 28) // "on_pushButton_update_clicked"
+QT_MOC_LITERAL(71, 1034, 14), // "SlotNotifyText"
+QT_MOC_LITERAL(72, 1049, 9), // "uint8_t[]"
+QT_MOC_LITERAL(73, 1059, 4), // "text"
+QT_MOC_LITERAL(74, 1064, 3), // "len"
+QT_MOC_LITERAL(75, 1068, 15), // "Slot_ShowWindow"
+QT_MOC_LITERAL(76, 1084, 9), // "Slot_Exit"
+QT_MOC_LITERAL(77, 1094, 47), // "on_listWidget_task_1_customCo..."
+QT_MOC_LITERAL(78, 1142, 52), // "on_listWidget_table_state_cus..."
+QT_MOC_LITERAL(79, 1195, 47), // "on_listWidget_task_2_customCo..."
+QT_MOC_LITERAL(80, 1243, 47), // "on_listWidget_task_3_customCo..."
+QT_MOC_LITERAL(81, 1291, 47), // "on_listWidget_task_4_customCo..."
+QT_MOC_LITERAL(82, 1339, 47), // "on_listWidget_task_5_customCo..."
+QT_MOC_LITERAL(83, 1387, 56), // "on_listWidget_table_state_key..."
+QT_MOC_LITERAL(84, 1444, 47), // "on_listWidget_task_6_customCo..."
+QT_MOC_LITERAL(85, 1492, 50), // "on_listWidget_hidwindow_custo..."
+QT_MOC_LITERAL(86, 1543, 38), // "on_pushButton_chat_copy_answe..."
+QT_MOC_LITERAL(87, 1582, 39), // "on_pushButton_action_play_pau..."
+QT_MOC_LITERAL(88, 1622, 39), // "on_pushButton_action_calculat..."
+QT_MOC_LITERAL(89, 1662, 33), // "on_pushButton_action_chat_cli..."
+QT_MOC_LITERAL(90, 1696, 37), // "on_pushButton_action_computer..."
+QT_MOC_LITERAL(91, 1734, 34), // "on_pushButton_action_email_cl..."
+QT_MOC_LITERAL(92, 1769, 37), // "on_pushButton_action_explorer..."
+QT_MOC_LITERAL(93, 1807, 33), // "on_pushButton_action_mute_cli..."
+QT_MOC_LITERAL(94, 1841, 34), // "on_pushButton_action_power_cl..."
+QT_MOC_LITERAL(95, 1876, 40), // "on_pushButton_action_screen_s..."
+QT_MOC_LITERAL(96, 1917, 34), // "on_pushButton_action_sleep_cl..."
+QT_MOC_LITERAL(97, 1952, 35), // "on_pushButton_action_weakup_c..."
+QT_MOC_LITERAL(98, 1988, 35), // "on_pushButton_RGB_next_page_c..."
+QT_MOC_LITERAL(99, 2024, 35), // "on_pushButton_RGB_last_page_c..."
+QT_MOC_LITERAL(100, 2060, 38), // "on_pushButton_get_hardware_ms..."
+QT_MOC_LITERAL(101, 2099, 38), // "on_pushButton_get_firmware_ms..."
+QT_MOC_LITERAL(102, 2138, 28) // "on_pushButton_update_clicked"
 
     },
     "Form_MainWindow\0Signal_AddFinger\0\0"
@@ -160,6 +164,7 @@ QT_MOC_LITERAL(98, 2104, 28) // "on_pushButton_update_clicked"
     "Slot_Update_FirmwareMsg\0date\0version\0"
     "Slot_Update_HardwareMsg\0uint8_t*\0"
     "flashId\0ch9329_ver\0fpm383cSN\0"
+    "SlotNotifyText\0uint8_t[]\0text\0len\0"
     "Slot_ShowWindow\0Slot_Exit\0"
     "on_listWidget_task_1_customContextMenuRequested\0"
     "on_listWidget_table_state_customContextMenuRequested\0"
@@ -196,7 +201,7 @@ static const uint qt_meta_data_Form_MainWindow[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-      64,   14, // methods
+      65,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -204,72 +209,73 @@ static const uint qt_meta_data_Form_MainWindow[] = {
       16,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    4,  334,    2, 0x06 /* Public */,
-       8,    1,  343,    2, 0x06 /* Public */,
-      10,    0,  346,    2, 0x06 /* Public */,
-      11,    0,  347,    2, 0x06 /* Public */,
-      12,    3,  348,    2, 0x06 /* Public */,
-      16,    3,  355,    2, 0x06 /* Public */,
-      17,    4,  362,    2, 0x06 /* Public */,
-      19,    3,  371,    2, 0x06 /* Public */,
-      22,    4,  378,    2, 0x06 /* Public */,
-      27,    5,  387,    2, 0x06 /* Public */,
-      32,    1,  398,    2, 0x06 /* Public */,
-      34,    2,  401,    2, 0x06 /* Public */,
-      36,    4,  406,    2, 0x06 /* Public */,
-      40,    0,  415,    2, 0x06 /* Public */,
-      41,    0,  416,    2, 0x06 /* Public */,
-      42,    0,  417,    2, 0x06 /* Public */,
+       1,    4,  339,    2, 0x06 /* Public */,
+       8,    1,  348,    2, 0x06 /* Public */,
+      10,    0,  351,    2, 0x06 /* Public */,
+      11,    0,  352,    2, 0x06 /* Public */,
+      12,    3,  353,    2, 0x06 /* Public */,
+      16,    3,  360,    2, 0x06 /* Public */,
+      17,    4,  367,    2, 0x06 /* Public */,
+      19,    3,  376,    2, 0x06 /* Public */,
+      22,    4,  383,    2, 0x06 /* Public */,
+      27,    5,  392,    2, 0x06 /* Public */,
+      32,    1,  403,    2, 0x06 /* Public */,
+      34,    2,  406,    2, 0x06 /* Public */,
+      36,    4,  411,    2, 0x06 /* Public */,
+      40,    0,  420,    2, 0x06 /* Public */,
+      41,    0,  421,    2, 0x06 /* Public */,
+      42,    0,  422,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      43,    0,  418,    2, 0x0a /* Public */,
-      44,    2,  419,    2, 0x0a /* Public */,
-      47,    0,  424,    2, 0x0a /* Public */,
-      48,    0,  425,    2, 0x0a /* Public */,
-      49,    0,  426,    2, 0x0a /* Public */,
-      50,    0,  427,    2, 0x0a /* Public */,
-      51,    0,  428,    2, 0x0a /* Public */,
-      52,    0,  429,    2, 0x0a /* Public */,
-      53,    1,  430,    2, 0x0a /* Public */,
-      54,    0,  433,    2, 0x0a /* Public */,
-      55,    0,  434,    2, 0x0a /* Public */,
-      56,    0,  435,    2, 0x0a /* Public */,
-      57,    0,  436,    2, 0x0a /* Public */,
-      58,    0,  437,    2, 0x0a /* Public */,
-      59,    0,  438,    2, 0x0a /* Public */,
-      60,    0,  439,    2, 0x0a /* Public */,
-      61,    0,  440,    2, 0x0a /* Public */,
-      62,    0,  441,    2, 0x0a /* Public */,
-      63,    2,  442,    2, 0x0a /* Public */,
-      66,    3,  447,    2, 0x0a /* Public */,
-      71,    0,  454,    2, 0x08 /* Private */,
-      72,    0,  455,    2, 0x08 /* Private */,
-      73,    1,  456,    2, 0x08 /* Private */,
-      74,    1,  459,    2, 0x08 /* Private */,
-      75,    1,  462,    2, 0x08 /* Private */,
-      76,    1,  465,    2, 0x08 /* Private */,
-      77,    1,  468,    2, 0x08 /* Private */,
-      78,    1,  471,    2, 0x08 /* Private */,
-      79,    1,  474,    2, 0x08 /* Private */,
-      80,    1,  477,    2, 0x08 /* Private */,
-      81,    1,  480,    2, 0x08 /* Private */,
-      82,    0,  483,    2, 0x08 /* Private */,
-      83,    0,  484,    2, 0x08 /* Private */,
-      84,    0,  485,    2, 0x08 /* Private */,
-      85,    0,  486,    2, 0x08 /* Private */,
-      86,    0,  487,    2, 0x08 /* Private */,
-      87,    0,  488,    2, 0x08 /* Private */,
-      88,    0,  489,    2, 0x08 /* Private */,
-      89,    0,  490,    2, 0x08 /* Private */,
-      90,    0,  491,    2, 0x08 /* Private */,
-      91,    0,  492,    2, 0x08 /* Private */,
-      92,    0,  493,    2, 0x08 /* Private */,
-      93,    0,  494,    2, 0x08 /* Private */,
-      94,    0,  495,    2, 0x08 /* Private */,
-      95,    0,  496,    2, 0x08 /* Private */,
-      96,    0,  497,    2, 0x08 /* Private */,
-      97,    0,  498,    2, 0x08 /* Private */,
-      98,    0,  499,    2, 0x08 /* Private */,
+      43,    0,  423,    2, 0x0a /* Public */,
+      44,    2,  424,    2, 0x0a /* Public */,
+      47,    0,  429,    2, 0x0a /* Public */,
+      48,    0,  430,    2, 0x0a /* Public */,
+      49,    0,  431,    2, 0x0a /* Public */,
+      50,    0,  432,    2, 0x0a /* Public */,
+      51,    0,  433,    2, 0x0a /* Public */,
+      52,    0,  434,    2, 0x0a /* Public */,
+      53,    1,  435,    2, 0x0a /* Public */,
+      54,    0,  438,    2, 0x0a /* Public */,
+      55,    0,  439,    2, 0x0a /* Public */,
+      56,    0,  440,    2, 0x0a /* Public */,
+      57,    0,  441,    2, 0x0a /* Public */,
+      58,    0,  442,    2, 0x0a /* Public */,
+      59,    0,  443,    2, 0x0a /* Public */,
+      60,    0,  444,    2, 0x0a /* Public */,
+      61,    0,  445,    2, 0x0a /* Public */,
+      62,    0,  446,    2, 0x0a /* Public */,
+      63,    2,  447,    2, 0x0a /* Public */,
+      66,    3,  452,    2, 0x0a /* Public */,
+      71,    2,  459,    2, 0x0a /* Public */,
+      75,    0,  464,    2, 0x08 /* Private */,
+      76,    0,  465,    2, 0x08 /* Private */,
+      77,    1,  466,    2, 0x08 /* Private */,
+      78,    1,  469,    2, 0x08 /* Private */,
+      79,    1,  472,    2, 0x08 /* Private */,
+      80,    1,  475,    2, 0x08 /* Private */,
+      81,    1,  478,    2, 0x08 /* Private */,
+      82,    1,  481,    2, 0x08 /* Private */,
+      83,    1,  484,    2, 0x08 /* Private */,
+      84,    1,  487,    2, 0x08 /* Private */,
+      85,    1,  490,    2, 0x08 /* Private */,
+      86,    0,  493,    2, 0x08 /* Private */,
+      87,    0,  494,    2, 0x08 /* Private */,
+      88,    0,  495,    2, 0x08 /* Private */,
+      89,    0,  496,    2, 0x08 /* Private */,
+      90,    0,  497,    2, 0x08 /* Private */,
+      91,    0,  498,    2, 0x08 /* Private */,
+      92,    0,  499,    2, 0x08 /* Private */,
+      93,    0,  500,    2, 0x08 /* Private */,
+      94,    0,  501,    2, 0x08 /* Private */,
+      95,    0,  502,    2, 0x08 /* Private */,
+      96,    0,  503,    2, 0x08 /* Private */,
+      97,    0,  504,    2, 0x08 /* Private */,
+      98,    0,  505,    2, 0x08 /* Private */,
+      99,    0,  506,    2, 0x08 /* Private */,
+     100,    0,  507,    2, 0x08 /* Private */,
+     101,    0,  508,    2, 0x08 /* Private */,
+     102,    0,  509,    2, 0x08 /* Private */,
 
  // signals: parameters
     QMetaType::Void, 0x80000000 | 3, 0x80000000 | 3, 0x80000000 | 3, 0x80000000 | 3,    4,    5,    6,    7,
@@ -310,6 +316,7 @@ static const uint qt_meta_data_Form_MainWindow[] = {
     QMetaType::Void,
     QMetaType::Void, 0x80000000 | 29, 0x80000000 | 29,   64,   65,
     QMetaType::Void, 0x80000000 | 67, QMetaType::Char, 0x80000000 | 29,   68,   69,   70,
+    QMetaType::Void, 0x80000000 | 72, QMetaType::Int,   73,   74,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void, QMetaType::QPoint,    4,
@@ -384,34 +391,35 @@ void Form_MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         case 33: _t->Slot_Popup_ChatSettingWindow(); break;
         case 34: _t->Slot_Update_FirmwareMsg((*reinterpret_cast< char*(*)>(_a[1])),(*reinterpret_cast< char*(*)>(_a[2]))); break;
         case 35: _t->Slot_Update_HardwareMsg((*reinterpret_cast< uint8_t*(*)>(_a[1])),(*reinterpret_cast< char(*)>(_a[2])),(*reinterpret_cast< char*(*)>(_a[3]))); break;
-        case 36: _t->Slot_ShowWindow(); break;
-        case 37: _t->Slot_Exit(); break;
-        case 38: _t->on_listWidget_task_1_customContextMenuRequested((*reinterpret_cast< const QPoint(*)>(_a[1]))); break;
-        case 39: _t->on_listWidget_table_state_customContextMenuRequested((*reinterpret_cast< const QPoint(*)>(_a[1]))); break;
-        case 40: _t->on_listWidget_task_2_customContextMenuRequested((*reinterpret_cast< const QPoint(*)>(_a[1]))); break;
-        case 41: _t->on_listWidget_task_3_customContextMenuRequested((*reinterpret_cast< const QPoint(*)>(_a[1]))); break;
-        case 42: _t->on_listWidget_task_4_customContextMenuRequested((*reinterpret_cast< const QPoint(*)>(_a[1]))); break;
-        case 43: _t->on_listWidget_task_5_customContextMenuRequested((*reinterpret_cast< const QPoint(*)>(_a[1]))); break;
-        case 44: _t->on_listWidget_table_state_key_customContextMenuRequested((*reinterpret_cast< const QPoint(*)>(_a[1]))); break;
-        case 45: _t->on_listWidget_task_6_customContextMenuRequested((*reinterpret_cast< const QPoint(*)>(_a[1]))); break;
-        case 46: _t->on_listWidget_hidwindow_customContextMenuRequested((*reinterpret_cast< const QPoint(*)>(_a[1]))); break;
-        case 47: _t->on_pushButton_chat_copy_answer_clicked(); break;
-        case 48: _t->on_pushButton_action_play_pause_clicked(); break;
-        case 49: _t->on_pushButton_action_calculator_clicked(); break;
-        case 50: _t->on_pushButton_action_chat_clicked(); break;
-        case 51: _t->on_pushButton_action_computer_clicked(); break;
-        case 52: _t->on_pushButton_action_email_clicked(); break;
-        case 53: _t->on_pushButton_action_explorer_clicked(); break;
-        case 54: _t->on_pushButton_action_mute_clicked(); break;
-        case 55: _t->on_pushButton_action_power_clicked(); break;
-        case 56: _t->on_pushButton_action_screen_save_clicked(); break;
-        case 57: _t->on_pushButton_action_sleep_clicked(); break;
-        case 58: _t->on_pushButton_action_weakup_clicked(); break;
-        case 59: _t->on_pushButton_RGB_next_page_clicked(); break;
-        case 60: _t->on_pushButton_RGB_last_page_clicked(); break;
-        case 61: _t->on_pushButton_get_hardware_msg_clicked(); break;
-        case 62: _t->on_pushButton_get_firmware_msg_clicked(); break;
-        case 63: _t->on_pushButton_update_clicked(); break;
+        case 36: _t->SlotNotifyText((*reinterpret_cast< uint8_t(*)[]>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 37: _t->Slot_ShowWindow(); break;
+        case 38: _t->Slot_Exit(); break;
+        case 39: _t->on_listWidget_task_1_customContextMenuRequested((*reinterpret_cast< const QPoint(*)>(_a[1]))); break;
+        case 40: _t->on_listWidget_table_state_customContextMenuRequested((*reinterpret_cast< const QPoint(*)>(_a[1]))); break;
+        case 41: _t->on_listWidget_task_2_customContextMenuRequested((*reinterpret_cast< const QPoint(*)>(_a[1]))); break;
+        case 42: _t->on_listWidget_task_3_customContextMenuRequested((*reinterpret_cast< const QPoint(*)>(_a[1]))); break;
+        case 43: _t->on_listWidget_task_4_customContextMenuRequested((*reinterpret_cast< const QPoint(*)>(_a[1]))); break;
+        case 44: _t->on_listWidget_task_5_customContextMenuRequested((*reinterpret_cast< const QPoint(*)>(_a[1]))); break;
+        case 45: _t->on_listWidget_table_state_key_customContextMenuRequested((*reinterpret_cast< const QPoint(*)>(_a[1]))); break;
+        case 46: _t->on_listWidget_task_6_customContextMenuRequested((*reinterpret_cast< const QPoint(*)>(_a[1]))); break;
+        case 47: _t->on_listWidget_hidwindow_customContextMenuRequested((*reinterpret_cast< const QPoint(*)>(_a[1]))); break;
+        case 48: _t->on_pushButton_chat_copy_answer_clicked(); break;
+        case 49: _t->on_pushButton_action_play_pause_clicked(); break;
+        case 50: _t->on_pushButton_action_calculator_clicked(); break;
+        case 51: _t->on_pushButton_action_chat_clicked(); break;
+        case 52: _t->on_pushButton_action_computer_clicked(); break;
+        case 53: _t->on_pushButton_action_email_clicked(); break;
+        case 54: _t->on_pushButton_action_explorer_clicked(); break;
+        case 55: _t->on_pushButton_action_mute_clicked(); break;
+        case 56: _t->on_pushButton_action_power_clicked(); break;
+        case 57: _t->on_pushButton_action_screen_save_clicked(); break;
+        case 58: _t->on_pushButton_action_sleep_clicked(); break;
+        case 59: _t->on_pushButton_action_weakup_clicked(); break;
+        case 60: _t->on_pushButton_RGB_next_page_clicked(); break;
+        case 61: _t->on_pushButton_RGB_last_page_clicked(); break;
+        case 62: _t->on_pushButton_get_hardware_msg_clicked(); break;
+        case 63: _t->on_pushButton_get_firmware_msg_clicked(); break;
+        case 64: _t->on_pushButton_update_clicked(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -560,13 +568,13 @@ int Form_MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 64)
+        if (_id < 65)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 64;
+        _id -= 65;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 64)
+        if (_id < 65)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 64;
+        _id -= 65;
     }
     return _id;
 }

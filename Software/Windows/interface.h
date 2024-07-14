@@ -8,6 +8,9 @@
 #include "msg_handler.h"
 #include "hid_function.h"
 #include "form_hidewindow.h"
+#include "form_entrance.h"
+#include <QtSerialPort/QSerialPortInfo>
+#include <QtSerialPort/QSerialPort>
 
 #define PROTOCOL_VID    0x303A
 #define PROTOCOL_PID    0x4005
@@ -29,6 +32,7 @@ public:
     void run();
 private:
     volatile bool stopped;
+    void connectDevice(QString vid, QString pid);
 };
 
 #endif // INTERFACE_H

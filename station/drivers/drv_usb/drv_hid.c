@@ -58,6 +58,7 @@ static const uint8_t hid_configuration_descriptor[] = {
     
 };
 
+static uint8_t hidGenerateChecksum(uint8_t data[], uint16_t len);
 static void hidReceiveProtocol(uint8_t data[], uint8_t len);
 
 /********* TinyUSB HID callbacks ***************/
@@ -104,9 +105,54 @@ void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id, hid_report_type_
 
 void tud_cdc_rx_cb(uint8_t itf)
 {
-    setLed(0,1,1);
-    vTaskDelay(pdMS_TO_TICKS(500));
-    setLed(1,0,1);
+    uint8_t readBuffer[1024] = {0};
+    //uint8_t rxData = 0;
+
+    //readBuffer = tud_cdc_read_char();
+
+    tud_cdc_read(readBuffer, 1024);
+    //tud_cdc_read_flush();
+
+    // uint8_t cmd = readBuffer[2];
+    // uint16_t dataLen = readBuffer[3]<<8 | readBuffer[4];
+
+    //bleSendProtocol(0x0A, &rxData, 1);
+
+    xQueueSend(bleTransQueueHandle,readBuffer,0);
+
+    // setLed(0,1,1);
+    // vTaskDelay(pdMS_TO_TICKS(500));
+    // setLed(1,0,1);
+}
+
+
+void cdcSendProtocol(uint8_t cmd, uint8_t data[], uint16_t len)
+{
+    static uint8_t uploadData[500] = {0};
+    uint8_t checksum = 0;
+
+    if (len > 500) return; 
+
+    uploadData[0] = SERIAL_PROTOCOL_START_H;
+    uploadData[1] = SERIAL_PROTOCOL_START_L;
+    uploadData[2] = cmd;
+    uploadData[3] = len>>8;
+    uploadData[4] = (uint8_t)len;
+    for(uint16_t i = 0; i < len; i++)
+    {
+        uploadData[i+5] = data[i];
+    }
+
+    checksum = hidGenerateChecksum(uploadData, len+5);
+
+    uploadData[len + 5] = checksum;
+    uploadData[len + 5 + 1] = SERIAL_PROTOCOL_STOP_H;
+    uploadData[len + 5 + 2] = SERIAL_PROTOCOL_STOP_L;
+
+    //tud_cdc_write_clear();
+    tud_cdc_write(uploadData, len+8);
+    tud_cdc_write_flush();
+    //tud_cdc_write_clear();
 }
 
 
@@ -197,10 +243,10 @@ void hid_mouse_click(hid_mouse_button_bm_t button, MouseClickState_e state)
     }
 }
 
-static uint8_t hidGenerateChecksum(uint8_t data[], uint8_t len)
+static uint8_t hidGenerateChecksum(uint8_t data[], uint16_t len)
 {
     uint8_t checksum = 0;
-    for(uint8_t i = 0; i < len; i++)
+    for(uint16_t i = 0; i < len; i++)
     {
         checksum += data[i];
     }
@@ -239,11 +285,11 @@ void hidReceiveProtocol(uint8_t data[], uint8_t len)
     {
         if (data[2] == 0x01)
         {
-            bleSendProtocol(CMD_HID_SEND_TEXT_START, &data[3], len);
+            //bleSendProtocol(CMD_HID_SEND_TEXT_START, &data[3], len);
         }
         else if (data[2] == 0x02)
         {
-            bleSendProtocol(CMD_HID_SEND_TEXT, &data[3], len);
+            //bleSendProtocol(CMD_HID_SEND_TEXT, &data[3], len);
         }
 
     }

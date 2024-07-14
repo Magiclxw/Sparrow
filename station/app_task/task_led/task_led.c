@@ -29,10 +29,10 @@ static void Led_Task()
         //tud_cdc_write_str(data);
         //if (tud_cdc_connected())
         {
-            tud_cdc_write_clear();
-            tud_cdc_write(data, sizeof(data));
-            //tud_cdc_write_char(data[0]);
-            tud_cdc_write_flush();
+            // tud_cdc_write_clear();
+            // tud_cdc_write(data, sizeof(data));
+            // //tud_cdc_write_char(data[0]);
+            // tud_cdc_write_flush();
         }
         
         vTaskDelay(pdMS_TO_TICKS(1000));

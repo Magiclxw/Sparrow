@@ -10,6 +10,8 @@ RecTextCtrlStruct s_recTextCtrl;
 uint8_t TableState[8] = {0};
 
 static uint8_t *s_textPointer;
+static uint8_t textBuffer[2048];
+static uint8_t s_textStartFlag = 0;
 
 static uint8_t generateChecksum(uint8_t data[], uint8_t len);
 
@@ -113,6 +115,9 @@ int Msg_Handler::Data_Resolve(uint8_t *data)
 
     if (Comp_CheckSum((uint8_t*)&g_rec_data_format, g_rec_data_format.checksum))
     {
+        //清除接收标志
+        s_textStartFlag = 0;
+        memset(&s_recTextCtrl, 0, sizeof(RecTextCtrlStruct));
         return OPERATE_ERROR_INVALID_PARAMETERS;
     }
 
@@ -124,45 +129,54 @@ int Msg_Handler::Data_Resolve(uint8_t *data)
 
             s_recTextCtrl.frameLen = data[5] << 8 | data[6];
             s_recTextCtrl.curFrame = 0;
-            s_textPointer = (uint8_t*)malloc(s_recTextCtrl.frameLen * 53);
+            s_recTextCtrl.dataLen = s_recTextCtrl.frameLen * 53;
+            //s_textPointer = (uint8_t*)malloc(s_recTextCtrl.dataLen);
             qDebug() << "frame length : " << s_recTextCtrl.frameLen;
             ack = 1;
             sendHidData(PROTOCOL_REC_CMD_TEXT_START, &ack, 1);
+
+            s_textStartFlag = 1;
         }
         break;
 
         case PROTOCOL_REC_CMD_TEXT_FRAME:
         {
-            uint8_t ack = 0;
-            uint16_t frameIndex = data[5] << 8 | data[6];
-
-            if (frameIndex == s_recTextCtrl.curFrame)
+            if (s_textStartFlag == 1)
             {
-                memcpy(&s_textPointer[s_recTextCtrl.curFrame * 53], &data[7], g_rec_data_format.dataLen);   //*53 : 除去frameIndex字节
+                uint8_t response[3];
+                uint16_t frameIndex = data[5] << 8 | data[6];
+
+                if (frameIndex == s_recTextCtrl.curFrame)
+                {
+                    memcpy(&textBuffer[s_recTextCtrl.curFrame * 53], &data[7], g_rec_data_format.dataLen);   //*53 : 除去frameIndex字节
+
+                    //收到最后一帧数据
+                    if(s_recTextCtrl.curFrame == s_recTextCtrl.frameLen - 1)
+                    {
+                        //1、发送信号(注意释放申请的空间)
+                        emit SignalMsgText(textBuffer,s_recTextCtrl.dataLen);
+                        //2、清空buffer
+                        memset(&s_recTextCtrl, 0, sizeof(RecTextCtrlStruct));
+                        s_textStartFlag = 0;
+                    }
+                }
+
+                qDebug() << "current frame : " << s_recTextCtrl.curFrame;
+
+                qDebug() << "frame index : " << frameIndex;
+
+                QByteArray byteArray(reinterpret_cast<char*>(&data[7]), g_rec_data_format.dataLen);
+
+                qDebug() << byteArray.toHex();
+
+                response[0] = s_recTextCtrl.curFrame >> 8;
+                response[1] = s_recTextCtrl.curFrame;
+                response[2] = 1;
+
+                sendHidData(PROTOCOL_REC_CMD_TEXT_FRAME, response, 3);
 
                 s_recTextCtrl.curFrame++;
             }
-
-
-
-            qDebug() << "current frame : " << s_recTextCtrl.curFrame;
-
-            qDebug() << "frame index : " << frameIndex;
-
-            QByteArray byteArray(reinterpret_cast<char*>(&data[7]), g_rec_data_format.dataLen);
-
-            qDebug() << byteArray.toHex();
-
-            //收到最后一帧数据
-            if(s_recTextCtrl.curFrame == s_recTextCtrl.frameLen)
-            {
-                //1、发送信号(注意释放申请的空间)
-
-                //2、清空buffer
-                memset(&s_recTextCtrl, 0, sizeof(RecTextCtrlStruct));
-            }
-
-            sendHidData(PROTOCOL_REC_CMD_TEXT_FRAME, &ack, 1);
         }
         break;
 

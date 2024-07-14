@@ -6,13 +6,17 @@
 #include "../../sys_config.h"
 
 TaskHandle_t Bluetooth_Task__Handle = NULL;
+TaskHandle_t bleTaskHandle = NULL;
 
 static uint8_t hidData[63] = {0};
+static uint8_t transData[1024] = {0};
 
 const static char *TAG = "task_bluetooth";
 
 static void Bluetooth_Task();
 static void blueToothDataHandler(uint8_t *data);
+
+static void blueToothTransTask();
 
 int Bluetooth_Task_Create()
 {
@@ -25,9 +29,21 @@ int Bluetooth_Task_Create()
     return OPERATE_SUCCESS;
 }
 
+int bleTransTaskCreate()
+{
+    xTaskCreate((TaskFunction_t)blueToothTransTask,
+                (const char*)"Bluetooth Trans Task",
+                (uint32_t )BLUETOOTH_TASK_STACK_SIZE,
+                (void *	)NULL,
+                (UBaseType_t)BLUETOOTH_TASK_PRIORITY,
+                &bleTaskHandle);
+    return OPERATE_SUCCESS;
+}
+
 void Bluetooth_Task()
 {
     BleData_t bleData;
+    uint8_t recData[1024] = {0};
 
     initBLE();
     //创建队列
@@ -37,22 +53,43 @@ void Bluetooth_Task()
     {
         if(Bluetooth_Queue_Handle != NULL)
         {
-            xQueueReceive(Bluetooth_Queue_Handle,&bleData,portMAX_DELAY);
-            ESP_LOGI(TAG, "ble_task rec : %d",bleData.length);
+            xQueueReceive(Bluetooth_Queue_Handle,recData,portMAX_DELAY);
+            //ESP_LOGI(TAG, "ble_task rec : %d",bleData.length);
             //打印数据
-            esp_log_buffer_hex(TAG, bleData.data,bleData.length);
-            blueToothDataHandler(bleData.data);
+            //esp_log_buffer_hex(TAG, bleData.data,bleData.length);
+            blueToothDataHandler(recData);
         }
 
     }
     
 }
 
-uint8_t compareCheckSum(uint8_t data[] ,uint8_t length)
+static void blueToothTransTask()
+{
+    BleTransDataStruct transData;
+
+    uint8_t recdata[1024];
+
+    bleTransQueueHandle = xQueueCreate(BLUETOOTH_TRANS_QUEUE_LENGTH,BLUETOOTH_TRANS_QUEUE_SIZE);
+
+    uint8_t bleData[5] = {0,1,2,3,4};
+
+    while (1)
+    {
+        if(bleTransQueueHandle != NULL)
+        {
+            xQueueReceive(bleTransQueueHandle,recdata,portMAX_DELAY);
+
+            bleSendProtocol(recdata);
+        }
+    }
+}
+
+uint8_t compareCheckSum(uint8_t data[] ,uint16_t length)
 {
     uint8_t checksum = 0;
 
-    for (uint8_t i = 0; i < length; i++)
+    for (uint16_t i = 0; i < length; i++)
     {
         checksum += data[i];
     }
@@ -70,11 +107,11 @@ uint8_t compareCheckSum(uint8_t data[] ,uint8_t length)
 static void blueToothDataHandler(uint8_t *data)
 {
     uint8_t cmd = data[2];
-    uint8_t dataLen = data[3];
+    uint16_t dataLen = data[3] << 8 | data[4];
 
-    uint8_t result = compareCheckSum(data, dataLen + 4);
+    //uint8_t result = compareCheckSum(data, dataLen + 5);
 
-    if(result == 0) return;
+    //if(result == 0) return;
 
     switch (cmd)
     {
@@ -190,6 +227,24 @@ static void blueToothDataHandler(uint8_t *data)
             }
 
             hidSendProtocol(HID_PROTOCOL_CMD_TEXT, hidData, dataLen);
+            break;
+        }
+        case CMD_CDC_SEND_FILE_START:
+        {
+            for(uint8_t i = 0; i < dataLen; i++)
+            {
+                transData[i] = data[5 + i];
+            }
+            cdcSendProtocol(CDC_PROTOCOL_CMD_FILE_START, transData, dataLen);
+            break;
+        }
+        case CMD_CDC_SEND_FILE:
+        {
+            for(uint16_t i = 0; i < dataLen; i++)
+            {
+                transData[i] = data[5 + i];
+            }
+            cdcSendProtocol(CDC_PROTOCOL_CMD_FILE, transData, dataLen);
             break;
         }
     }

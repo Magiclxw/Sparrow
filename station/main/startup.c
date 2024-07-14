@@ -39,6 +39,7 @@ void postStartup()
     LED_Task_Create();
 
     Bluetooth_Task_Create();
+    bleTransTaskCreate();
 
     //启动舵机线程
     Servo_Control_TASK_Create();

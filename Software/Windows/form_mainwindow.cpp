@@ -1243,11 +1243,11 @@ void Form_MainWindow::InitSysTray()
 {
     m_sysTrayIcon = new QSystemTrayIcon(this);
 
-    QIcon icon = QIcon(":/icon/main_icon.jpg");
+    QIcon icon = QIcon(":/icon/Icon.png");
 
     m_sysTrayIcon->setIcon(icon);
 
-    m_sysTrayIcon->setToolTip("HelloFinger");
+    m_sysTrayIcon->setToolTip("Sparrow");
 
     connect(m_sysTrayIcon,&QSystemTrayIcon::activated,[=](QSystemTrayIcon::ActivationReason reason){
         if(reason == QSystemTrayIcon::DoubleClick)
@@ -1269,6 +1269,19 @@ void Form_MainWindow::createAction()
     m_exit = new QAction("退出",this);
     connect(m_exit,&QAction::triggered,this,&Form_MainWindow::Slot_Exit);
 
+}
+
+void Form_MainWindow::SlotNotifyText(uint8_t *text, int len)
+{
+    QIcon icon = QIcon(":/icon/Icon.png");
+
+    QClipboard *clip = QApplication::clipboard();
+
+    QString data = QString::fromUtf8(reinterpret_cast<const char*>(text), len);
+
+    m_sysTrayIcon->showMessage("复制文本:",data, icon);
+
+    clip->setText(data);
 }
 
 void Form_MainWindow::createMenu()

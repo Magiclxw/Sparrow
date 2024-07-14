@@ -22,7 +22,7 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_Msg_Handler_t {
     QByteArrayData data[19];
-    char stringdata0[222];
+    char stringdata0[223];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -49,7 +49,7 @@ QT_MOC_LITERAL(14, 176, 10), // "ch9329_ver"
 QT_MOC_LITERAL(15, 187, 9), // "fpm383cSN"
 QT_MOC_LITERAL(16, 197, 13), // "SignalMsgText"
 QT_MOC_LITERAL(17, 211, 4), // "data"
-QT_MOC_LITERAL(18, 216, 5) // "lenth"
+QT_MOC_LITERAL(18, 216, 6) // "length"
 
     },
     "Msg_Handler\0Signal_Update_TableState\0"
@@ -57,7 +57,7 @@ QT_MOC_LITERAL(18, 216, 5) // "lenth"
     "state1\0state2\0Signal_Update_Firmware_Msg\0"
     "char*\0date\0version\0Signal_Update_Hardware_Msg\0"
     "uint8_t*\0flashId\0ch9329_ver\0fpm383cSN\0"
-    "SignalMsgText\0data\0lenth"
+    "SignalMsgText\0data\0length"
 };
 #undef QT_MOC_LITERAL
 
@@ -86,7 +86,7 @@ static const uint qt_meta_data_Msg_Handler[] = {
     QMetaType::Void, 0x80000000 | 4, 0x80000000 | 4,    5,    6,
     QMetaType::Void, 0x80000000 | 8, 0x80000000 | 8,    9,   10,
     QMetaType::Void, 0x80000000 | 12, QMetaType::Char, 0x80000000 | 8,   13,   14,   15,
-    QMetaType::Void, 0x80000000 | 12, 0x80000000 | 4,   17,   18,
+    QMetaType::Void, 0x80000000 | 12, QMetaType::Int,   17,   18,
 
        0        // eod
 };
@@ -101,7 +101,7 @@ void Msg_Handler::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         case 1: _t->Signal_Update_EnrollState((*reinterpret_cast< uint8_t(*)>(_a[1])),(*reinterpret_cast< uint8_t(*)>(_a[2]))); break;
         case 2: _t->Signal_Update_Firmware_Msg((*reinterpret_cast< char*(*)>(_a[1])),(*reinterpret_cast< char*(*)>(_a[2]))); break;
         case 3: _t->Signal_Update_Hardware_Msg((*reinterpret_cast< uint8_t*(*)>(_a[1])),(*reinterpret_cast< char(*)>(_a[2])),(*reinterpret_cast< char*(*)>(_a[3]))); break;
-        case 4: _t->SignalMsgText((*reinterpret_cast< uint8_t*(*)>(_a[1])),(*reinterpret_cast< uint8_t(*)>(_a[2]))); break;
+        case 4: _t->SignalMsgText((*reinterpret_cast< uint8_t*(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -135,7 +135,7 @@ void Msg_Handler::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
             }
         }
         {
-            using _t = void (Msg_Handler::*)(uint8_t * , uint8_t );
+            using _t = void (Msg_Handler::*)(uint8_t * , int );
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Msg_Handler::SignalMsgText)) {
                 *result = 4;
                 return;
@@ -212,7 +212,7 @@ void Msg_Handler::Signal_Update_Hardware_Msg(uint8_t * _t1, char _t2, char * _t3
 }
 
 // SIGNAL 4
-void Msg_Handler::SignalMsgText(uint8_t * _t1, uint8_t _t2)
+void Msg_Handler::SignalMsgText(uint8_t * _t1, int _t2)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
     QMetaObject::activate(this, &staticMetaObject, 4, _a);

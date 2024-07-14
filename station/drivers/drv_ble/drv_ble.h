@@ -22,6 +22,7 @@
 #include "sdkconfig.h"
 
 extern QueueHandle_t Bluetooth_Queue_Handle;
+extern QueueHandle_t bleTransQueueHandle;
 
 #define BLE_PROTOCOL_START_H    (0xA5)
 #define BLE_PROTOCOL_START_L    (0x5A)
@@ -38,13 +39,13 @@ typedef struct bleTransDataStruct
 {
     uint8_t start[2];
     uint8_t cmd;
-    uint8_t length;
+    uint16_t length;
     uint8_t data[100];
     uint8_t checksum;
     uint8_t stop[2];
 }BleTransDataStruct;
 
 void initBLE();
-void bleSendProtocol(uint8_t cmd, uint8_t data[], uint8_t length);
+void bleSendProtocol(uint8_t data[]);
 
 #endif

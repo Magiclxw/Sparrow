@@ -5,11 +5,14 @@
 uint16_t spp_conn_id = 0xffff;
 
 QueueHandle_t Bluetooth_Queue_Handle = NULL;
-BleData_t ble_rec_data;
+QueueHandle_t bleTransQueueHandle = NULL;
+
+static uint8_t ble_rec_data[1024];
+
 
 ///Declare the static function
 static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_if, esp_ble_gatts_cb_param_t *param);
-static bool compareCheckSum(uint8_t *data, uint8_t length);
+static bool compareCheckSum(uint8_t *data, uint16_t length);
 
 #define GATTS_SERVICE_UUID_TEST_A   0x00FF
 #define GATTS_CHAR_UUID_TEST_A      0xFF01
@@ -314,17 +317,17 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
     case ESP_GATTS_WRITE_EVT: {
         ESP_LOGI(GATTS_TAG, "GATT_WRITE_EVT, conn_id %d, trans_id %" PRIu32 ", handle %d", param->write.conn_id, param->write.trans_id, param->write.handle);
         if (!param->write.is_prep){
-            ESP_LOGI(GATTS_TAG, "GATT_WRITE_EVT, value len %d, value :", param->write.len);
-            esp_log_buffer_hex(GATTS_TAG, param->write.value, param->write.len);
+            // ESP_LOGI(GATTS_TAG, "GATT_WRITE_EVT, value len %d, value :", param->write.len);
+            // esp_log_buffer_hex(GATTS_TAG, param->write.value, param->write.len);
             //记录长度
-            ble_rec_data.length = param->write.len;
+            //ble_rec_data.length = param->write.len;
             //拷贝数据
             //ble_rec_data.data = param->write.value;
-            memcpy(ble_rec_data.data, param->write.value, param->write.len);
+            memcpy(ble_rec_data, param->write.value, param->write.len);
 
-            if(Bluetooth_Queue_Handle != NULL && compareCheckSum(param->write.value,ble_rec_data.length))
+            //if(Bluetooth_Queue_Handle != NULL && compareCheckSum(param->write.value,ble_rec_data.length))
             {
-                xQueueSend(Bluetooth_Queue_Handle,&ble_rec_data,0);
+                xQueueSend(Bluetooth_Queue_Handle,ble_rec_data,0);
             }
             
             ESP_LOGI(GATTS_TAG, "End of GATT_WRITE_EVT1");
@@ -499,7 +502,7 @@ static void gatts_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_
     } while (0);
 }
 
-static bool compareCheckSum(uint8_t *data, uint8_t length)
+static bool compareCheckSum(uint8_t *data, uint16_t length)
 {
     uint8_t checkSum = 0;
 
@@ -530,27 +533,32 @@ static uint8_t generateCheckSum(uint8_t data[], uint8_t length)
     return checkSum;
 }
 
-void bleSendProtocol(uint8_t cmd, uint8_t data[], uint8_t length)
+void bleSendProtocol(uint8_t data[])
 {
-    uint8_t transData[100];
-    uint8_t len = data[0];
+    uint8_t transData[1024];
+    uint8_t cmd = data[2];
+    uint16_t dataLength = data[3] << 8 | data[4];
 
     transData[0] = BLE_PROTOCOL_START_H;
     transData[1] = BLE_PROTOCOL_START_L;
-    transData[2] = cmd;
-    transData[3] = len;
+    // transData[2] = cmd;
+    // transData[3] = dataLength >> 8;
+    // transData[4] = (uint8_t)dataLength;
 
-    for(uint8_t i = 0; i < len; i++)
-    {
-        transData[4+i] = data[i+1];
-    }
-    transData[4 + len] = generateCheckSum(&transData, len + 4);
+    // for(uint8_t i = 5; i < dataLength; i++)
+    // {
+    //     transData[5+i] = data[i];
+    // }
+    memcpy(&transData[2], &data[2], dataLength + 3);
 
-    transData[4 + len + 1] = BLE_PROTOCOL_STOP_H;
-    transData[4 + len + 2] = BLE_PROTOCOL_STOP_L;
+    transData[5 + dataLength] = generateCheckSum(&transData, dataLength + 5);
 
-    belSendData(&transData, len + 4 + 3);
+    transData[5 + dataLength + 1] = BLE_PROTOCOL_STOP_H;
+    transData[5 + dataLength + 2] = BLE_PROTOCOL_STOP_L;
+
+    belSendData(&transData, dataLength + 5 + 3);
 }
+
 
 void belSendData(uint8_t *data, uint8_t length)
 {

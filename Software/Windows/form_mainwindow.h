@@ -72,6 +72,7 @@ public slots:
     void Slot_Popup_ChatSettingWindow(void);
     void Slot_Update_FirmwareMsg(char* date,char* version);
     void Slot_Update_HardwareMsg(uint8_t* flashId,char ch9329_ver,char* fpm383cSN);
+    void SlotNotifyText(uint8_t text[], int len);
 signals:
     void Signal_AddFinger(uint8_t pos,uint8_t times,uint8_t param1,uint8_t param2);
     void Signal_DeleteFinger(uint8_t id);

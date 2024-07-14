@@ -71,7 +71,7 @@ public class UploadTextActivity extends AppCompatActivity {
                 {
                     frameNum += 1;
                 }
-            cmdHidSendTextStart(frameNum, (byte) 2);
+                cmdHidSendTextStart(frameNum, (byte) 2);
                 //cmdHidSendText(frameIndex, (byte) FRAME_LEN, dataBuffer);
                 if (!bleTransportThread.isAlive())
                 {
@@ -85,31 +85,59 @@ public class UploadTextActivity extends AppCompatActivity {
     {
         if ((short)(data[0] & 0xff) == 0xA5 && (short)(data[1] & 0xff) == 0x5A)
         {
-            if (frameIndex <= frameNum - 1)
+            if((short)(data[2] & 0xff) == 0x09 && data[4] == 0x01)
             {
                 byte framData[] = new byte[FRAME_LEN];
 
-                if (frameIndex < frameNum - 1)
+                for (int i = 0; i < FRAME_LEN; i++)
                 {
-                    for (int i = 0; i < FRAME_LEN; i++)
-                    {
-                        framData[i] = dataBuffer[frameIndex * FRAME_LEN + i];
-                    }
-                    cmdHidSendText(frameIndex, (byte) DATA_LEN, framData);
-                    frameIndex++;
+                    framData[i] = dataBuffer[frameIndex * FRAME_LEN + i];
                 }
-                else if (frameIndex == frameNum - 1)
+
+                cmdHidSendText(frameIndex, (byte) DATA_LEN, framData);
+
+                frameIndex++;
+                System.out.println("frameIndex = " + frameIndex);
+                return 0;
+            }
+            else if ((short)(data[2] & 0xff) == 0x0A)
+            {
+                int recIndex = data[4]<<8 | data[5];
+                System.out.println("recIndex = " + recIndex);
+                System.out.println("frameIndex = " + frameIndex);
+                if (frameIndex-1 == recIndex)
                 {
-                    for (int i = 0; i < extraData; i++)
+                    if (frameIndex <= frameNum - 1)
                     {
-                        framData[i] = dataBuffer[frameIndex * FRAME_LEN + i];
+                        byte framData[] = new byte[FRAME_LEN];
+
+                        if (frameIndex < frameNum - 1)
+                        {
+                            for (int i = 0; i < FRAME_LEN; i++)
+                            {
+                                framData[i] = dataBuffer[frameIndex * FRAME_LEN + i];
+                            }
+                            cmdHidSendText(frameIndex, (byte) DATA_LEN, framData);
+                            frameIndex++;
+                        }
+                        else if (frameIndex == frameNum - 1)
+                        {
+                            for (int i = 0; i < extraData; i++)
+                            {
+                                framData[i] = dataBuffer[frameIndex * FRAME_LEN + i];
+                            }
+
+                            cmdHidSendText(frameIndex, (byte)DATA_LEN, framData);
+
+                            System.out.println("send finished");
+
+                            return 1;
+                        }
                     }
-
-                    cmdHidSendText(frameIndex, (byte)DATA_LEN, framData);
-
-                    System.out.println("send finished");
-
-                    return 1;
+                }
+                else
+                {
+                    return 0;
                 }
             }
         }

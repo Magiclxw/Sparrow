@@ -7,6 +7,8 @@ debug/interface.o
 debug/interface_chat.o
 debug/main.o
 debug/msg_handler.o
+debug/serialInterface.o
+debug/filemanager.o
 debug/system_init.o
 debug/usb_listener.o
 debug/globalkeyevent_win.o
@@ -27,6 +29,7 @@ debug/moc_form_mainwindow.o
 debug/moc_hid_function.o
 debug/moc_interface_chat.o
 debug/moc_msg_handler.o
+debug/moc_serialInterface.o
 debug/moc_system_init.o
 debug/moc_usb_listener.o
 debug/moc_globalkeyevent.o

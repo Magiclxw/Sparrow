@@ -64,6 +64,7 @@ typedef struct recTextCtrlStruct
 {
     uint16_t frameLen;  //数据帧总个数
     uint16_t curFrame;  //当前数据帧
+    int dataLen;   //数据总长度
 }RecTextCtrlStruct;
 
 class Msg_Handler : public QObject
@@ -82,7 +83,7 @@ signals:
     void Signal_Update_EnrollState(uint8_t state1,uint8_t state2);
     void Signal_Update_Firmware_Msg(char* date,char* version);
     void Signal_Update_Hardware_Msg(uint8_t* flashId,char ch9329_ver,char* fpm383cSN);
-    void SignalMsgText(uint8_t *data, uint8_t lenth);
+    void SignalMsgText(uint8_t *data, int length);
 };
 
 #endif // MSG_HANDLER_H

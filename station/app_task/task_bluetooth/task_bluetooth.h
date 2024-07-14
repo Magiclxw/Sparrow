@@ -10,8 +10,11 @@
 #define BLUETOOTH_TASK_STACK_SIZE   (8192)
 #define BLUETOOTH_TASK_PRIORITY     (14)
 
-#define BLUETOOTH_REC_QUEUE_LENGTH  (10)
-#define BLUETOOTH_REC_QUEUE_SIZE    (sizeof(BleData_t))
+#define BLUETOOTH_REC_QUEUE_LENGTH  (2)
+#define BLUETOOTH_REC_QUEUE_SIZE    (1024)
+
+#define BLUETOOTH_TRANS_QUEUE_LENGTH  (2)
+#define BLUETOOTH_TRANS_QUEUE_SIZE    (1024)
 
 #define CMD_MOUSE_MOVE              (0x01)
 #define CMD_MOUSE_CLICK             (0x02)
@@ -23,8 +26,11 @@
 #define CMD_CFG_SET_PASSWORD        (0x08)
 #define CMD_HID_SEND_TEXT_START     (0x09)
 #define CMD_HID_SEND_TEXT           (0x0A)
+#define CMD_CDC_SEND_FILE_START     (0x0B)
+#define CMD_CDC_SEND_FILE           (0x0C)
 
 
 int Bluetooth_Task_Create();
+int bleTransTaskCreate();
 
 #endif

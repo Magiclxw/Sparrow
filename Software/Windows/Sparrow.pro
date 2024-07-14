@@ -1,7 +1,7 @@
-QT       += core gui
-QT      += winextras
-QT += network
-
+QT  += core gui
+QT  += winextras
+QT  += network
+QT  += serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -21,6 +21,8 @@ SOURCES += \
     interface_chat.cpp \
     main.cpp \
     msg_handler.cpp \
+    serialInterface.cpp \
+    system/filemanager.cpp \
     system/system_init.cpp \
     usb_listener.cpp
 
@@ -36,6 +38,8 @@ HEADERS += \
     interface_chat.h \
     lib/hidapi.h \
     msg_handler.h \
+    serialInterface.h \
+    system/filemanager.h \
     system/system_init.h \
     usb_listener.h
 
