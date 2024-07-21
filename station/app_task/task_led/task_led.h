@@ -8,6 +8,6 @@
 #define LED_TASK_STACK_SIZE (4096)
 #define LED_TASK_PRIORITY (3)
 
-int LED_Task_Create();
+int createLedTask();
 
 #endif

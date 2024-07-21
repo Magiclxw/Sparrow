@@ -30,7 +30,7 @@ typedef struct ServoAngleState
 
 extern QueueHandle_t Angle_State_Handle;
 
-int Servo_Control_TASK_Create(void);
+int createServoTask(void);
 void servo_calibrate(void);
 
 #endif

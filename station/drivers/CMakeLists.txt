@@ -1,5 +1,5 @@
 idf_component_register(SRCS "drv_dac/drv_adc.c"
-                            "drv_usb/drv_hid.c"
+                            "drv_usb/drv_usb.c"
                             "drv_ble/drv_ble.c"
                             "drv_nvs/drv_nvs.c"
                             "drv_json/drv_jsonHandler.c"

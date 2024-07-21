@@ -16,7 +16,7 @@ static inline uint32_t example_angle_to_compare(int angle)
     return (angle - SERVO_MIN_DEGREE) * (SERVO_MAX_PULSEWIDTH_US - SERVO_MIN_PULSEWIDTH_US) / (SERVO_MAX_DEGREE - SERVO_MIN_DEGREE) + SERVO_MIN_PULSEWIDTH_US;
 }
 
-int Servo_Control_TASK_Create(void)
+int createServoTask(void)
 {
     xTaskCreate((TaskFunction_t)vTaskServoProcessing,
                 (const char*)"Servo Processing",

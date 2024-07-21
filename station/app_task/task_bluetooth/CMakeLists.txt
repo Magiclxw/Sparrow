@@ -5,4 +5,5 @@ idf_component_register(SRCS "task_bluetooth.c"
                                      "../../drivers/drv_usb"
                                      "../../drivers/drv_led"
                                      "../../drivers/drv_nvs"
-                        REQUIRES   esp_event driver bt espressif__esp_tinyusb nvs_flash)
+                                     "../../drivers/drv_mqtt"
+                        REQUIRES   esp_event driver bt espressif__esp_tinyusb nvs_flash mqtt)

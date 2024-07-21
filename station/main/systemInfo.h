@@ -5,5 +5,6 @@
 
 esp_err_t sysInfoGetPowerOnTimes(uint16_t *times);
 esp_err_t sysInfoSetPowerOnTimes(uint16_t times);
+esp_err_t sysInfoIncrementPowerOnTimes(void);
 
 #endif

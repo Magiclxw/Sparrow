@@ -86,7 +86,7 @@ void example_lvgl_demo_ui(lv_disp_t *disp)
     lv_anim_start(&a);
 }
 
-uint8_t displayTaskCreate()
+void createDisplayTask()
 {
     xTaskCreate((TaskFunction_t)displayTask,
                 (const char*)"lcdTask",
@@ -94,7 +94,6 @@ uint8_t displayTaskCreate()
                 (void *	)NULL,
                 (UBaseType_t)LCD_TASK_PRIORITY,
                 &s_lcdTaskHandle);
-    return 1;
 }
 
 static void displayTask()

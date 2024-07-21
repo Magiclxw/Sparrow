@@ -1,5 +1,8 @@
 #include "systemInfo.h"
 
+//开机次数统计
+static uint16_t s_powerOnTimes = 0;
+
 esp_err_t sysInfoGetPowerOnTimes(uint16_t *times)
 {
     char strTimes[6] = {0};
@@ -42,6 +45,22 @@ esp_err_t sysInfoSetPowerOnTimes(uint16_t times)
     ret = nvsCommit();
 
     nvsClose();
+
+    return ret;
+}
+
+/*
+* @brief 统计开机次数
+*/
+esp_err_t sysInfoIncrementPowerOnTimes(void)
+{
+    esp_err_t ret = sysInfoGetPowerOnTimes(&s_powerOnTimes);
+
+    //printf("powerOnTimes = %d\r\n",s_powerOnTimes);
+
+    s_powerOnTimes++;
+
+    ret = sysInfoSetPowerOnTimes(s_powerOnTimes);
 
     return ret;
 }

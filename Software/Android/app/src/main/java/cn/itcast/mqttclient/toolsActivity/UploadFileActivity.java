@@ -47,6 +47,7 @@ public class UploadFileActivity extends AppCompatActivity {
     private static final int FRAME_SIZE = 300;
     private static long dataSize = 0;
     private static int fileType;
+    private static String fileName;
     private static byte recData[];
     private static int recFlag = 0;
     Button btn_select_file;
@@ -72,7 +73,7 @@ public class UploadFileActivity extends AppCompatActivity {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("*/*");//筛选器
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
-                startActivityForResult(Intent.createChooser(intent,"选择一个文件"),1);
+                startActivityForResult(Intent.createChooser(intent, "选择一个文件"), 1);
             }
         });
 
@@ -81,18 +82,17 @@ public class UploadFileActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (timer != null)
-        {
+        if (timer != null) {
             timer.cancel();
         }
 
-        Log.d("FileContent","开始计数");
+        Log.d("FileContent", "开始计数");
 
         timer = new CountDownTimer(2000, 1000) { // 30秒倒计时，每秒触发一次
             public void onTick(long millisUntilFinished) {
                 // 每秒触发的操作
                 recFlag = 0;
-                Log.d("FileContent","Counter up");
+                Log.d("FileContent", "Counter up");
             }
 
             public void onFinish() {
@@ -102,7 +102,7 @@ public class UploadFileActivity extends AppCompatActivity {
 //                    frameIndex--;
 //                    bleDataRecFlag = 1;
 //                }
-                Log.d("FileContent","计时结束");
+                Log.d("FileContent", "计时结束");
             }
         };
 
@@ -112,8 +112,7 @@ public class UploadFileActivity extends AppCompatActivity {
             uri = data.getData(); // 获取选定文件的 URI
             //获取文件大小
             dataSize = getFileSize(uri);
-            //获取文件类型
-            fileType = getFileTypeFromUri(this, uri);
+            fileName = uri.getPath().substring(uri.getPath().lastIndexOf("/") + 1);
             System.out.println("data size = " + dataSize);
             Log.d("FileContent", "类型: " + fileType);
             // 读取文件内容
@@ -128,11 +127,10 @@ public class UploadFileActivity extends AppCompatActivity {
         try {
             inputStream = getContentResolver().openInputStream(uri);
             bis = new BufferedInputStream(inputStream);
-            byte[] buffer= new byte[400];
+            byte[] buffer = new byte[400];
             int bytesRead;
             int totalData = 0;
-            while ((bytesRead = bis.read(buffer)) != -1)
-            {
+            while ((bytesRead = bis.read(buffer)) != -1) {
                 totalData += bytesRead;
                 Log.d("FileContent", "读取到的二进制数据: " + bytesRead + "字节");
             }
@@ -148,57 +146,78 @@ public class UploadFileActivity extends AppCompatActivity {
     }
 
 
-
-    class BleTransportThread extends Thread
-    {
-        public void run()
-        {
+    class BleTransportThread extends Thread {
+        public void run() {
             try {
                 inputStream = getContentResolver().openInputStream(uri);
                 bis = new BufferedInputStream(inputStream);
-                byte[] buffer= new byte[300];
-                int bytesRead;
-
-                cmdCdcSendFileStart(fileType, (int)dataSize, FRAME_SIZE);
+                byte[] buffer = new byte[300];
+                byte[] name = fileName.getBytes();
+                int nameSize = name.length;
+                int bytesRead = 0;
+                int counter = 0;    //超时计数
+                int timeOutFlag = 0;
+                cmdCdcSendFileStart(nameSize, name, (int) dataSize, FRAME_SIZE);
                 //cmdCdcSendFile(frameIndex, 100, buffer);
-            while ((bytesRead = bis.read(buffer)) != -1)
+                //while ((bytesRead = bis.read(buffer)) != -1)
                 {
-                Log.d("FileContent", "bytesRead" + bytesRead);
-                    while(true)
+                    //Log.d("FileContent", "bytesRead" + bytesRead);
+                    while (true)
                     {
-                        if(bleDataRecFlag == 1)
+                        //if (timeOutFlag == 0)
                         {
-                            Log.d("FileContent", "收到响应");
-                            if (bleRecData[2] == 0x03)
+                            counter++;
+                            if (bleDataRecFlag == 1)
                             {
-                                cmdCdcSendFile(frameIndex, bytesRead, buffer);
-                                bleDataRecFlag = 0;
-                                recFlag = 1;
-                                timer.start();
-                            }
-                            else if (bleRecData[2] == 0x04)
-                            {
-                                int ackFrameIndex = bleRecData[5] << 8 | bleRecData[6];
-                                Log.d("FileContent", "ackFrame = " + ackFrameIndex);
-                                if (frameIndex == ackFrameIndex)
+
+                                Log.d("FileContent", "收到响应");
+                                if (bleRecData[2] == 0x03)
                                 {
-                                    frameIndex++;
+                                    bytesRead = bis.read(buffer);
                                     cmdCdcSendFile(frameIndex, bytesRead, buffer);
                                     bleDataRecFlag = 0;
-                                    recFlag = 1;
-                                    timer.start();
-                                    //Log.d("FileContent", "发送数据");
+
+                                    //timer.start();
+                                }
+                                else if (bleRecData[2] == 0x04)
+                                {
+                                    if ((bytesRead = bis.read(buffer)) != -1)
+                                    {
+                                        int ackFrameIndex =  ((bleRecData[5]&0xff) << 8) | (bleRecData[6]&0xff);
+                                        Log.d("FileContent", "ackFrame = " + ackFrameIndex);
+                                        if (frameIndex == ackFrameIndex)
+                                        {
+                                            frameIndex++;
+                                            cmdCdcSendFile(frameIndex, bytesRead, buffer);
+                                            bleDataRecFlag = 0;
+
+                                            //timer.start();
+                                            //Log.d("FileContent", "发送数据");
+                                        }
+                                        else
+                                        {
+                                            Log.d("FileContent", "索引不一致");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
                                 }
                                 else
                                 {
-                                    Log.d("FileContent", "索引不一致");
+                                    Log.d("FileContent", "数据无效");
                                 }
+                                counter = 0;
                             }
-                            else
-                            {
-                                Log.d("FileContent", "数据无效");
-                            }
-                            break;
+                        }
+
+
+                        if (counter == 0x7FFFFFF) {
+                            Log.d("FileContent", "超时");
+                            cmdCdcSendFile(frameIndex, bytesRead, buffer);
+                            counter = 0;
+                            //timeOutFlag= 1;
                         }
                     }
                 }
@@ -223,81 +242,4 @@ public class UploadFileActivity extends AppCompatActivity {
         return fileSize;
     }
 
-    public static void getRecData(byte data[])
-    {
-        recData = data;
-    }
-
-    public static void getRecFlag(int flag)
-    {
-        recFlag = flag;
-    }
-
-    public int getFileTypeFromUri(Context context, Uri uri) {
-        String fileType = null;
-        ContentResolver contentResolver = context.getContentResolver();
-        String mimeType = contentResolver.getType(uri);
-
-        if (mimeType != null) {
-            String[] split = mimeType.split("/");
-            fileType = split[1];
-
-            switch (fileType)
-            {
-                case "txt":
-                {
-                    return FILE_TYPE_TXT;
-                }
-                case "doc":
-                {
-                    return FILE_TYPE_DOC;
-                }
-                case "pdf":
-                {
-                    return FILE_TYPE_PDF;
-                }
-                case "ppt":
-                {
-                    return FILE_TYPE_PPT;
-                }
-                case "xls":
-                {
-                    return FILE_TYPE_XLS;
-                }
-                case "jpg":
-                {
-                    return FILE_TYPE_JPG;
-                }
-                case "png":
-                {
-                    return FILE_TYPE_PNG;
-                }
-                case "bmp":
-                {
-                    return FILE_TYPE_BMP;
-                }
-                case "zip":
-                {
-                    return FILE_TYPE_ZIP;
-                }
-                case "rar":
-                {
-                    return FILE_TYPE_RAR;
-                }
-                case "exe":
-                {
-                    return FILE_TYPE_EXE;
-                }
-                case "bin":
-                {
-                    return FILE_TYPE_BIN;
-                }
-                default:
-                {
-                    return 0;
-                }
-            }
-        }
-        return -1;
-    }
 }

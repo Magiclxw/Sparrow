@@ -16,9 +16,7 @@ SOURCES += \
     form_entrance.cpp \
     form_hidewindow.cpp \
     form_mainwindow.cpp \
-    hid_function.cpp \
     interface.cpp \
-    interface_chat.cpp \
     main.cpp \
     msg_handler.cpp \
     serialInterface.cpp \
@@ -32,10 +30,8 @@ HEADERS += \
     form_entrance.h \
     form_hidewindow.h \
     form_mainwindow.h \
-    hid_function.h \
     hidapi.h \
     interface.h \
-    interface_chat.h \
     lib/hidapi.h \
     msg_handler.h \
     serialInterface.h \

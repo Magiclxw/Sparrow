@@ -10,7 +10,7 @@
 #include "esp_log.h"
 #include "esp_sntp.h"
 
-void initialise_wifi(void);
+void initWifi(void);
 esp_err_t clearWifiData();
 
 #endif

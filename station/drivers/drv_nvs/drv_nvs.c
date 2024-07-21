@@ -64,3 +64,24 @@ esp_err_t nvsSaveValue(const char* namespace_name, nvs_open_mode_t open_mode, co
     
     return ret;
 }
+
+esp_err_t nvsLoadValue(const char* namespace_name, nvs_open_mode_t open_mode, const char* key, char* out_value)
+{
+    esp_err_t ret = ESP_OK;
+    size_t length = 0;
+
+    ret = nvsOpen(namespace_name, open_mode);
+
+    if(ret != ESP_OK) return ret;
+
+    ret = nvsGetStr(key, NULL, &length);
+
+    if (ret == ESP_OK)
+    {
+        ret = nvsGetStr(key, out_value, &length);
+    }
+
+    nvsClose();
+
+    return ret;
+}

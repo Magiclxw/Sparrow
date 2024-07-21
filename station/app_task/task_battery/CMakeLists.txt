@@ -1,6 +1,6 @@
 idf_component_register(SRCS "task_battery.c"
                             "../../drivers/drv_adc/drv_adc.c"
-                            "../../drivers/drv_mqtt/driver_mqtt.c"
+                            "../../drivers/drv_mqtt/drv_mqtt.c"
                         INCLUDE_DIRS "."
                                      "../../drivers/drv_adc"
                                      "../../drivers/drv_mqtt"

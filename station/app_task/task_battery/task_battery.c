@@ -1,6 +1,6 @@
 #include "task_battery.h"
 #include "../../drivers/drv_adc/drv_adc.h"
-#include "driver_mqtt.h"
+#include "drv_mqtt.h"
 #include "../../sys_config.h"
 
 TaskHandle_t Battery_Task__Handle = NULL;
@@ -9,7 +9,7 @@ const static char *TAG = "battery";
 
 static void Battery_Task();
 
-int Battery_Task_Create()
+int createBatteryTask()
 {
     xTaskCreate((TaskFunction_t)Battery_Task,
                 (const char*)"Battery_Task",

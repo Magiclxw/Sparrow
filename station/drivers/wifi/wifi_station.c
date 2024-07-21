@@ -24,13 +24,13 @@ static const int CONNECTED_BIT = BIT0;
 static const int ESPTOUCH_DONE_BIT = BIT1;
 static const char *TAG = "smartconfig_example";
 
-static void smartconfig_example_task(void * parm);
+static void taskSmartconfig(void * parm);
 
 static void event_handler(void* arg, esp_event_base_t event_base,
                                 int32_t event_id, void* event_data)
 {
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
-        xTaskCreate(smartconfig_example_task, "smartconfig_example_task", 4096, NULL, 3, NULL);
+        xTaskCreate(taskSmartconfig, "taskSmartconfig", 4096, NULL, 3, NULL);
     } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
         esp_wifi_connect();
         xEventGroupClearBits(s_wifi_event_group, CONNECTED_BIT);
@@ -98,7 +98,7 @@ static void event_handler(void* arg, esp_event_base_t event_base,
     }
 }
 
-void initialise_wifi(void)
+void initWifi(void)
 {
     ESP_ERROR_CHECK(esp_netif_init());
     s_wifi_event_group = xEventGroupCreate();
@@ -119,7 +119,9 @@ void initialise_wifi(void)
     esp_sntp_config_t config = ESP_NETIF_SNTP_DEFAULT_CONFIG("pool.ntp.org");
     esp_netif_sntp_init(&config);
 }
-
+/*
+* @brief 删除保存的wifi数据
+*/
 esp_err_t clearWifiData()
 {
     esp_err_t ret = nvsOpen(USER_NAMESPACE_0, NVS_READWRITE);
@@ -133,7 +135,7 @@ esp_err_t clearWifiData()
     return ret;
 }
 
-static void smartconfig_example_task(void * parm)
+static void taskSmartconfig(void * parm)
 {
     EventBits_t uxBits;
     ESP_ERROR_CHECK( esp_smartconfig_set_type(SC_TYPE_ESPTOUCH) );

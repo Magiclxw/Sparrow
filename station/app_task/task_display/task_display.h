@@ -19,6 +19,6 @@
 #define LCD_TASK_PRIORITY   (10)
 
 
-uint8_t displayTaskCreate();
+void createDisplayTask();
 
 #endif

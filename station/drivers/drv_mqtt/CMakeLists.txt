@@ -1,4 +1,4 @@
-idf_component_register(SRCS "driver_mqtt.c"
+idf_component_register(SRCS "drv_mqtt.c"
                         INCLUDE_DIRS "."
                                     "../../app_task/task_servo"
                                     "../../main"

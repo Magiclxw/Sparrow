@@ -1,9 +1,10 @@
 #include "task_bluetooth.h"
 #include "esp_log.h"
-#include "drv_hid.h"
+#include "drv_usb.h"
 #include "drv_led.h"
 #include "drv_nvs.h"
 #include "../../sys_config.h"
+#include "drv_mqtt.h"
 
 TaskHandle_t Bluetooth_Task__Handle = NULL;
 TaskHandle_t bleTaskHandle = NULL;
@@ -13,14 +14,16 @@ static uint8_t transData[1024] = {0};
 
 const static char *TAG = "task_bluetooth";
 
-static void Bluetooth_Task();
-static void blueToothDataHandler(uint8_t *data);
+static void bluetoothRecTask();
+static void bluetoothRecDataHandler(uint8_t *data);
+static void bluetoothTransTask();
+static void bluetoothTransDataHandler(uint8_t *data);
+static esp_err_t compareCheckSum(uint8_t data[] ,uint16_t length);
+static esp_err_t dataCheck(uint8_t data[]);
 
-static void blueToothTransTask();
-
-int Bluetooth_Task_Create()
+int createBleRecTask()
 {
-    xTaskCreate((TaskFunction_t)Bluetooth_Task,
+    xTaskCreate((TaskFunction_t)bluetoothRecTask,
                 (const char*)"Bluetooth_Task",
                 (uint32_t )BLUETOOTH_TASK_STACK_SIZE,
                 (void *	)NULL,
@@ -29,9 +32,9 @@ int Bluetooth_Task_Create()
     return OPERATE_SUCCESS;
 }
 
-int bleTransTaskCreate()
+int createBleTransTask()
 {
-    xTaskCreate((TaskFunction_t)blueToothTransTask,
+    xTaskCreate((TaskFunction_t)bluetoothTransTask,
                 (const char*)"Bluetooth Trans Task",
                 (uint32_t )BLUETOOTH_TASK_STACK_SIZE,
                 (void *	)NULL,
@@ -40,7 +43,7 @@ int bleTransTaskCreate()
     return OPERATE_SUCCESS;
 }
 
-void Bluetooth_Task()
+void bluetoothRecTask()
 {
     BleData_t bleData;
     uint8_t recData[1024] = {0};
@@ -57,14 +60,14 @@ void Bluetooth_Task()
             //ESP_LOGI(TAG, "ble_task rec : %d",bleData.length);
             //打印数据
             //esp_log_buffer_hex(TAG, bleData.data,bleData.length);
-            blueToothDataHandler(recData);
+            bluetoothRecDataHandler(recData);
         }
 
     }
     
 }
 
-static void blueToothTransTask()
+static void bluetoothTransTask()
 {
     BleTransDataStruct transData;
 
@@ -85,7 +88,7 @@ static void blueToothTransTask()
     }
 }
 
-uint8_t compareCheckSum(uint8_t data[] ,uint16_t length)
+static esp_err_t compareCheckSum(uint8_t data[] ,uint16_t length)
 {
     uint8_t checksum = 0;
 
@@ -94,24 +97,55 @@ uint8_t compareCheckSum(uint8_t data[] ,uint16_t length)
         checksum += data[i];
     }
 
+    ESP_LOGI(TAG, " rec checksum = %d, calc checksum = %d\r\n", checksum, data[length]);
+
     if (checksum == data[length])
     {
-        return 1;
+        return ESP_OK;
     }
     else
     {
-        return 0;
+        return ESP_FAIL;
     }
 }
 
-static void blueToothDataHandler(uint8_t *data)
+static esp_err_t dataCheck(uint8_t data[])
+{
+    if (data[0] == BLE_PROTOCOL_START_H && data[1] == BLE_PROTOCOL_START_L)
+    {
+        uint16_t dataLen = data[3] << 8 | data[4];
+
+        if (data[dataLen + BLE_PROTOCOL_START_LEN + BEL_PROTOCOL_CMD_LEN + BLE_PROTOCOL_DATALEN_LEN + BLE_PROTOCOL_CHECKSUM_LEN + 1] == BLE_PROTOCOL_STOP_H 
+        && data[dataLen + BLE_PROTOCOL_START_LEN + BEL_PROTOCOL_CMD_LEN + BLE_PROTOCOL_DATALEN_LEN + BLE_PROTOCOL_CHECKSUM_LEN + 2] == BLE_PROTOCOL_STOP_L )
+        {
+            if (compareCheckSum(data, dataLen + 5) == ESP_OK)
+            {
+                // ESP_LOGI(TAG, " compare ok\r\n");
+                return ESP_OK;
+            }
+            else
+            {
+                // ESP_LOGI(TAG, " compare fail\r\n");
+                return ESP_FAIL;
+            }
+        }
+    }
+    return ESP_FAIL;
+}
+
+/*
+* @brief 处理接收到的数据
+* @param[in] data : [0]     [1]     [2]     [3]     [4]         [5]...
+*                  Start_H Start_L  CMD  DataLen_H DataLen_L    Data
+*/
+static void bluetoothRecDataHandler(uint8_t *data)
 {
     uint8_t cmd = data[2];
     uint16_t dataLen = data[3] << 8 | data[4];
 
-    //uint8_t result = compareCheckSum(data, dataLen + 5);
+    esp_err_t result = dataCheck(data);
 
-    //if(result == 0) return;
+    if(result == ESP_FAIL) return;
 
     switch (cmd)
     {
@@ -171,16 +205,7 @@ static void blueToothDataHandler(uint8_t *data)
 
             ESP_LOGI(TAG,"server_address = %s\n", server_address);
 
-            // esp_err_t ret = nvsOpen(USER_NAMESPACE_0, NVS_READWRITE);
-
-            // if(ret == ESP_OK)
-            // {
-            //     ret = nvsSetStr(SERVER_ADDRESS, server_address);
-
-            //     ret = nvsCommit();
-
-            //     nvsClose();
-            // }
+            mqttSetBrokerAddr(server_address);
 
             break;
         }
@@ -194,6 +219,7 @@ static void blueToothDataHandler(uint8_t *data)
 
             ESP_LOGI(TAG,"server_username = %s\n", server_username);
 
+            mqttSetBrokerUsername(server_username);
             break;
         }
         case CMD_CFG_SET_PASSWORD:
@@ -205,6 +231,8 @@ static void blueToothDataHandler(uint8_t *data)
             }
 
             ESP_LOGI(TAG,"server_password = %s\n", server_password);
+
+            mqttSetBrokerPassword(server_password);
             break;
         }
         case CMD_HID_SEND_TEXT_START:
@@ -214,7 +242,7 @@ static void blueToothDataHandler(uint8_t *data)
                 hidData[i] = data[4 + i];
             }
 
-            hidSendProtocol(HID_PROTOCOL_CMD_TEXT_START ,hidData, dataLen);
+            //hidSendProtocol(HID_PROTOCOL_CMD_TEXT_START ,hidData, dataLen);
             //hid_data_send(hidData, dataLen);
             //ESP_LOGI(TAG,"hid text = %s\n", &data[5]);
             break;
@@ -226,7 +254,7 @@ static void blueToothDataHandler(uint8_t *data)
                 hidData[i] = data[4 + i];
             }
 
-            hidSendProtocol(HID_PROTOCOL_CMD_TEXT, hidData, dataLen);
+            //hidSendProtocol(HID_PROTOCOL_CMD_TEXT, hidData, dataLen);
             break;
         }
         case CMD_CDC_SEND_FILE_START:
@@ -235,7 +263,7 @@ static void blueToothDataHandler(uint8_t *data)
             {
                 transData[i] = data[5 + i];
             }
-            cdcSendProtocol(CDC_PROTOCOL_CMD_FILE_START, transData, dataLen);
+            cdcSendProtocol(USB_PROTOCOL_CMD_FILE_START, transData, dataLen);
             break;
         }
         case CMD_CDC_SEND_FILE:
@@ -244,11 +272,8 @@ static void blueToothDataHandler(uint8_t *data)
             {
                 transData[i] = data[5 + i];
             }
-            cdcSendProtocol(CDC_PROTOCOL_CMD_FILE, transData, dataLen);
+            cdcSendProtocol(USB_PROTOCOL_CMD_FILE, transData, dataLen);
             break;
         }
     }
 }
-
-
-

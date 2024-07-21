@@ -1,13 +1,13 @@
 #include "task_led.h"
 #include "drv_led.h"
 #include "../../sys_config.h"
-#include "drv_hid.h"
+#include "drv_usb.h"
 
 TaskHandle_t Led_Task__Handle = NULL;
 
 static void Led_Task();
 
-int LED_Task_Create()
+int createLedTask()
 {
     xTaskCreate((TaskFunction_t)Led_Task,
                 (const char*)"Led_Task",
@@ -24,8 +24,8 @@ static void Led_Task()
 
     while(1)
     {
-        //setLed(1,0,1);
-        char data[12] = "hello world\r\n";
+        setLed(1,1,0);
+        //char data[12] = "hello world\r\n";
         //tud_cdc_write_str(data);
         //if (tud_cdc_connected())
         {

@@ -24,63 +24,6 @@ Interface::Interface(QObject *parent) : QThread(parent)
     msgHandler = new Msg_Handler;
     //connect(usbListener, &USB_Listener::deviceIn, this, &Interface::connectDevice);
 
-    /* 更新索引表 */
-    connect(msgHandler,&Msg_Handler::Signal_Update_TableState,mainwindow,&Form_MainWindow::Slot_UpdateIndexTable);
-    /* 添加指纹 */
-    connect(mainwindow,&Form_MainWindow::Signal_AddFinger,this,[=](uint8_t id,uint8_t times,uint8_t param1,uint8_t param2){
-        HID_Add_Finger(usb_handle,id,param1,param2,times);
-    });
-    /* 删除指纹 */
-    connect(mainwindow,&Form_MainWindow::Signal_DeleteFinger,this,[=](uint8_t id){
-        HID_Delete_Finger(usb_handle,id);
-    });
-    /* 刷新指纹列表 */
-    connect(mainwindow,&Form_MainWindow::Signal_RefreshFinger,this,[=](){
-        HID_Get_TableState(usb_handle);
-    });
-    /* 设置设置呼吸灯效 */
-    connect(mainwindow,&Form_MainWindow::Signal_SetBreathRGB,this,[=](uint8_t color_R,uint8_t color_G,uint8_t color_B,uint8_t interval){
-        HID_Send_Breath_RGB(usb_handle,color_R,color_G,color_B,interval);
-    });
-    /* 设置开机密码 */
-    connect(mainwindow,&Form_MainWindow::Signal_SetWindowsPassword,this,[=](QString password,uint8_t fingertype,uint8_t id){
-        HID_Send_WindowsPassword(usb_handle,(Finger_Type_e)fingertype,password,id);
-    });
-    /* 设置密码 */
-    connect(mainwindow,&Form_MainWindow::Signal_SetPassword,this,[=](QString password,uint8_t fingertype,uint8_t id){
-        HID_Send_Password(usb_handle,(Finger_Type_e)fingertype,password,id);
-    });
-    /* 设置账号+密码 */
-    connect(mainwindow,&Form_MainWindow::Signal_SetAccount_Password,this,[=](QString account,QString password,uint8_t fingertype,uint8_t id){
-        HID_Send_Account_Password(usb_handle,(Finger_Type_e)fingertype,account,password,id);
-    });
-    /* 设置快捷启动 */
-    connect(mainwindow,&Form_MainWindow::Signal_SetQuickStart,this,[=](uint8_t fingertype,QUICK_START_e startID,uint8_t index){
-        HID_Send_QuickStart(usb_handle,(Finger_Type_e)fingertype,startID,index);
-    });
-    /* 更新指纹注册状态 */
-    connect(msgHandler,&Msg_Handler::Signal_Update_EnrollState,mainwindow,&Form_MainWindow::Slot_EnrollState);
-    /* 设置快捷键 */
-    connect(mainwindow,&Form_MainWindow::Signal_SetShortcut,this,[=](uint8_t fingertype,uint8_t func,char* key,uint8_t key_len,uint8_t index){
-        HID_Send_Shortcut(usb_handle,(Finger_Type_e)fingertype,func,key,key_len,index);
-    });
-    /* 设置Action按键功能 */
-    connect(mainwindow,&Form_MainWindow::Signal_SetActionFunc,this,[=](uint8_t func,uint8_t action){
-        HID_Set_Action_Func(usb_handle,func,action);
-    });
-    /* 设置指纹模块灯效 */
-    connect(mainwindow,&Form_MainWindow::Signal_SetFingerRGB,this,[=](uint8_t mode,uint8_t startColor,uint8_t stopColor,uint8_t interval){
-        HID_Send_Finger_RGB(usb_handle,mode,startColor,stopColor,interval);
-    });
-    /* 获取固件信息 */
-    connect(mainwindow,&Form_MainWindow::Signal_GetFirmwareMsg,this,[=](){
-        HID_Get_FW_Msg(usb_handle);
-    });
-    /* 获取硬件信息 */
-    connect(mainwindow,&Form_MainWindow::Signal_GetHardwareMsg,this,[=](){
-        HID_Get_HW_Msg(usb_handle);
-    });
-
     connect(msgHandler,&Msg_Handler::Signal_Update_Firmware_Msg,mainwindow,&Form_MainWindow::Slot_Update_FirmwareMsg);
     connect(msgHandler,&Msg_Handler::Signal_Update_Hardware_Msg,mainwindow,&Form_MainWindow::Slot_Update_HardwareMsg);
 

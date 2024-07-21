@@ -178,24 +178,27 @@ public class BLEInterface {
         MainActivity.bleManager.sendCmd(data);
     }
 
-    public static void cmdCdcSendFileStart(int fileType, int dataSize, int frameSize)
+    public static void cmdCdcSendFileStart(int nameSize, byte[] name, int dataSize, int frameSize)
     {
-        byte data[] = new byte[15];
+        byte data[] = new byte[15 + nameSize];
         data[0] = (byte) CMD_START_H;
         data[1] = (byte)CMD_START_L;
         data[2] = CMD_CDC_SEND_FILE_START;
         data[3] = 0x00;
-        data[4] = 0x07;
-        data[5] = (byte) fileType;
-        data[6] = (byte) (dataSize>>24);
-        data[7] = (byte) (dataSize>>16);
-        data[8] = (byte) (dataSize>>8);
-        data[9] = (byte) dataSize;
-        data[10] = (byte) (frameSize>>8);
-        data[11] = (byte) frameSize;
-        data[12] = (byte) CalcCheckSum(data,12);
-        data[13] = (byte)CMD_STOP_H;
-        data[14] = (byte)CMD_STOP_L;
+        data[4] = (byte) (((byte) nameSize) + 7);
+        data[5] = (byte) nameSize;
+
+        if (nameSize >= 0) System.arraycopy(name, 0, data, 6, nameSize);
+
+        data[6 + nameSize] = (byte) (dataSize>>24);
+        data[6 + nameSize + 1] = (byte) (dataSize>>16);
+        data[6 + nameSize + 2] = (byte) (dataSize>>8);
+        data[6 + nameSize + 3] = (byte) dataSize;
+        data[6 + nameSize + 4] = (byte) (frameSize>>8);
+        data[6 + nameSize + 5] = (byte) frameSize;
+        data[6 + nameSize + 6] = (byte) CalcCheckSum(data,6 + nameSize + 6);
+        data[6 + nameSize + 7] = (byte)CMD_STOP_H;
+        data[6 + nameSize + 8] = (byte)CMD_STOP_L;
         MainActivity.bleManager.sendCmd(data);
     }
 

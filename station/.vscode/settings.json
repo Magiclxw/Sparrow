@@ -5,7 +5,7 @@
     "board/esp32s3-builtin.cfg"
   ],
   "idf.flashType": "UART",
-  "idf.portWin": "COM6",
+  "idf.portWin": "COM10",
   "files.associations": {
     "mqtt_client.h": "c",
     "wifi.h": "c",
@@ -67,6 +67,7 @@
     "ui_comp_image1.h": "c",
     "ui_comp_hook.h": "c",
     "time.h": "c",
-    "timespec.h": "c"
+    "timespec.h": "c",
+    "mqtt5_client.h": "c"
   }
 }

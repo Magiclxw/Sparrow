@@ -13,9 +13,6 @@
 #include "esp_system.h"
 #include "esp_event.h"
 #include "esp_log.h"
-#include "drv_hid.h"
-#include "drv_ble.h"
-#include "task_led.h"
 #include "drv_nvs.h"
 #include "systemInfo.h"
 #include "startup.h"
@@ -25,15 +22,10 @@
 void app_main(void)
 {
   static uint16_t powerOnTimes = 0;
+  //前启动
   preStartup();
-
-  vTaskDelay(pdMS_TO_TICKS(100));
-  sysInfoGetPowerOnTimes(&powerOnTimes);
-  printf("powerOnTimes = %d\r\n",powerOnTimes);
-  powerOnTimes++;
-  sysInfoSetPowerOnTimes(powerOnTimes);
-
+  //中启动
   midStartup();
-
+  //后启动
   postStartup();
 }

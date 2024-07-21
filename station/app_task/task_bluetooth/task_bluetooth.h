@@ -16,6 +16,17 @@
 #define BLUETOOTH_TRANS_QUEUE_LENGTH  (2)
 #define BLUETOOTH_TRANS_QUEUE_SIZE    (1024)
 
+#define BLE_PROTOCOL_START_LEN      (2)
+#define BLE_PROTOCOL_STOP_LEN       (2)
+#define BEL_PROTOCOL_CMD_LEN        (1)
+#define BLE_PROTOCOL_DATALEN_LEN    (1)
+#define BLE_PROTOCOL_CHECKSUM_LEN   (1)
+
+#define BLE_PROTOCOL_START_H        (0xA5)
+#define BLE_PROTOCOL_START_L        (0x5A)
+#define BLE_PROTOCOL_STOP_H         (0xF0) 
+#define BLE_PROTOCOL_STOP_L         (0x0F)
+
 #define CMD_MOUSE_MOVE              (0x01)
 #define CMD_MOUSE_CLICK             (0x02)
 #define CMD_KEYBOARD_INPUT          (0x03)
@@ -30,7 +41,7 @@
 #define CMD_CDC_SEND_FILE           (0x0C)
 
 
-int Bluetooth_Task_Create();
-int bleTransTaskCreate();
+int createBleRecTask();
+int createBleTransTask();
 
 #endif

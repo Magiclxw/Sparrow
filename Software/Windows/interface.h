@@ -6,7 +6,6 @@
 #include "lib/hidapi.h"
 #include "form_mainwindow.h"
 #include "msg_handler.h"
-#include "hid_function.h"
 #include "form_hidewindow.h"
 #include "form_entrance.h"
 #include <QtSerialPort/QSerialPortInfo>
