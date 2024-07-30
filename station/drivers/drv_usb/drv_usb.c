@@ -2,12 +2,18 @@
 #include "driver/gpio.h"
 #include "drv_ble.h"
 #include "drv_led.h"
+#include "drv_nvs.h"
 #include "task_bluetooth.h"
 
 #define TUSB_DESC_TOTAL_LEN      (TUD_CONFIG_DESC_LEN + TUD_CDC_DESC_LEN + TUD_HID_INOUT_DESC_LEN)
 
 #define APP_BUTTON (GPIO_NUM_0) // Use BOOT signal by default
 static const char *TAG = "example";
+
+static uint8_t *s_usbDataBackground = NULL;
+static uint16_t s_imageSize = 0;
+static uint16_t s_imageCount = 0;
+
 uint8_t const conv_table[128][2] =  { HID_ASCII_TO_KEYCODE };
 /**
  * @brief HID report descriptor
@@ -173,6 +179,44 @@ static void usbDataHandler(uint8_t data[])
                 xQueueSend(bleTransQueueHandle,data,0);
                 break;
             }
+            case USB_PROTOCOL_CMD_SET_BACKGROUND_START:
+            {
+                uint8_t ack = 0x01;
+                uint16_t s_imageSize = data[5] << 8 | data[6];
+                if (s_usbDataBackground != NULL)
+                {
+                    free(s_usbDataBackground);
+                    s_usbDataBackground = NULL;
+                }
+                s_usbDataBackground = (uint8_t*) malloc(s_imageSize);
+                cdcSendProtocol(USB_PROTOCOL_CMD_SET_BACKGROUND_START, &ack, 1);
+                break;
+            }
+            case USB_PROTOCOL_CMD_SET_BACKGROUND:
+            {
+                if (s_usbDataBackground != NULL)
+                {
+                    //uint16_t frameIndex = data[5] << 8 | data[6];
+                    uint8_t response[3] = {data[5], data[6], 0x01};
+                    uint16_t frameLength = data[7] << 8 | data[8];
+                    
+                    memcpy(&s_usbDataBackground[s_imageCount], &data[9], frameLength);
+
+                    s_imageCount += frameLength;
+                    //数据接收完成
+                    if (s_imageCount == s_imageSize)
+                    {
+                        nvsSaveBlobData(USER_NAMESPACE_0, NVS_READWRITE, NVS_KEY_BACKGROUND, s_usbDataBackground, s_imageCount);
+                        s_imageCount = 0;
+                        s_imageSize = 0;
+                        free(s_usbDataBackground);
+                        s_usbDataBackground = NULL;
+                    }
+
+                    cdcSendProtocol(USB_PROTOCOL_CMD_SET_BACKGROUND, response, 3);
+                }
+                break;
+            }
         }
     }
 }
@@ -326,6 +370,12 @@ void hid_mouse_move(uint8_t x,uint8_t y)
     tud_hid_mouse_report(HID_ITF_PROTOCOL_MOUSE, 0x00, x, y, 0, 0);
 }
 
+// //保存背景图片
+// esp_err_t usbSaveBackground(uint16_t frameIndex, uint16_t data[])
+// {
+
+// }
+
 void intiUsb(void)
 {
     // Initialize button that will trigger HID reports
@@ -351,3 +401,4 @@ void intiUsb(void)
     ESP_LOGI(TAG, "USB initialization DONE");
 
 }
+

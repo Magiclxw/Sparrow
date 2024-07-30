@@ -98,9 +98,9 @@ void lv_port_indev_init(void)
     indev_button = lv_indev_drv_register(&indev_drv);
 
     /*Assign buttons to points on the screen*/
-    static const lv_point_t btn_points[2] = {
+    static const lv_point_t btn_points[1] = {
         {10, 10},   /*Button 0 -> x:10; y:10*/
-        {40, 100},  /*Button 1 -> x:40; y:100*/
+        //{40, 100},  /*Button 1 -> x:40; y:100*/
     };
     lv_indev_set_button_points(indev_button, btn_points);
 }
@@ -322,7 +322,7 @@ static int8_t button_get_pressed_id(void)
     uint8_t i;
 
     /*Check to buttons see which is being pressed (assume there are 2 buttons)*/
-    for(i = 0; i < 2; i++) {
+    for(i = 0; i < 1; i++) {
         /*Return the pressed button's ID*/
         if(button_is_pressed(i)) {
             return i;
@@ -338,7 +338,7 @@ static bool button_is_pressed(uint8_t id)
 {
 
     /*Your code comes here*/
-    if(buttonGetState())
+    if(!buttonGetState())
     {
         return true;
     }

@@ -3,7 +3,7 @@
 
 #include <string.h>
 #include "freertos/FreeRTOS.h"
-#include "lvgl.h"
+#include "../../managed_components/lvgl__lvgl/lvgl.h"
 
 void ui_startPageInit(lv_disp_t *disp);
 

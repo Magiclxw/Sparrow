@@ -152,13 +152,13 @@ static void bluetoothRecDataHandler(uint8_t *data)
         //鼠标移动
         case CMD_MOUSE_MOVE:
         {
-            hid_mouse_move(data[4],data[5]);
+            hid_mouse_move(data[5],data[6]);
             break;
         }
         //鼠标点击
         case CMD_MOUSE_CLICK:
         {
-            //hid_mouse_click(data[4],data[5]);
+            hid_mouse_click(data[5],data[6]);
             ESP_LOGI(TAG, " CLICKED\r\n");
             break;
         }
@@ -172,10 +172,11 @@ static void bluetoothRecDataHandler(uint8_t *data)
         //键盘功能键
         case CMD_KEYBOARD_FUNC:
         {
-            hid_input_func(data[4],data[5]);
-            ESP_LOGI(TAG, " key %c\r\n",data[4]);
+            hid_input_func(data[5],data[6]);
+            ESP_LOGI(TAG, " key %c\r\n",data[5]);
             break;
         }
+
         //发送HID数据
         // case CMD_HID_DATA_SEND:
         // {
@@ -200,7 +201,7 @@ static void bluetoothRecDataHandler(uint8_t *data)
 
             for(uint16_t i = 0; i < dataLen; i++)
             {
-                server_address[i] = data[4 + i];
+                server_address[i] = data[5 + i];
             }
 
             ESP_LOGI(TAG,"server_address = %s\n", server_address);
@@ -214,7 +215,7 @@ static void bluetoothRecDataHandler(uint8_t *data)
             char server_username[100] = {0};
             for(uint8_t i = 0; i < dataLen; i++)
             {
-                server_username[i] = data[4 + i];
+                server_username[i] = data[5 + i];
             }
 
             ESP_LOGI(TAG,"server_username = %s\n", server_username);
@@ -227,7 +228,7 @@ static void bluetoothRecDataHandler(uint8_t *data)
             char server_password[100] = {0};
             for(uint8_t i = 0; i < dataLen; i++)
             {
-                server_password[i] = data[4 + i];
+                server_password[i] = data[5 + i];
             }
 
             ESP_LOGI(TAG,"server_password = %s\n", server_password);
@@ -239,9 +240,9 @@ static void bluetoothRecDataHandler(uint8_t *data)
         {
             for(uint8_t i = 0; i < dataLen; i++)
             {
-                hidData[i] = data[4 + i];
+                hidData[i] = data[5 + i];
             }
-
+            cdcSendProtocol(USB_PROTOCOL_CMD_TEXT_START, transData, dataLen);
             //hidSendProtocol(HID_PROTOCOL_CMD_TEXT_START ,hidData, dataLen);
             //hid_data_send(hidData, dataLen);
             //ESP_LOGI(TAG,"hid text = %s\n", &data[5]);

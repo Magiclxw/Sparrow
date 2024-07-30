@@ -217,6 +217,32 @@ static void recDataHandler(uint8_t data[])
                     }
                     break;
                 }
+                case SERIAL_CMD_DISK_INFO:
+                {
+                    QList<QStorageInfo> msg;
+                    sysGetDiskMsg(&msg);
+                    uint8_t diskNum = msg.count();
+                    uint8_t *data = (uint8_t*)malloc(diskNum * 17 + 1); //1:diskNum
+                    uint8_t diskPath;
+                    uint64_t diskSize;
+                    uint64_t remainSize;
+                    data[0] = diskNum;
+                    for (uint8_t i = 0; i < diskNum; i++)
+                    {
+                        diskPath = msg.takeAt(i).rootPath().toUtf8().at(0);
+                        data[1 + i * 17] = diskPath;
+                        diskSize = msg.takeAt(i).bytesTotal() / (1024 * 1024);
+                        memcpy(&data[1 + i * 17 + 1], &diskSize, 8);
+                        remainSize = msg.takeAt(i).bytesAvailable() / (1024 * 1024);
+                        memcpy(&data[1 + i * 17 + 9], &remainSize, 8);
+                    }
+                    sendCdcData(SERIAL_CMD_DISK_INFO, data, 1 + diskNum * 17);
+
+                    qDebug() << "send disk info";
+
+                    free(data);
+                    break;
+                }
             }
         }
     }

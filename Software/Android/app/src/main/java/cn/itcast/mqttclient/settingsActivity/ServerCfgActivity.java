@@ -33,7 +33,7 @@ import cn.itcast.mqttclient.ble.BLEInterface;
 public class ServerCfgActivity extends AppCompatActivity {
     private EditText et_mqtt_addr,et_username,et_password;
     private Button btn_server_save, btn_server_save_to_sparrow;
-    String addr = "ssl://";
+    String addr = "mqtts://";
     String username;
     String password;
     private int serverCfgCounter = 0;

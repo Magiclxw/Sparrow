@@ -2,12 +2,16 @@
 #include "esp_sleep.h"
 #include "../../main/systemInfo.h"
 #include "../drv_json/drv_jsonHandler.h"
+#include "string.h"
 
 static const char *TAG = "MQTT station";
 
 esp_mqtt_client_handle_t client = NULL;
 
 static uint16_t s_powerOnTimes = 0;
+static char s_addr[256] = {0};
+static char s_username[256] = {0};
+static char s_password[256] = {0};
 
 static void log_error_if_nonzero(const char *message, int error_code)
 {
@@ -136,40 +140,100 @@ esp_err_t mqttSetBrokerPassword(const char *password)
     return ret;
 }
 
-esp_err_t mqttGetBrokerAddr(const char *addr)
+size_t mqttGetBrokerAddr()
 {
-    esp_err_t ret = nvsLoadValue(USER_NAMESPACE_0, NVS_READWRITE, SERVER_ADDRESS, addr);
-    return ret;
+    size_t length = 0;
+
+    esp_err_t ret = nvsLoadValue(USER_NAMESPACE_0, NVS_READWRITE, SERVER_ADDRESS, s_addr, &length);
+
+    if (ret == ESP_OK)
+    {
+        return length;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
-esp_err_t mqttGetBrokerUsername(const char *username)
+size_t mqttGetBrokerUsername()
 {
-    esp_err_t ret = nvsLoadValue(USER_NAMESPACE_0, NVS_READWRITE, SERVER_USERNAME, username);
-    return ret;
+    size_t length = 0;
+
+    esp_err_t ret = nvsLoadValue(USER_NAMESPACE_0, NVS_READWRITE, SERVER_USERNAME, s_username, &length);
+    
+    if (ret == ESP_OK)
+    {
+        return length;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
-esp_err_t mqttGetBrokerPassword(const char *password)
+size_t mqttGetBrokerPassword()
 {
-    esp_err_t ret = nvsLoadValue(USER_NAMESPACE_0, NVS_READWRITE, SERVER_PASSWORD, password);
-    return ret;
+    size_t length = 0;
+
+    esp_err_t ret = nvsLoadValue(USER_NAMESPACE_0, NVS_READWRITE, SERVER_PASSWORD, s_password, &length);
+    
+    if (ret == ESP_OK)
+    {
+        return length;
+    }
+    else
+    {
+        return 0;
+    }
 }
+
+
 
 void initMqtt(void)
 {
-  const esp_mqtt_client_config_t mqtt_cfg = {
-    .broker.address.uri = "mqtts://j1aa1aff.ala.cn-hangzhou.emqxsl.cn:8883",
-    .credentials = {
-        .username = "test",
-      .authentication = {
-        .password = "asd13579",
-      },
-    }
-  };
+    static char *addr = NULL;
+    static char *username = NULL;
+    static char *password = NULL;
 
-    ESP_LOGI(TAG, "[APP] Free memory: %" PRIu32 " bytes", esp_get_free_heap_size());
-    client = esp_mqtt_client_init(&mqtt_cfg);
-    /* The last argument may be used to pass data to the event handler, in this example mqtt_event_handler */
-    esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
-    esp_mqtt_client_start(client);
+    uint8_t addrLen = 0;
+    uint8_t usernameLen = 0;
+    uint8_t passwordLen = 0;
+
+    addrLen = mqttGetBrokerAddr();
+    usernameLen = mqttGetBrokerUsername();
+    passwordLen = mqttGetBrokerPassword();
+
+    if (addrLen != 0 && usernameLen != 0 && passwordLen != 0)
+    {
+        addr = pvPortMalloc(addrLen);
+        username = pvPortMalloc(usernameLen);
+        password = pvPortMalloc(passwordLen);
+
+        memcpy(addr, s_addr, addrLen);
+        memcpy(username, s_username, usernameLen);
+        memcpy(password, s_password, passwordLen);
+
+        const esp_mqtt_client_config_t mqtt_cfg = {
+        .broker.address.uri = addr,
+        .credentials = {
+            .username = username,
+        .authentication = {
+            .password = password,
+        // // .broker.address.uri = "mqtts://j1aa1aff.ala.cn-hangzhou.emqxsl.cn:8883",
+        // // .credentials = {
+        // //     .username = "test",
+        // // .authentication = {
+        // //     .password = "asd13579",
+                },
+            }
+        };
+
+        ESP_LOGI(TAG, "[APP] Free memory: %" PRIu32 " bytes", esp_get_free_heap_size());
+        client = esp_mqtt_client_init(&mqtt_cfg);
+        /* The last argument may be used to pass data to the event handler, in this example mqtt_event_handler */
+        esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
+        esp_mqtt_client_start(client);
+    }
 }
 

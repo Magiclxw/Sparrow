@@ -18,8 +18,10 @@ lv_obj_t * ui_ImageEntrance;
 
 // SCREEN: ui_Screen2
 void ui_Screen2_screen_init(void);
+void drawDiskInfoBar(uint8_t diskNum, uint8_t diskData[]);
 void ui_event_Screen2(lv_event_t * e);
 lv_obj_t * ui_Screen2;
+lv_obj_t * ui_MainPage;
 lv_obj_t * ui_LabelHour;
 lv_obj_t * ui_LabelColon;
 lv_obj_t * ui_LabelMinute;
@@ -29,11 +31,24 @@ lv_obj_t * ui_LabelMonth;
 lv_obj_t * ui_LabelSlash2;
 lv_obj_t * ui_LabelDate;
 lv_obj_t * ui_Label9;
+lv_obj_t * ui_SecondPage;
+
 
 // SCREEN: ui_Screen3
 void ui_Screen3_screen_init(void);
 lv_obj_t * ui_Screen3;
+void ui_event_Menu(lv_event_t * e);
+void reloadScreen3Timer();
+void initScreen3Timer();
+void resetScreen3Timer();
 lv_obj_t * ui_Menu;
+
+// SCREEN: ui_Screen4
+void ui_Screen4_screen_init(void);
+void initScreen4Timer();
+void resetScreen4Timer();
+lv_obj_t * ui_Screen4;
+lv_obj_t * ui_Label1;
 lv_obj_t * ui____initial_actions0;
 const lv_img_dsc_t * ui_imgset_1776456547[1] = {&ui_img_919562436};
 
@@ -75,10 +90,45 @@ void ui_event_Screen2(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
-    if(event_code == LV_EVENT_CLICKED) {
+    if(event_code == LV_EVENT_LONG_PRESSED) {
+        initScreen3Timer();
         _ui_screen_change(&ui_Screen3, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_Screen3_screen_init);
     }
+    if(event_code == LV_EVENT_CLICKED) {
+        drawDiskInfoBar(8, NULL);
+    }
 }
+void ui_event_Menu(lv_event_t * e)
+{
+    static uint8_t index = 0;
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    
+    if(event_code == LV_EVENT_SHORT_CLICKED) {
+        //_ui_roller_set_property(ui_Menu, _UI_ROLLER_PROPERTY_SELECTED_WITH_ANIM,0);
+
+        reloadScreen3Timer();
+
+        if (index < lv_roller_get_option_cnt(ui_Menu)-1)
+        {
+            index++;
+        }
+        else
+        {
+            index = 0;
+
+        }
+        lv_roller_set_selected(ui_Menu, index, LV_ANIM_ON);
+    }
+    if(event_code == LV_EVENT_LONG_PRESSED) {
+        resetScreen3Timer();
+        initScreen4Timer();
+        lv_roller_get_selected(ui_Menu);
+        _ui_screen_change(&ui_Screen4, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_Screen4_screen_init);
+        
+    }
+}
+
 
 ///////////////////// SCREENS ////////////////////
 
@@ -93,6 +143,7 @@ void ui_init(void)
     ui_Screen1_screen_init();
     ui_Screen2_screen_init();
     ui_Screen3_screen_init();
+    ui_Screen4_screen_init();
     ui____initial_actions0 = lv_obj_create(NULL);
     lv_disp_load_scr(ui_Screen1);
 }

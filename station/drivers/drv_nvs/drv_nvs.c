@@ -65,23 +65,66 @@ esp_err_t nvsSaveValue(const char* namespace_name, nvs_open_mode_t open_mode, co
     return ret;
 }
 
-esp_err_t nvsLoadValue(const char* namespace_name, nvs_open_mode_t open_mode, const char* key, char* out_value)
+esp_err_t nvsLoadValue(const char* namespace_name, nvs_open_mode_t open_mode, const char* key, char* out_value, size_t *length)
 {
     esp_err_t ret = ESP_OK;
-    size_t length = 0;
 
     ret = nvsOpen(namespace_name, open_mode);
 
     if(ret != ESP_OK) return ret;
 
-    ret = nvsGetStr(key, NULL, &length);
+    ret = nvsGetStr(key, NULL, length);
 
     if (ret == ESP_OK)
     {
-        ret = nvsGetStr(key, out_value, &length);
+        ret = nvsGetStr(key, out_value, length);
     }
 
     nvsClose();
+
+    return ret;
+}
+
+esp_err_t nvsSaveBlobData(const char* namespace_name, nvs_open_mode_t open_mode, const char* key, uint8_t *out_value, size_t length)
+{
+    esp_err_t ret = ESP_OK;
+
+    ret = nvsOpen(namespace_name, open_mode);
+
+    ret = nvs_set_blob(s_nvsHandle, key, out_value, length);
+
+    ret = nvs_commit(s_nvsHandle);
+    if (ret != ESP_OK) return ret;
+
+    // Close
+    nvs_close(s_nvsHandle);
+
+    return ret;
+}
+
+esp_err_t nvsLoadBlobData(const char* namespace_name, nvs_open_mode_t open_mode, const char* key, uint8_t *out_value)
+{
+    esp_err_t ret = ESP_OK;
+
+    ret = nvsOpen(namespace_name, open_mode);
+    
+    if(ret != ESP_OK) return ret;
+
+    size_t length = 0;
+
+    ret = nvs_get_blob(s_nvsHandle, key, NULL, &length);
+
+    if (ret != ESP_OK && ret != ESP_ERR_NVS_NOT_FOUND) return ret;
+
+    if (length > 0)
+    {
+        key = malloc(length);
+
+        ret = nvs_get_blob(s_nvsHandle, key, out_value, &length);
+    }
+
+    // Close
+    nvs_close(s_nvsHandle);
 
     return ret;
 }

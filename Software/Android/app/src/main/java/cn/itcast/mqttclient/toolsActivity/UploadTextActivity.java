@@ -71,7 +71,7 @@ public class UploadTextActivity extends AppCompatActivity {
                 {
                     frameNum += 1;
                 }
-                cmdHidSendTextStart(frameNum, (byte) 2);
+                cmdHidSendTextStart(frameNum);
                 //cmdHidSendText(frameIndex, (byte) FRAME_LEN, dataBuffer);
                 if (!bleTransportThread.isAlive())
                 {

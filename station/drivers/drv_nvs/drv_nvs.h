@@ -10,6 +10,7 @@
 #define SERVER_ADDRESS  ("server_address")
 #define SERVER_USERNAME ("server_username")
 #define SERVER_PASSWORD ("server_password")
+#define NVS_KEY_BACKGROUND ("nvs_key_background")
 
 esp_err_t initNvs(void);
 esp_err_t nvsOpen(const char* namespace_name, nvs_open_mode_t open_mode);
@@ -19,6 +20,8 @@ esp_err_t nvsSetStr(const char* key, const char* value);
 esp_err_t nvsCommit();
 esp_err_t nvsEraseKey(const char* key);
 esp_err_t nvsSaveValue(const char* namespace_name, nvs_open_mode_t open_mode, const char* key, const char* value);
-esp_err_t nvsLoadValue(const char* namespace_name, nvs_open_mode_t open_mode, const char* key, char* out_value);
+esp_err_t nvsLoadValue(const char* namespace_name, nvs_open_mode_t open_mode, const char* key, char* out_value, size_t *length);
+esp_err_t nvsSaveBlobData(const char* namespace_name, nvs_open_mode_t open_mode, const char* key, uint8_t *out_value, size_t length);
+esp_err_t nvsLoadBlobData(const char* namespace_name, nvs_open_mode_t open_mode, const char* key, uint8_t *out_value);
 
 #endif

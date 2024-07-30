@@ -213,7 +213,7 @@ public class UploadFileActivity extends AppCompatActivity {
                         }
 
 
-                        if (counter == 0x7FFFFFF) {
+                        if (counter == 0x2FFFFFF) {
                             Log.d("FileContent", "超时");
                             cmdCdcSendFile(frameIndex, bytesRead, buffer);
                             counter = 0;
@@ -222,6 +222,8 @@ public class UploadFileActivity extends AppCompatActivity {
                     }
                 }
                 Log.d("FileContent", "结束");
+                frameIndex = 0;
+                bleDataRecFlag = 0;
             } catch (IOException e) {
                 e.printStackTrace();
             }

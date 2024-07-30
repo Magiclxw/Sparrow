@@ -1,7 +1,7 @@
 #ifndef __DEVICE_BINDING_H__
 #define __DEVICE_BINDING_H__
 
-#include "lvgl.h"
+#include "../../managed_components/lvgl__lvgl/lvgl.h"
 #include "lv_port_indev.h"
 
 extern lv_indev_t * indev_button;

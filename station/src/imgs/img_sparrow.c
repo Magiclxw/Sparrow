@@ -1,4 +1,4 @@
-#include "lvgl.h"
+#include "../../managed_components/lvgl__lvgl/lvgl.h"
 
 const unsigned char image_sparrow_map[32768] =  { /* 0X10,0X10,0X00,0X80,0X00,0X80,0X01,0X1B, */
 0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,0XFF,

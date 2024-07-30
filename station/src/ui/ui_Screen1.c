@@ -8,6 +8,7 @@
 void screenJumpTimer(lv_timer_t *timer)
 {
     lv_disp_load_scr(ui_Screen2);
+    lv_timer_del(timer);
 }
 
 void ui_Screen1_screen_init(void)
@@ -30,4 +31,5 @@ void ui_Screen1_screen_init(void)
     // arise_Animation(ui_Screen1, 100);
      static uint32_t user_data = 10;
      timer = lv_timer_create(screenJumpTimer, 3000, &user_data);
+     lv_timer_set_repeat_count(timer, 1);
 }

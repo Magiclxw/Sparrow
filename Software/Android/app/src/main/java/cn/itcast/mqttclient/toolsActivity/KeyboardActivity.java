@@ -3,6 +3,7 @@ package cn.itcast.mqttclient.toolsActivity;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,33 +19,39 @@ public class KeyboardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_keyboard);
-
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         findViewById(R.id.BtnSpace).setOnTouchListener(new SpaceOnTouch());
         findViewById(R.id.BtnEnter).setOnTouchListener(new EnterOnTouch());
         //findViewById(R.id.BtnFn).setOnTouchListener(new FnKeyOnTouch());
 
         String packageName = getPackageName();
         KeyOnTouch keyOnTouch = new KeyOnTouch();
-        for (int i = 1; i < 72; i++) {
+        for (int i = 1; i < 72; i++)
+        {
             int resId = getResources().getIdentifier("Btn" + i, "id", packageName);
-            if (resId != 0) {
+            if (resId != 0)
+            {
                 findViewById(resId).setOnTouchListener(keyOnTouch);
             }
         }
 
         CtrlKeyOnTouch ctrlKeyOnTouch = new CtrlKeyOnTouch();
-        for (int i = 1; i < 6; i++) {
+        for (int i = 1; i < 6; i++)
+        {
             int resId = getResources().getIdentifier("CtrlBtn" + i, "id", packageName);
-            if (resId != 0) {
+            if (resId != 0)
+            {
                 findViewById(resId).setOnTouchListener(ctrlKeyOnTouch);
             }
         }
     }
 
-    private class KeyOnTouch implements View.OnTouchListener {
+    private class KeyOnTouch implements View.OnTouchListener
+    {
         @SuppressLint("ClickableViewAccessibility")
         @Override
-        public boolean onTouch(View v, MotionEvent e) {
+        public boolean onTouch(View v, MotionEvent e)
+        {
             if (e.getAction() == MotionEvent.ACTION_DOWN)
             {
                 byte key = (byte) Integer.parseInt(v.getTag().toString(), 16);
@@ -59,10 +66,12 @@ public class KeyboardActivity extends AppCompatActivity {
         }
     }
 
-    private class CtrlKeyOnTouch implements View.OnTouchListener {
+    private class CtrlKeyOnTouch implements View.OnTouchListener
+    {
         @SuppressLint("ClickableViewAccessibility")
         @Override
-        public boolean onTouch(View v, MotionEvent e) {
+        public boolean onTouch(View v, MotionEvent e)
+        {
             modifier = (byte) Integer.parseInt(v.getTag().toString(), 16);
             System.out.println((byte) Integer.parseInt(v.getTag().toString(), 16));
 
@@ -79,7 +88,8 @@ public class KeyboardActivity extends AppCompatActivity {
         }
     }
 
-    private class SpaceOnTouch implements View.OnTouchListener {
+    private class SpaceOnTouch implements View.OnTouchListener
+    {
         @SuppressLint("ClickableViewAccessibility")
         @Override
         public boolean onTouch(View v, MotionEvent e) {
@@ -91,7 +101,8 @@ public class KeyboardActivity extends AppCompatActivity {
         }
     }
 
-    private class EnterOnTouch implements View.OnTouchListener {
+    private class EnterOnTouch implements View.OnTouchListener
+    {
         @SuppressLint("ClickableViewAccessibility")
         @Override
         public boolean onTouch(View v, MotionEvent e) {

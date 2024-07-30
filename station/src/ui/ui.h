@@ -10,13 +10,13 @@
 extern "C" {
 #endif
 
-#include "lvgl.h"
+#include "../../managed_components/lvgl__lvgl/lvgl.h"
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
 #include "esp_system.h"
-#include "esp_event.h"
+//#include "esp_event.h"
 #include "esp_log.h"
 #include "esp_sntp.h"
 #include "ui_helpers.h"
@@ -33,6 +33,7 @@ extern lv_obj_t * ui_ImageEntrance;
 void ui_Screen2_screen_init(void);
 void ui_event_Screen2(lv_event_t * e);
 extern lv_obj_t * ui_Screen2;
+extern lv_obj_t * ui_MainPage;
 extern lv_obj_t * ui_LabelHour;
 extern lv_obj_t * ui_LabelColon;
 extern lv_obj_t * ui_LabelMinute;
@@ -42,19 +43,26 @@ extern lv_obj_t * ui_LabelMonth;
 extern lv_obj_t * ui_LabelSlash2;
 extern lv_obj_t * ui_LabelDate;
 extern lv_obj_t * ui_Label9;
+extern lv_obj_t * ui_SecondPage;
 // SCREEN: ui_Screen3
 void ui_Screen3_screen_init(void);
 extern lv_obj_t * ui_Screen3;
-extern lv_obj_t * ui_Menu;
+void ui_event_Menu(lv_event_t * e);
+extern lv_obj_t * ui_Menu;// SCREEN: ui_Screen4
+void ui_Screen4_screen_init(void);
+extern lv_obj_t * ui_Screen4;
+extern lv_obj_t * ui_Label1;
 extern lv_obj_t * ui____initial_actions0;
 
 
 LV_IMG_DECLARE(ui_img_919562436);    // assets/128乘128_画板 1 副本 2.png
-
-
-
-
-
+LV_IMG_DECLARE(ui_img_background_png);    // assets/background.png
+LV_IMG_DECLARE(ui_img_background1_png);
+LV_IMG_DECLARE(ui_img_background2_png);
+LV_IMG_DECLARE(ui_img_background3_png);
+LV_IMG_DECLARE(ui_img_background4_png);
+LV_IMG_DECLARE(ui_img_background5_png);
+LV_FONT_DECLARE(lv_font_source_han_sans_normal_30);
 
 void ui_init(void);
 

@@ -68,6 +68,12 @@
     "ui_comp_hook.h": "c",
     "time.h": "c",
     "timespec.h": "c",
-    "mqtt5_client.h": "c"
+    "mqtt5_client.h": "c",
+    "lv_conf_internal.h": "c",
+    "devicebinding.h": "c",
+    "lv_port_indev.h": "c",
+    "ui.h": "c",
+    "drv_led.h": "c",
+    "thread": "c"
   }
 }

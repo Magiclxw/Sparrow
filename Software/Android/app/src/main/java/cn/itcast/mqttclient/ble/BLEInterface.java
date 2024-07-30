@@ -66,15 +66,17 @@ public class BLEInterface {
      */
     public static void cmdMouseMove(byte x, byte y)
     {
-        byte data[] = new byte[8];
+        byte data[] = new byte[10];
         data[0] = (byte)CMD_START_H;
         data[1] = (byte)CMD_START_L;
         data[2] = CMD_MOUSE_MOVE;
-        data[3] =  x;
-        data[4] =  y;
-        data[5] = (byte)CalcCheckSum(data,5);
-        data[6] = (byte)CMD_STOP_H;
-        data[7] = (byte)CMD_STOP_L;
+        data[3] = (byte) 0x00;
+        data[4] = (byte) 0x02;
+        data[5] =  x;
+        data[6] =  y;
+        data[7] = (byte)CalcCheckSum(data,7);
+        data[8] = (byte)CMD_STOP_H;
+        data[9] = (byte)CMD_STOP_L;
         MainActivity.bleManager.sendCmd(data);
     }
     /**
@@ -84,15 +86,17 @@ public class BLEInterface {
      */
     public static void cmdMouseClick(int key, int state)
     {
-        byte data[] = new byte[8];
+        byte data[] = new byte[10];
         data[0] = (byte) CMD_START_H;
         data[1] = (byte)CMD_START_L;
         data[2] = CMD_MOUSE_CLICK;
-        data[3] = (byte)key;
-        data[4] = (byte)state;
-        data[5] = (byte) CalcCheckSum(data,5);
-        data[6] = (byte)CMD_STOP_H;
-        data[7] = (byte)CMD_STOP_L;
+        data[3] = (byte) 0x00;
+        data[4] = (byte) 0x02;
+        data[5] = (byte)key;
+        data[6] = (byte)state;
+        data[7] = (byte) CalcCheckSum(data,7);
+        data[8] = (byte)CMD_STOP_H;
+        data[9] = (byte)CMD_STOP_L;
         MainActivity.bleManager.sendCmd(data);
     }
 
@@ -112,15 +116,17 @@ public class BLEInterface {
 
     public static void cmdKeyboardFunc(byte modifier,byte key)
     {
-        byte data[] = new byte[8];
+        byte data[] = new byte[10];
         data[0] = (byte) CMD_START_H;
         data[1] = (byte)CMD_START_L;
         data[2] = CMD_KEYBOARD_FUNC;
-        data[3] = modifier;
-        data[4] = key;
-        data[5] = (byte) CalcCheckSum(data,5);
-        data[6] = (byte)CMD_STOP_H;
-        data[7] = (byte)CMD_STOP_L;
+        data[3] = (byte) 0x00;
+        data[4] = (byte) 0x02;
+        data[5] = modifier;
+        data[6] = key;
+        data[7] = (byte) CalcCheckSum(data,7);
+        data[8] = (byte)CMD_STOP_H;
+        data[9] = (byte)CMD_STOP_L;
         MainActivity.bleManager.sendCmd(data);
     }
 
@@ -141,40 +147,41 @@ public class BLEInterface {
         MainActivity.bleManager.sendCmd(data);
     }
 
-    public static void cmdHidSendTextStart(int frameLength, byte cmdLen)
+    public static void cmdHidSendTextStart(int dataLen)
     {
-        byte data[] = new byte[9];
+        byte data[] = new byte[10];
         data[0] = (byte) CMD_START_H;
         data[1] = (byte)CMD_START_L;
         data[2] = CMD_HID_SEND_TEXT_START;
-        data[3] = cmdLen;
-        data[4] = (byte) (frameLength>>8);
-        data[5] = (byte) frameLength;
-        data[6] = (byte) CalcCheckSum(data,6);
-        data[7] = (byte)CMD_STOP_H;
-        data[8] = (byte)CMD_STOP_L;
+        data[3] = (byte) 0x00;
+        data[4] = (byte) 0x02;
+        data[5] = (byte) (dataLen>>8);
+        data[6] = (byte) dataLen;
+        data[7] = (byte) CalcCheckSum(data,7);
+        data[8] = (byte)CMD_STOP_H;
+        data[9] = (byte)CMD_STOP_L;
         MainActivity.bleManager.sendCmd(data);
     }
 
-    public static void cmdHidSendText(int frameIndex, byte dataLen, byte frameData[])
+    public static void cmdHidSendText(int frameIndex, int frameLen, byte frameData[])
     {
-        byte data[] = new byte[dataLen + 7];
+        byte data[] = new byte[frameLen + 10];
         data[0] = (byte) CMD_START_H;
         data[1] = (byte)CMD_START_L;
         data[2] = CMD_HID_SEND_TEXT;
 
-        data[3] = (byte) dataLen;
+        data[3] = (byte) ((frameLen + 2) >> 8);
+        data[4] = (byte) (frameLen + 2);
         /***************** data ***************/
-        data[4] = (byte) (frameIndex>>8);
-        data[5] = (byte) frameIndex;
-        for(int i = 0; i < dataLen-2; i++)
-        {
-            data[6+i] = frameData[i];
-        }
+        data[5] = (byte) (frameIndex>>8);
+        data[6] = (byte) frameIndex;
+
+        if (frameLen >= 0) System.arraycopy(frameData, 0, data, 7, frameLen);
+
         /***************************************/
-        data[4 + dataLen] = (byte) CalcCheckSum(data,dataLen + 4);
-        data[4 + dataLen + 1] = (byte)CMD_STOP_H;
-        data[4 + dataLen + 2] = (byte)CMD_STOP_L;
+        data[7 + frameLen] = (byte) CalcCheckSum(data,frameLen + 7);
+        data[7 + frameLen + 1] = (byte)CMD_STOP_H;
+        data[7 + frameLen + 2] = (byte)CMD_STOP_L;
         MainActivity.bleManager.sendCmd(data);
     }
 
@@ -225,54 +232,63 @@ public class BLEInterface {
         MainActivity.bleManager.sendCmd(data);
     }
 
-    public static void cmdSetServerAddr(byte addr[], byte length)
+    public static void cmdSetServerAddr(byte addr[], int length)
     {
-        byte data[] = new byte[7+length];
+        byte data[] = new byte[8+length];
         data[0] = (byte) CMD_START_H;
-        data[1] = (byte)CMD_START_L;
+        data[1] = (byte) CMD_START_L;
         data[2] = CMD_CFG_SET_SERVER;
-        data[3] = length;
+        data[3] = (byte) (length >> 8);
+        data[4] = (byte) length;
+
         for(byte i = 0; i < length; i++)
         {
-            data[i+4] = addr[i];
+            data[i+5] = addr[i];
         }
-        data[4+length] = (byte) CalcCheckSum(data,4+length);
-        data[4+length+1] = (byte)CMD_STOP_H;
-        data[4+length+2] = (byte)CMD_STOP_L;
+
+        data[5+length] = (byte) CalcCheckSum(data,5+length);
+        data[5+length+1] = (byte)CMD_STOP_H;
+        data[5+length+2] = (byte)CMD_STOP_L;
         MainActivity.bleManager.sendCmd(data);
     }
 
-    public static void cmdSetServerUsername(byte username[], byte length)
+    public static void cmdSetServerUsername(byte username[], int length)
     {
-        byte data[] = new byte[7+length];
+        byte data[] = new byte[8+length];
         data[0] = (byte) CMD_START_H;
         data[1] = (byte)CMD_START_L;
         data[2] = CMD_CFG_SET_USERNAME;
-        data[3] = length;
+        data[3] = (byte) (length >> 8);
+        data[4] = (byte) length;
+
         for(byte i = 0; i < length; i++)
         {
-            data[i+4] = username[i];
+            data[i+5] = username[i];
         }
-        data[4+length] = (byte) CalcCheckSum(data,4+length);
-        data[4+length+1] = (byte)CMD_STOP_H;
-        data[4+length+2] = (byte)CMD_STOP_L;
+
+        data[5+length] = (byte) CalcCheckSum(data,5+length);
+        data[5+length+1] = (byte)CMD_STOP_H;
+        data[5+length+2] = (byte)CMD_STOP_L;
         MainActivity.bleManager.sendCmd(data);
     }
 
-    public static void cmdSetServerPassword(byte password[], byte length)
+    public static void cmdSetServerPassword(byte password[], int length)
     {
-        byte data[] = new byte[7+length];
+        byte data[] = new byte[8+length];
         data[0] = (byte) CMD_START_H;
         data[1] = (byte)CMD_START_L;
         data[2] = CMD_CFG_SET_PASSWORD;
-        data[3] = length;
+        data[3] = (byte) (length >> 8);
+        data[4] = (byte) length;
+
         for(byte i = 0; i < length; i++)
         {
-            data[i+4] = password[i];
+            data[i+5] = password[i];
         }
-        data[4+length] = (byte) CalcCheckSum(data,4+length);
-        data[4+length+1] = (byte)CMD_STOP_H;
-        data[4+length+2] = (byte)CMD_STOP_L;
+
+        data[5+length] = (byte) CalcCheckSum(data,5+length);
+        data[5+length+1] = (byte)CMD_STOP_H;
+        data[5+length+2] = (byte)CMD_STOP_L;
         MainActivity.bleManager.sendCmd(data);
     }
 

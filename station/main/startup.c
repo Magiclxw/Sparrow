@@ -23,7 +23,7 @@ void preStartup()
     initWifi();
     //mqtt初始化，建立mqtt连接
     initMqtt();
-    intiUsb();
+    //intiUsb();
 
     //xSemaphoreTake(preStartupSemaphore,portMAX_DELAY);
 }
@@ -31,6 +31,7 @@ void preStartup()
 void midStartup()
 {
     //esp_deep_sleep(1000000LL * 3600);
+    vTaskDelay(pdMS_TO_TICKS(100));
     createDisplayTask();
 }
 

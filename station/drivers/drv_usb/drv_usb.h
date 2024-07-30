@@ -19,6 +19,8 @@
 #define USB_PROTOCOL_CMD_TEXT         (0x02)
 #define USB_PROTOCOL_CMD_FILE_START   (0x03)
 #define USB_PROTOCOL_CMD_FILE         (0x04)
+#define USB_PROTOCOL_CMD_SET_BACKGROUND_START (0x05)  //启动设置背景图片
+#define USB_PROTOCOL_CMD_SET_BACKGROUND (0x06)
 
 typedef enum MouseClickState
 {

@@ -1,7 +1,7 @@
 #include "task_display.h"
-#include "deviceBinding.h"
+#include "../../src/ui/deviceBinding.h"
 #include "../../drivers/drv_button/drv_button.h"
-#include "ui.h"
+#include "../../src/ui/ui.h"
 
 TaskHandle_t s_lcdTaskHandle = NULL;
 
@@ -138,7 +138,7 @@ static void displayTask()
     esp_lcd_panel_handle_t panel_handle = NULL;
     esp_lcd_panel_dev_config_t panel_config = {
         .reset_gpio_num = EXAMPLE_PIN_NUM_LCD_RST,
-        .rgb_ele_order = LCD_RGB_ELEMENT_ORDER_BGR,
+        .rgb_ele_order = LCD_RGB_ELEMENT_ORDER_RGB,
         .bits_per_pixel = 16,
     };
 
@@ -150,6 +150,8 @@ static void displayTask()
     ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle, 40, 52));
 
     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, true, false));
+
+    esp_lcd_panel_invert_color(panel_handle, true);
 
     // user can flush pre-defined pattern to the screen before we turn on the screen or backlight
     ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));
