@@ -19,6 +19,9 @@ lv_obj_t * ui_ImageEntrance;
 // SCREEN: ui_Screen2
 void ui_Screen2_screen_init(void);
 void drawDiskInfoBar(uint8_t diskNum, uint8_t diskData[]);
+void screen2SetMeter(uint8_t cpuValue, uint8_t memValue);
+void screen2SetNetSpeed(uint64_t downloadSpeed, uint64_t uploadSpeed);
+void ui_Screen2_change_display();
 void ui_event_Screen2(lv_event_t * e);
 lv_obj_t * ui_Screen2;
 lv_obj_t * ui_MainPage;
@@ -32,6 +35,10 @@ lv_obj_t * ui_LabelSlash2;
 lv_obj_t * ui_LabelDate;
 lv_obj_t * ui_Label9;
 lv_obj_t * ui_SecondPage;
+lv_obj_t * ui_LabelDownloadSpeedText;
+lv_obj_t * ui_LabelDownloadSpeedTextUnit;
+lv_obj_t * ui_LabelUploadSpeedText;
+lv_obj_t * ui_LabelUploadSpeedTextUnit;
 
 
 // SCREEN: ui_Screen3
@@ -51,6 +58,9 @@ lv_obj_t * ui_Screen4;
 lv_obj_t * ui_Label1;
 lv_obj_t * ui____initial_actions0;
 const lv_img_dsc_t * ui_imgset_1776456547[1] = {&ui_img_919562436};
+
+void ui_Settings_screen_init(void);
+lv_obj_t * ui_Settings;
 
 ///////////////////// TEST LVGL SETTINGS ////////////////////
 #if LV_COLOR_DEPTH != 16
@@ -95,7 +105,7 @@ void ui_event_Screen2(lv_event_t * e)
         _ui_screen_change(&ui_Screen3, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_Screen3_screen_init);
     }
     if(event_code == LV_EVENT_CLICKED) {
-        drawDiskInfoBar(8, NULL);
+        ui_Screen2_change_display();
     }
 }
 void ui_event_Menu(lv_event_t * e)
@@ -104,9 +114,8 @@ void ui_event_Menu(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
     
-    if(event_code == LV_EVENT_SHORT_CLICKED) {
-        //_ui_roller_set_property(ui_Menu, _UI_ROLLER_PROPERTY_SELECTED_WITH_ANIM,0);
-
+    if(event_code == LV_EVENT_SHORT_CLICKED) 
+    {
         reloadScreen3Timer();
 
         if (index < lv_roller_get_option_cnt(ui_Menu)-1)
@@ -123,9 +132,15 @@ void ui_event_Menu(lv_event_t * e)
     if(event_code == LV_EVENT_LONG_PRESSED) {
         resetScreen3Timer();
         initScreen4Timer();
-        lv_roller_get_selected(ui_Menu);
-        _ui_screen_change(&ui_Screen4, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_Screen4_screen_init);
-        
+        uint8_t index = lv_roller_get_selected(ui_Menu);
+        if (index == 1)
+        {
+            _ui_screen_change(&ui_Screen4, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_Screen4_screen_init);
+        }
+        else if (index == 2)
+        {
+            _ui_screen_change(&ui_Settings, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_Settings_screen_init);
+        }
     }
 }
 

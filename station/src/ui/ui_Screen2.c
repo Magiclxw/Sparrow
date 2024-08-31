@@ -5,11 +5,43 @@
 
 #include "ui.h"
 
+#define BAR_INTERVAL (10)
+
 static char year[12];
 static char month[12];
 static char date[12];
 static char hour[12];
 static char minute[12];
+
+static lv_obj_t * arcCpu;
+static lv_obj_t * arcMemory;
+static lv_obj_t * labelCpu;
+static lv_obj_t * labelMemory;
+
+
+static lv_disp_rot_t rotation = LV_DISP_ROT_NONE;
+
+void screen2SetCpuValue(uint8_t v)
+{
+    if (v <= 100 && v >= 0)
+    {
+        char cpuUsageStr[12];
+        sprintf(cpuUsageStr, "%d", (int)(v));
+        lv_arc_set_value(arcCpu, v);
+        lv_label_set_text(labelCpu, cpuUsageStr);
+    }
+}
+
+void screen2SetMemValue(uint8_t v)
+{
+    if (v <= 100 && v >= 0)
+    {
+        char memUsageStr[12];
+        sprintf(memUsageStr, "%d", (int)(v));
+        lv_arc_set_value(arcMemory, v);
+        lv_label_set_text(labelMemory, memUsageStr);
+    }
+}
 
 void timeUpdateTimer(lv_timer_t *timer)
 {
@@ -38,6 +70,7 @@ void timeUpdateTimer(lv_timer_t *timer)
     lv_label_set_text(ui_LabelDate,date);
     lv_label_set_text(ui_LabelHour,hour);
     lv_label_set_text(ui_LabelMinute,minute);
+
 }
 
 void diskSetInfo()
@@ -45,10 +78,13 @@ void diskSetInfo()
 
 }
 
+static lv_obj_t *bar[20] = {0};
+static lv_obj_t *label[20] = {0};
+
 void drawDiskInfoBar(uint8_t diskNum, uint8_t diskData[])
 {
     static lv_style_t style_indic;
-    lv_obj_t **bar = {0};
+    static uint8_t firstRecFlag = 0;
 
     lv_style_init(&style_indic);
     lv_style_set_bg_opa(&style_indic, LV_OPA_COVER);
@@ -56,35 +92,237 @@ void drawDiskInfoBar(uint8_t diskNum, uint8_t diskData[])
     lv_style_set_bg_grad_color(&style_indic, lv_palette_main(LV_PALETTE_BLUE));
     lv_style_set_bg_grad_dir(&style_indic, LV_GRAD_DIR_VER);
 
-    bar = (lv_obj_t **)malloc(sizeof(lv_obj_t*)*diskNum);
-    // lv_obj_t * bar = lv_bar_create(lv_scr_act());
-    // lv_obj_add_style(bar, &style_indic, LV_PART_INDICATOR);
-    // lv_obj_set_size(bar, 20, 100);
-    // lv_obj_center(bar);
-    // lv_bar_set_range(bar, 0, 100);
-    // lv_bar_set_value(bar, 80,LV_ANIM_OFF);
-    //*bar = (lv_obj_t*)pvPortMalloc(sizeof(lv_obj_t*)*diskNum);
     for (int i = 0; i < diskNum; i++) 
     {
-        bar[i] = lv_bar_create(lv_scr_act());
-        lv_obj_add_style(bar[i], &style_indic, LV_PART_INDICATOR);
-        lv_obj_set_size(bar[i], 240/diskNum-5, 100);
-        lv_obj_center(bar[i]);
-        lv_obj_set_x(bar[i], 240/diskNum*i + 5);
-        lv_bar_set_range(bar[i], 0, 100);
-        lv_bar_set_value(bar[i], 80,LV_ANIM_OFF);
+        char text[2] = {0,'\0'};
+        if (firstRecFlag == 0)
+        {
+            bar[i] = lv_bar_create(ui_Screen2);
+            label[i] = lv_label_create(ui_Screen2);
+            lv_obj_add_style(bar[i], &style_indic, LV_PART_INDICATOR);
+            lv_obj_set_size(bar[i], (240-(BAR_INTERVAL*diskNum+1))/diskNum, 100);
+            //lv_obj_center(bar[i]);
+            lv_obj_set_x(bar[i], BAR_INTERVAL + ((240-(BAR_INTERVAL*diskNum+1))/diskNum)*i + BAR_INTERVAL*i);
+            lv_obj_set_y(bar[i], 10);   
+            lv_bar_set_range(bar[i], 0, 100);
+
+            lv_obj_set_width(ui_LabelHour, LV_SIZE_CONTENT);   /// 1
+            lv_obj_set_height(ui_LabelHour, LV_SIZE_CONTENT);    /// 1
+            lv_obj_set_x(label[i], BAR_INTERVAL + ((240-(BAR_INTERVAL*diskNum+1))/diskNum)*i + BAR_INTERVAL*i + 10);
+            lv_obj_set_y(label[i], 110);
+        }
+        
+        lv_bar_set_value(bar[i], diskData[i * 2 + 1],LV_ANIM_OFF);
+
+        text[0] = diskData[i * 2];
+        lv_label_set_text(label[i],text);
+        lv_obj_set_style_text_font(label[i], &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    }
+    firstRecFlag = 1;
+}
+
+
+void screen2SetMeter(uint8_t cpuValue, uint8_t memValue)
+{
+    screen2SetCpuValue(cpuValue);
+    screen2SetMemValue(memValue);
+}
+
+void screen2SetNetSpeed(uint64_t downloadSpeed, uint64_t uploadSpeed)
+{
+    char downloadSpeedStr[20] = {0};
+    char uploadSpeedStr[20] = {0};
+    if (downloadSpeed > 1024)
+    {
+        sprintf(downloadSpeedStr, "%d", (int)(downloadSpeed /1024));
+        lv_label_set_text(ui_LabelDownloadSpeedText, downloadSpeedStr);
+        lv_label_set_text(ui_LabelDownloadSpeedTextUnit, "MB/s");
+    }
+    else
+    {
+        sprintf(downloadSpeedStr, "%d", (int)(downloadSpeed));
+        lv_label_set_text(ui_LabelDownloadSpeedText, downloadSpeedStr);
+        lv_label_set_text(ui_LabelDownloadSpeedTextUnit, "KB/s");
     }
 
+    if (uploadSpeed > 1024)
+    {
+        sprintf(uploadSpeedStr, "%d", (int)(uploadSpeed/1024));
+        lv_label_set_text(ui_LabelUploadSpeedText, uploadSpeedStr);
+        lv_label_set_text(ui_LabelUploadSpeedTextUnit, "MB/s");
+    }
+    else
+    {
+        sprintf(uploadSpeedStr, "%d", (int)(uploadSpeed));
+        lv_label_set_text(ui_LabelUploadSpeedText, uploadSpeedStr);
+        lv_label_set_text(ui_LabelUploadSpeedTextUnit, "KB/s");
+    }
+}
 
-    // lv_anim_t a;
-    // lv_anim_init(&a);
-    // lv_anim_set_exec_cb(&a, diskSetInfo);
-    // lv_anim_set_duration(&a, 3000);
-    // lv_anim_set_playback_duration(&a, 3000);
-    // lv_anim_set_var(&a, bar);
-    // lv_anim_set_values(&a, -20, 40);
-    // lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
-    // lv_anim_start(&a);
+void createMeter1(lv_obj_t *scr)
+{
+    static lv_style_t style;
+    static lv_obj_t *labelCpuText;
+    arcCpu = lv_arc_create(scr);
+    labelCpuText = lv_label_create(scr);
+
+    lv_style_init(&style);
+    //lv_style_set_arc_color(&style, lv_palette_main(LV_PALETTE_GREY));
+    //lv_obj_set_style_bg_color(arc, lv_palette_main(LV_PALETTE_RED), 0);
+    lv_obj_set_style_arc_color(arcCpu, lv_palette_main(LV_PALETTE_PURPLE), LV_PART_INDICATOR);
+    lv_arc_set_rotation(arcCpu, 90);
+    lv_arc_set_bg_angles(arcCpu, 0, 360);
+    lv_arc_set_range(arcCpu, 0, 100);
+    lv_arc_set_start_angle(arcCpu, 90);
+
+    lv_obj_remove_style(arcCpu, NULL, LV_PART_KNOB);   /*Be sure the knob is not displayed*/
+    lv_obj_add_style(arcCpu, &style, 0);
+    lv_obj_set_size(arcCpu, 90, 90);
+    // lv_obj_set_align(scr, LV_ALIGN_OUT_LEFT_MID);
+    lv_obj_center(arcCpu);
+    lv_obj_set_pos(arcCpu, -50, -10);
+
+    labelCpu = lv_label_create(scr);
+    lv_obj_set_style_text_font(labelCpu, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(labelCpu, lv_color_hex3(0xfff), 0);
+    lv_label_set_text(labelCpu, "0");
+    lv_obj_center(labelCpu);
+    lv_obj_set_pos(labelCpu, -50, -10);
+
+    lv_arc_set_value(arcCpu, 10);
+
+    lv_label_set_text(labelCpuText, "CPU");
+    // lv_obj_set_align(labelCpuText,scr);
+    lv_obj_align_to(labelCpuText, scr, LV_ALIGN_CENTER, -100, -60);
+    // lv_obj_set_align(labelCpuText, LV_ALIGN_OUT_TOP_MID);
+    // lv_obj_set_pos(labelCpuText, -30, 0);
+    lv_obj_set_style_text_font(labelCpuText, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(labelCpuText, lv_color_hex3(0xfff), 0);
+}
+
+void createMeter2(lv_obj_t *scr)
+{
+    static lv_style_t style;
+    static lv_obj_t *labelMemoryText;
+
+    arcMemory = lv_arc_create(scr);
+    labelMemoryText = lv_label_create(scr);
+
+    lv_style_init(&style);
+    // lv_style_set_arc_color(&style, lv_palette_main(LV_PALETTE_GREY));
+    lv_obj_set_style_arc_color(arcMemory, lv_palette_main(LV_PALETTE_BLUE), LV_PART_INDICATOR);
+    lv_arc_set_rotation(arcMemory, 90);
+    lv_arc_set_bg_angles(arcMemory, 0, 360);
+    lv_arc_set_range(arcMemory, 0, 100);
+    lv_obj_remove_style(arcMemory, NULL, LV_PART_KNOB);   /*Be sure the knob is not displayed*/
+    lv_obj_add_style(arcMemory, &style, 0);
+    lv_obj_set_size(arcMemory, 90, 90);
+    //lv_obj_set_align(scr, LV_ALIGN_OUT_RIGHT_MID);
+    lv_obj_center(arcMemory);
+    lv_obj_set_pos(arcMemory, 50, -10);
+
+    labelMemory = lv_label_create(scr);
+    lv_obj_set_style_text_font(labelMemory, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(labelMemory, lv_color_hex3(0xfff), 0);
+    lv_label_set_text(labelMemory, "0");
+    lv_obj_center(labelMemory);
+    lv_obj_set_pos(labelMemory, 50, -10);
+
+    lv_arc_set_value(arcMemory, 10);
+
+    lv_label_set_text(labelMemoryText, "MEM");
+    lv_obj_align_to(labelMemoryText, scr, LV_ALIGN_CENTER, 80, -60);
+    // lv_obj_set_align(labelMemoryText, LV_ALIGN_OUT_TOP_MID);
+    // lv_obj_set_pos(labelMemoryText, 30, 0);
+    lv_obj_set_style_text_font(labelMemoryText, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(labelMemoryText, lv_color_hex3(0xfff), 0);
+}
+
+void createSpeedArrow(lv_obj_t *scr)
+{
+    static lv_style_t styleLineUpload, styleLineDownload;
+    static lv_point_t line_points[] = { {115, 110}, {115, 130}, {106, 125}, {125, 130}, {125, 110}, {134, 115} };
+    lv_style_set_line_rounded(&styleLineUpload, true);
+    lv_style_set_line_width(&styleLineUpload, 3);
+    lv_style_set_line_color(&styleLineUpload, lv_palette_main(LV_PALETTE_ORANGE));
+
+    lv_style_set_line_rounded(&styleLineDownload, true);
+    lv_style_set_line_width(&styleLineDownload, 3);
+    lv_style_set_line_color(&styleLineDownload, lv_palette_main(LV_PALETTE_BLUE));
+
+    lv_obj_t *lineUpload, *lineDownload;
+    lineUpload = lv_line_create(scr);
+    lv_line_set_points(lineUpload,line_points,3);
+    
+    lv_obj_add_style(lineUpload, &styleLineUpload, 0);
+
+    lineDownload = lv_line_create(scr);
+    lv_line_set_points(lineDownload,line_points+3,3);
+    
+    lv_obj_add_style(lineDownload, &styleLineDownload, 0);
+
+}
+
+void createSpeedText(lv_obj_t *scr)
+{
+    ui_LabelDownloadSpeedText = lv_label_create(scr);
+    ui_LabelDownloadSpeedTextUnit = lv_label_create(scr);
+    ui_LabelUploadSpeedText = lv_label_create(scr);
+    ui_LabelUploadSpeedTextUnit = lv_label_create(scr);
+
+    lv_obj_set_width(ui_LabelDownloadSpeedText, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_LabelDownloadSpeedText, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_LabelDownloadSpeedText, 15);
+    lv_obj_set_y(ui_LabelDownloadSpeedText, 110);
+    lv_obj_set_style_text_color(ui_LabelDownloadSpeedText, lv_color_hex(0xFFFFFF), 0);
+    // lv_obj_set_align(ui_LabelSpeedText, LV_ALIGN_BOTTOM_MID);
+    lv_label_set_text(ui_LabelDownloadSpeedText, "100");
+    lv_obj_set_style_text_font(ui_LabelDownloadSpeedText, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    lv_obj_set_width(ui_LabelUploadSpeedText, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_LabelUploadSpeedText, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_LabelUploadSpeedText, 140);
+    lv_obj_set_y(ui_LabelUploadSpeedText, 110);
+    lv_obj_set_style_text_color(ui_LabelUploadSpeedText, lv_color_hex(0xFFFFFF), 0);
+    lv_label_set_text(ui_LabelUploadSpeedText, "100");
+    lv_obj_set_style_text_font(ui_LabelUploadSpeedText, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    
+    lv_obj_set_width(ui_LabelDownloadSpeedTextUnit, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_LabelDownloadSpeedTextUnit, LV_SIZE_CONTENT);    /// 1
+    lv_obj_update_layout(ui_LabelDownloadSpeedText);
+    lv_obj_set_x(ui_LabelDownloadSpeedTextUnit, lv_obj_get_width(ui_LabelDownloadSpeedText) + 20);
+    lv_obj_set_y(ui_LabelDownloadSpeedTextUnit, 110);
+    lv_obj_set_style_text_color(ui_LabelDownloadSpeedTextUnit, lv_color_hex(0xFFFFFF), 0);
+    lv_label_set_text(ui_LabelDownloadSpeedTextUnit, "KB/s");
+    lv_obj_set_style_text_font(ui_LabelDownloadSpeedTextUnit, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    lv_obj_set_width(ui_LabelUploadSpeedTextUnit, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_LabelUploadSpeedTextUnit, LV_SIZE_CONTENT);    /// 1
+    lv_obj_update_layout(ui_LabelUploadSpeedText);
+    lv_obj_set_x(ui_LabelUploadSpeedTextUnit, lv_obj_get_width(ui_LabelUploadSpeedText) + 145);
+    lv_obj_set_y(ui_LabelUploadSpeedTextUnit, 110);
+    lv_obj_set_style_text_color(ui_LabelUploadSpeedTextUnit, lv_color_hex(0xFFFFFF), 0);
+    lv_label_set_text(ui_LabelUploadSpeedTextUnit, "KB/s");
+    lv_obj_set_style_text_font(ui_LabelUploadSpeedTextUnit, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+}
+
+void ui_Screen2_change_display()
+{
+    static uint8_t displayIndex = 0;
+
+    if(displayIndex == 0)
+    {
+        lv_obj_clear_flag(ui_MainPage, LV_OBJ_FLAG_HIDDEN);     /// Flags
+        lv_obj_add_flag(ui_SecondPage, LV_OBJ_FLAG_HIDDEN);     /// Flags
+        displayIndex = 1;
+    }
+    else if(displayIndex == 1)
+    {
+        lv_obj_clear_flag(ui_SecondPage, LV_OBJ_FLAG_HIDDEN);     /// Flags
+        lv_obj_add_flag(ui_MainPage, LV_OBJ_FLAG_HIDDEN);     /// Flags
+        displayIndex = 0;
+    }
 }
 
 void ui_Screen2_screen_init(void)
@@ -186,7 +424,12 @@ void ui_Screen2_screen_init(void)
     lv_obj_set_height(ui_SecondPage, 135);
     lv_obj_set_align(ui_SecondPage, LV_ALIGN_CENTER);
     lv_obj_clear_flag(ui_SecondPage, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    // lv_obj_add_flag(ui_SecondPage, LV_OBJ_FLAG_HIDDEN);     /// Flags
 
+    createMeter1(ui_SecondPage);
+    createMeter2(ui_SecondPage);
+    createSpeedArrow(ui_SecondPage);
+    createSpeedText(ui_SecondPage);
 
     lv_obj_add_event_cb(ui_Screen2, ui_event_Screen2, LV_EVENT_ALL, NULL);
 

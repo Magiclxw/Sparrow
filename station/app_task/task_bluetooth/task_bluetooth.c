@@ -48,7 +48,6 @@ void bluetoothRecTask()
     BleData_t bleData;
     uint8_t recData[1024] = {0};
 
-    initBLE();
     //创建队列
     Bluetooth_Queue_Handle = xQueueCreate(BLUETOOTH_REC_QUEUE_LENGTH,BLUETOOTH_REC_QUEUE_SIZE);
 

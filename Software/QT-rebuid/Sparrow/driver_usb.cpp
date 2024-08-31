@@ -3,9 +3,11 @@
 #include <QDebug>
 #include "system.h"
 #include "interface/usblistener.h"
+#include "interface/jqcpumonitor.h"
+#include <QTimer>
 
 QSerialPort serial;
-
+QTimer *timer;
 
 static uint8_t nameSize = 0;        //文件名长度
 static QString fileName;            //文件名
@@ -23,18 +25,39 @@ static bool compareCheckSum(uint8_t data[]);
 static uint8_t generateChecksum(uint8_t data[], uint8_t len);
 static void recDataHandler(uint8_t data[]);
 static int sendCdcData(uint8_t cmd, uint8_t data[], uint16_t dataLen);
+//static void sendDiskInfo();
 
 Driver_Usb::Driver_Usb(QObject *parent) : QThread(parent)
 {
     usbConnectDevice();
+    JQCPUMonitor::initialize();
+
+    timer = new QTimer();
 
     connect(&serial, &QSerialPort::readyRead, this, &Driver_Usb::serialReadData);
     connect(&serial, static_cast<void (QSerialPort::*)(QSerialPort::SerialPortError)>(&QSerialPort::error),  this, &Driver_Usb::handleSerialError);
+    connect(timer, &QTimer::timeout, this, &Driver_Usb::sendSysInfo);
+
+    timer->start(1000);
 }
 
 
 void Driver_Usb::run()
 {
+
+    while (1)
+    {
+//        usbClearWifiInfo();
+//        qDebug() << "clear wifi";
+//        sendSysInfo();
+        //sysGetNetSpeed();
+        //sysGetCpuInfo();
+        //sendDiskInfo();
+//        qDebug() << "\nCPU(Now):" << JQCPUMonitor::cpuUsagePercentage()*100;
+//        qDebug() << "CPU(5S):" << JQCPUMonitor::cpuUsagePercentageIn5Second();
+//        qDebug() << "CPU(30S):" << JQCPUMonitor::cpuUsagePercentageIn30Second();
+        msleep(1000);
+    }
 }
 
 //usb拔出错误处理
@@ -227,28 +250,38 @@ static void recDataHandler(uint8_t data[])
                     uint64_t diskSize;
                     uint64_t remainSize;
                     data[0] = diskNum;
+//                    for (uint8_t i = 0; i < diskNum; i++)
+//                    {
+//                        diskPath = msg.takeAt(i).rootPath().toUtf8().at(0);
+//                        data[1 + i * 17] = diskPath;
+//                        diskSize = msg.takeAt(i).bytesTotal() / (1024 * 1024);
+//                        memcpy(&data[1 + i * 17 + 1], &diskSize, 8);
+//                        remainSize = msg.takeAt(i).bytesAvailable() / (1024 * 1024);
+//                        memcpy(&data[1 + i * 17 + 9], &remainSize, 8);
+//                    }
                     for (uint8_t i = 0; i < diskNum; i++)
                     {
                         diskPath = msg.takeAt(i).rootPath().toUtf8().at(0);
-                        data[1 + i * 17] = diskPath;
                         diskSize = msg.takeAt(i).bytesTotal() / (1024 * 1024);
-                        memcpy(&data[1 + i * 17 + 1], &diskSize, 8);
                         remainSize = msg.takeAt(i).bytesAvailable() / (1024 * 1024);
-                        memcpy(&data[1 + i * 17 + 9], &remainSize, 8);
+                        data[1 + i * 2] = diskPath;
+                        data[1 + i * 2 + 1] = (uint8_t)(((float)remainSize/(float)diskSize)*100);
+
                     }
-                    sendCdcData(SERIAL_CMD_DISK_INFO, data, 1 + diskNum * 17);
+                    sendCdcData(SERIAL_CMD_DISK_INFO, data, 1 + diskNum * 2);
 
                     qDebug() << "send disk info";
 
                     free(data);
                     break;
                 }
+
             }
         }
     }
 }
 
-static int sendCdcData(uint8_t cmd, uint8_t data[], uint16_t dataLen)
+int sendCdcData(uint8_t cmd, uint8_t data[], uint16_t dataLen)
 {
     uint8_t sendData[1024];
 
@@ -271,4 +304,76 @@ static int sendCdcData(uint8_t cmd, uint8_t data[], uint16_t dataLen)
     serial.write((char*)sendData, dataLen + 8);
 
     return 1;
+}
+
+static QList<QStorageInfo> msg;
+
+void Driver_Usb::sendDiskInfo()
+{
+        sysGetDiskMsg(&msg);
+        uint8_t diskNum = msg.count();
+        uint8_t *data = (uint8_t*)malloc(diskNum * 2 + 1); //1:diskNum
+        uint8_t diskPath;
+        uint64_t diskSize;
+        uint64_t remainSize;
+
+        uint8_t memeryUsage = 0;
+        uint8_t cpuUsage = 0;
+        uint64_t uploadSpeed = 0;   //上传速度KB/s
+        uint64_t downloadSpeed = 0; //下载速度KB/s
+
+        data[0] = diskNum;
+    //                    for (uint8_t i = 0; i < diskNum; i++)
+    //                    {
+    //                        diskPath = msg.takeAt(i).rootPath().toUtf8().at(0);
+    //                        data[1 + i * 17] = diskPath;
+    //                        diskSize = msg.takeAt(i).bytesTotal() / (1024 * 1024);
+    //                        memcpy(&data[1 + i * 17 + 1], &diskSize, 8);
+    //                        remainSize = msg.takeAt(i).bytesAvailable() / (1024 * 1024);
+    //                        memcpy(&data[1 + i * 17 + 9], &remainSize, 8);
+    //                    }
+        for (uint8_t i = 0; i < diskNum; i++)
+        {
+            diskPath =msg.value(i).rootPath().toUtf8().at(0); //msg.takeAt(i).rootPath().toUtf8().at(0);
+
+            diskSize =msg.value(i).bytesTotal() / (1024 * 1024);
+            remainSize = msg.value(i).bytesAvailable() / (1024 * 1024);
+            data[1 + i * 2] = diskPath;
+            data[1 + i * 2 + 1] = 50;//(uint8_t)(100 - ((float)remainSize/(float)diskSize)*100);
+        }
+        sendCdcData(SERIAL_CMD_DISK_INFO, data, 1 + diskNum * 2);
+        qDebug() << "send disk info";
+        free(data);
+}
+
+
+void Driver_Usb::sendSysInfo()
+{
+    uint8_t data[18] = {0};
+    uint64_t uploadSpeed, downLoadSpeed;
+    uint8_t memery = 0;
+    uint8_t cpu = 0;
+
+    sysGetNetSpeed(&downLoadSpeed, &uploadSpeed);
+
+    memery = sysGetMemeryUsage();
+
+    cpu = JQCPUMonitor::cpuUsagePercentage()*100;
+
+    qDebug() << "memery : " << QString::number(memery);
+    qDebug() << "cpu : " << QString::number(cpu);
+
+    data[0] = memery;
+    data[1] = cpu;
+
+    memcpy(&data[2], &downLoadSpeed, 8);
+    memcpy(&data[10], &uploadSpeed, 8);
+
+    sendCdcData(SERIAL_CMD_SYS_INFO, data, 18);
+}
+
+void Driver_Usb::usbClearWifiInfo()
+{
+    uint8_t data = 1;
+    sendCdcData(SERIAL_CMD_CLEAR_WIFI_INFO, &data, 1);
 }

@@ -4,9 +4,31 @@
 #include <QDataStream>
 #include <QDir>
 #include <QDebug>
-
+#include <iphlpapi.h>
+#include <winsock.h>
+#include <iostream>
+#include <QProcess>
+#include <psapi.h>
+#include <Windows.h>
+#include <winioctl.h>
 
 QString fileFolder = "file";
+
+//上传速度
+static DWORD dwIn = 0;
+//下载速度
+static DWORD dwOut = 0;
+//上传最后字节
+static DWORD dwLastIn = 0;
+//下载最后字节
+static DWORD dwLastOut = 0;
+
+FILETIME preIdleTime;
+    FILETIME preKernelTime;
+    FILETIME preUserTime;
+    FILETIME idleTime;
+    FILETIME kernelTime;
+    FILETIME userTime;
 
 bool sysSaveDataToFile(QString fileName, uint8_t data[], int dataLen)
 {
@@ -62,3 +84,82 @@ void sysGetDiskMsg(QList<QStorageInfo> *msg)
         qDebug() << "-----------------------";
     }
 }
+
+void sysGetNetSpeed(uint64_t* downLoadSpeed, uint64_t* uploadSpeed)
+{
+    PMIB_IFTABLE pTable = nullptr;
+    DWORD dword = 0;
+    ULONG retCode = GetIfTable(pTable, &dword, true);
+    if(retCode == ERROR_NOT_SUPPORTED)
+        return;
+    if(retCode == ERROR_INSUFFICIENT_BUFFER)
+        pTable = (PMIB_IFTABLE)new BYTE[65535];
+
+
+    GetIfTable(pTable, &dword, true);
+
+    DWORD dwInOc = 0;
+    DWORD dwOutOc = 0;
+    for(UINT i = 0; i < pTable->dwNumEntries; i++)
+    {
+        MIB_IFROW row = pTable->table[i];
+        dwInOc += row.dwInOctets;
+        dwOutOc += row.dwOutOctets;
+    }
+    dwIn = dwInOc - dwLastIn;
+    dwOut = dwOutOc - dwLastOut;
+
+    if(dwLastIn <= 0)
+        dwIn = 0;
+    else
+        dwIn = dwIn / 1024;
+
+    if(dwLastOut <= 0)
+        dwOut = 0;
+    else
+        dwOut = dwOut / 1024;
+
+    dwLastIn = dwInOc;
+    dwLastOut = dwOutOc;
+
+    qDebug() << "upload speed = " + QString::number(dwOut);
+    qDebug() << "download speed = " + QString::number(dwIn);
+
+    *downLoadSpeed = dwIn/8;
+    *uploadSpeed = dwOut/8;
+}
+
+long long CompareFileTime(FILETIME time1, FILETIME time2)
+{
+    __int64 a = time1.dwHighDateTime << 32 | time1.dwLowDateTime;
+    __int64 b = time2.dwHighDateTime << 32 | time2.dwLowDateTime;
+
+    return (b - a);
+}
+
+double nCpuRate = 0;
+
+uint8_t sysGetMemeryUsage()
+{
+    QString memoryInfo = "Memory Information:\n";
+
+    MEMORYSTATUSEX memoryStatus;
+    memoryStatus.dwLength = sizeof(memoryStatus);
+
+    float memery = 0;
+
+
+     if (GlobalMemoryStatusEx(&memoryStatus)) {
+//         memoryInfo+=QString("Total Physical Memory: %1 %2\n").arg(memoryStatus.ullTotalPhys / (1024 * 1024)).arg("MB");
+//         memoryInfo+=QString("Available Physical Memory: %1 %2\n").arg(memoryStatus.ullAvailPhys / (1024 * 1024)).arg("MB");
+//         memoryInfo+=QString("Total Virtual Memory: %1 %2\n").arg(memoryStatus.ullTotalVirtual / (1024 * 1024)).arg("MB");
+//         memoryInfo+=QString("Available Virtual Memory: %1 %2\n").arg(memoryStatus.ullAvailVirtual / (1024 * 1024)).arg("MB");
+         memery = (float)((float)memoryStatus.ullAvailPhys / (float)memoryStatus.ullTotalPhys);
+     } else {
+         memoryInfo+=QString("无法获取内存使用情况信息。\n");
+     }
+     qDebug() << memoryInfo;
+
+     return (uint8_t)(100 - memery*100);
+}
+

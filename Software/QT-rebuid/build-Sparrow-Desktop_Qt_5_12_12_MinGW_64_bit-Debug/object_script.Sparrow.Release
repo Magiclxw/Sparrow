@@ -1,0 +1,10 @@
+release/driver_usb.o
+release/jqcpumonitor.o
+release/usblistener.o
+release/main.o
+release/mainwindow.o
+release/system.o
+release/qrc_Resources.o
+release/moc_jqcpumonitor.o
+release/moc_usblistener.o
+release/moc_mainwindow.o

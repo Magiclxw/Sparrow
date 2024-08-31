@@ -11,6 +11,7 @@ CONFIG += c++11
 
 SOURCES += \
     driver_usb.cpp \
+    interface/jqcpumonitor.cpp \
     interface/usblistener.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -18,6 +19,8 @@ SOURCES += \
 
 HEADERS += \
     driver_usb.h \
+    interface/jqcpumonitor.h \
+    interface/jqcpumonitor.inc \
     interface/usblistener.h \
     libs/hidapi.h \
     mainwindow.h \
@@ -39,4 +42,12 @@ DEPENDPATH += $$PWD/libs
 
 DISTFILES += \
     libs/hidapi.dll \
-    libs/hidapi.lib
+    libs/hidapi.lib \
+    libs/iphlpapi.lib
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/libs/ -liphlpapi
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/libs/ -liphlpapi
+else:unix: LIBS += -L$$PWD/libs/ -liphlpapi
+
+INCLUDEPATH += $$PWD/libs
+DEPENDPATH += $$PWD/libs

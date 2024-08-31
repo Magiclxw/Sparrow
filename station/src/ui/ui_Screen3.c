@@ -25,6 +25,11 @@ void reloadScreen3Timer()
     if(timer != NULL) {
         lv_timer_reset(timer);
     }
+    else
+    {
+        timer = lv_timer_create(screen3Timer_cb, 5000, NULL);
+        lv_timer_set_repeat_count(timer, 1);
+    }
 }
 
 void resetScreen3Timer()
@@ -34,8 +39,7 @@ void resetScreen3Timer()
         lv_timer_del(timer);
         //lv_timer_pause(timer);
     }
-    
-    //timer = NULL;
+    timer = NULL;
 }
 
 void ui_Screen3_screen_init(void)
@@ -52,4 +56,6 @@ void ui_Screen3_screen_init(void)
     lv_obj_set_style_text_font(ui_Menu, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_Menu, ui_event_Menu, LV_EVENT_ALL, NULL);
+
+    lv_roller_set_selected(ui_Menu, 0, LV_ANIM_OFF);
 }

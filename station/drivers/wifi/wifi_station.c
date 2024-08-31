@@ -149,21 +149,19 @@ static void taskSmartconfig(void * parm)
     esp_err_t ret = nvsOpen(USER_NAMESPACE_0, NVS_READWRITE);
 
     ret = nvsGetStr("ssid", NULL,&ssidLength);
-
+    printf("ret0 = %x\r\n",ret);
     if(ret == ESP_OK)
     {
         // printf("ret = %x\r\n",ret);
         // printf("ssid size = %d\r\n",ssidLength);
         ret = nvsGetStr("ssid", str_ssid,&ssidLength);
-        //printf("ret = %x\r\n",ret);
+        printf("ret = %x\r\n",ret);
         if(ret == ESP_OK)
         {
             printf("ssid = %s\r\n",str_ssid);
             size_t passwordLength ;
             nvsGetStr("password", NULL, &passwordLength);  //获取长度
             ret = nvsGetStr("password", str_password, &passwordLength);
-
-            nvsClose();
 
             if(ret == ESP_OK)
             {
@@ -178,6 +176,7 @@ static void taskSmartconfig(void * parm)
             }
         }
     }
+    nvsClose();
 
     while (1) {
         uxBits = xEventGroupWaitBits(s_wifi_event_group, CONNECTED_BIT | ESPTOUCH_DONE_BIT, true, false, portMAX_DELAY);

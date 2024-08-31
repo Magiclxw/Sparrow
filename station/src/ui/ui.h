@@ -32,6 +32,9 @@ extern lv_obj_t * ui_ImageEntrance;
 // SCREEN: ui_Screen2
 void ui_Screen2_screen_init(void);
 void ui_event_Screen2(lv_event_t * e);
+void drawDiskInfoBar(uint8_t diskNum, uint8_t diskData[]);
+void screen2SetMeter(uint8_t cpuValue, uint8_t memValue);
+void screen2SetNetSpeed(uint64_t downloadSpeed, uint64_t uploadSpeed);
 extern lv_obj_t * ui_Screen2;
 extern lv_obj_t * ui_MainPage;
 extern lv_obj_t * ui_LabelHour;
@@ -44,6 +47,10 @@ extern lv_obj_t * ui_LabelSlash2;
 extern lv_obj_t * ui_LabelDate;
 extern lv_obj_t * ui_Label9;
 extern lv_obj_t * ui_SecondPage;
+extern lv_obj_t * ui_LabelDownloadSpeedText;
+extern lv_obj_t * ui_LabelDownloadSpeedTextUnit;
+extern lv_obj_t * ui_LabelUploadSpeedText;
+extern lv_obj_t * ui_LabelUploadSpeedTextUnit;
 // SCREEN: ui_Screen3
 void ui_Screen3_screen_init(void);
 extern lv_obj_t * ui_Screen3;
@@ -54,6 +61,7 @@ extern lv_obj_t * ui_Screen4;
 extern lv_obj_t * ui_Label1;
 extern lv_obj_t * ui____initial_actions0;
 
+extern lv_obj_t * ui_Settings;
 
 LV_IMG_DECLARE(ui_img_919562436);    // assets/128乘128_画板 1 副本 2.png
 LV_IMG_DECLARE(ui_img_background_png);    // assets/background.png

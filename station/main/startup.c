@@ -23,7 +23,10 @@ void preStartup()
     initWifi();
     //mqtt初始化，建立mqtt连接
     initMqtt();
-    //intiUsb();
+
+    initBLE();
+    
+    intiUsb();
 
     //xSemaphoreTake(preStartupSemaphore,portMAX_DELAY);
 }

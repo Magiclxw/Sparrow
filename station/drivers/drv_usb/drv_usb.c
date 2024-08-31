@@ -4,6 +4,8 @@
 #include "drv_led.h"
 #include "drv_nvs.h"
 #include "task_bluetooth.h"
+#include "ui.h"
+#include "wifi_station.h"
 
 #define TUSB_DESC_TOTAL_LEN      (TUD_CONFIG_DESC_LEN + TUD_CDC_DESC_LEN + TUD_HID_INOUT_DESC_LEN)
 
@@ -163,7 +165,7 @@ static esp_err_t dataCheck(uint8_t data[])
 
 static void usbDataHandler(uint8_t data[])
 {
-    if (dataCheck(data) == ESP_OK)
+    //if (dataCheck(data) == ESP_OK)
     {
         uint8_t cmd = data[2];
         uint8_t* dataPtr = &data[5];
@@ -215,6 +217,32 @@ static void usbDataHandler(uint8_t data[])
 
                     cdcSendProtocol(USB_PROTOCOL_CMD_SET_BACKGROUND, response, 3);
                 }
+                break;
+            }
+            case USB_PROTOCOL_CMD_DISK_INFO:
+            {
+                uint8_t diskNum = data[5];
+                drawDiskInfoBar(diskNum, &data[6]);
+                break;
+            }
+            case USB_PROTOCOL_CMD_SYSTEM_INFO:
+            {
+                uint8_t memery = data[5];
+                uint8_t cpu = data[6];
+                uint64_t daownLoadSpeed;
+                uint64_t uploadSpeed;
+                memcpy(&daownLoadSpeed, &data[7], sizeof(daownLoadSpeed));
+                memcpy(&uploadSpeed, &data[15], sizeof(uploadSpeed));
+                setLed(0,1,1);
+                screen2SetMeter(cpu, memery);
+                screen2SetNetSpeed(daownLoadSpeed, uploadSpeed);
+
+                break;
+            }
+            case USB_PROTOCOL_CMD_CLEAR_WIFI_INFO:
+            {
+                clearWifiData();
+                setLed(0,1,1);
                 break;
             }
         }

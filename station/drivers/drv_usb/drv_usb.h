@@ -9,6 +9,7 @@
 #include "class/hid/hid_device.h"
 #include "esp_log.h"
 
+
 #define USB_PROTOCOL_START_H     (0xC0)
 #define USB_PROTOCOL_START_L     (0x0C)
 #define USB_PROTOCOL_STOP_H      (0xED)
@@ -21,6 +22,9 @@
 #define USB_PROTOCOL_CMD_FILE         (0x04)
 #define USB_PROTOCOL_CMD_SET_BACKGROUND_START (0x05)  //启动设置背景图片
 #define USB_PROTOCOL_CMD_SET_BACKGROUND (0x06)
+#define USB_PROTOCOL_CMD_DISK_INFO      (0x07)
+#define USB_PROTOCOL_CMD_SYSTEM_INFO    (0x08)
+#define USB_PROTOCOL_CMD_CLEAR_WIFI_INFO    (0x09)
 
 typedef enum MouseClickState
 {

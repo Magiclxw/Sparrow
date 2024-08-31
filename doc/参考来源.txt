@@ -1,1 +1,2 @@
 键盘布局：https://github.com/Sucareto/Android_HID_Keyboard
+CPU监控：https://github.com/188080501/JQCPUMonitor/tree/master

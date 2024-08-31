@@ -6,6 +6,7 @@ idf_component_register( SRCS
                         "ui/ui_Screen2.c"
                         "ui/ui_Screen3.c"
                         "ui/ui_Screen4.c"
+                        "ui/ui_settingPage.c"
                         "ui/ui_helpers.c"
                         "ui/ui_startPage.c"
                         "imgs/ui_img_919562436.c"

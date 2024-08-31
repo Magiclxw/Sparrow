@@ -16,13 +16,19 @@
 #define SERIAL_CMD_FILE_START       (0x03)
 #define SERIAL_CMD_FILE             (0x04)
 #define SERIAL_CMD_DISK_INFO        (0x07)
+#define SERIAL_CMD_SYS_INFO         (0x08)
+#define SERIAL_CMD_CLEAR_WIFI_INFO  (0x09)
 
+extern QSerialPort serial;
 
 class Driver_Usb : public QThread
 {
 public:
     explicit Driver_Usb(QObject *parent = nullptr);
     void usbConnectDevice();
+    void sendDiskInfo();
+    void sendSysInfo();
+    void usbClearWifiInfo();
     void run();
 private:
 

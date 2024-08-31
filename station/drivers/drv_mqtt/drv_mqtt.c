@@ -204,7 +204,7 @@ void initMqtt(void)
     usernameLen = mqttGetBrokerUsername();
     passwordLen = mqttGetBrokerPassword();
 
-    if (addrLen != 0 && usernameLen != 0 && passwordLen != 0)
+    //if (addrLen != 0 && usernameLen != 0 && passwordLen != 0)
     {
         addr = pvPortMalloc(addrLen);
         username = pvPortMalloc(usernameLen);
@@ -215,16 +215,16 @@ void initMqtt(void)
         memcpy(password, s_password, passwordLen);
 
         const esp_mqtt_client_config_t mqtt_cfg = {
-        .broker.address.uri = addr,
+        // .broker.address.uri = addr,
+        // .credentials = {
+        //     .username = username,
+        // .authentication = {
+        //     .password = password,
+        .broker.address.uri = "mqtts://j1aa1aff.ala.cn-hangzhou.emqxsl.cn:8883",
         .credentials = {
-            .username = username,
+            .username = "test1",
         .authentication = {
-            .password = password,
-        // // .broker.address.uri = "mqtts://j1aa1aff.ala.cn-hangzhou.emqxsl.cn:8883",
-        // // .credentials = {
-        // //     .username = "test",
-        // // .authentication = {
-        // //     .password = "asd13579",
+            .password = "asd13579",
                 },
             }
         };
