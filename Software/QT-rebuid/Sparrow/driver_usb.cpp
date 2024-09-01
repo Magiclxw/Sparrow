@@ -75,7 +75,10 @@ void Driver_Usb::serialReadData()
     qDebug() << "Received data: " << data;
     recDataHandler((uint8_t*)(data.data()));
 }
-
+/**
+ * @brief Driver_Usb::usbConnectDevice
+ *
+ */
 void Driver_Usb::usbConnectDevice()
 {
     // 获取系统中所有串口的信息
@@ -372,8 +375,26 @@ void Driver_Usb::sendSysInfo()
     sendCdcData(SERIAL_CMD_SYS_INFO, data, 18);
 }
 
+/**
+ * @name Driver_Usb::usbClearWifiInfo
+ * @brief 清除wifi账号密码
+ */
 void Driver_Usb::usbClearWifiInfo()
 {
     uint8_t data = 1;
     sendCdcData(SERIAL_CMD_CLEAR_WIFI_INFO, &data, 1);
+}
+
+void Driver_Usb::usbSetWifiInfo(uint8_t * ssid, uint8_t ssidLen, uint8_t* password, uint8_t passwordLen)
+{
+    uint8_t data[ssidLen + passwordLen +2];
+
+    data[0] = ssidLen;
+    memcpy(&data[1], ssid, ssidLen);
+    data[ssidLen] = '\0';
+    data[ssidLen+1] = passwordLen;
+    memcpy(&data[ssidLen+2], password, passwordLen);
+    data[ssidLen + 1 + passwordLen] = '\0';
+
+    sendCdcData(USB_PROTOCOL_CMD_SET_WIFI_INFO, data, ssidLen + passwordLen + 2);
 }

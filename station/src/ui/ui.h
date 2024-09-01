@@ -47,6 +47,7 @@ extern lv_obj_t * ui_LabelSlash2;
 extern lv_obj_t * ui_LabelDate;
 extern lv_obj_t * ui_Label9;
 extern lv_obj_t * ui_SecondPage;
+extern lv_obj_t * ui_ThirdPage;
 extern lv_obj_t * ui_LabelDownloadSpeedText;
 extern lv_obj_t * ui_LabelDownloadSpeedTextUnit;
 extern lv_obj_t * ui_LabelUploadSpeedText;

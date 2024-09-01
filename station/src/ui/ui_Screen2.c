@@ -97,8 +97,8 @@ void drawDiskInfoBar(uint8_t diskNum, uint8_t diskData[])
         char text[2] = {0,'\0'};
         if (firstRecFlag == 0)
         {
-            bar[i] = lv_bar_create(ui_Screen2);
-            label[i] = lv_label_create(ui_Screen2);
+            bar[i] = lv_bar_create(ui_ThirdPage);
+            label[i] = lv_label_create(ui_ThirdPage);
             lv_obj_add_style(bar[i], &style_indic, LV_PART_INDICATOR);
             lv_obj_set_size(bar[i], (240-(BAR_INTERVAL*diskNum+1))/diskNum, 100);
             //lv_obj_center(bar[i]);
@@ -332,6 +332,7 @@ void ui_Screen2_screen_init(void)
 
     lv_obj_clear_flag(ui_Screen2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_bg_img_src(ui_Screen2, &ui_img_background1_png, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Screen2, lv_color_hex(0xFFFFFF), 0);
 
     ui_MainPage = lv_obj_create(ui_Screen2);
     lv_obj_remove_style_all(ui_MainPage);
@@ -430,6 +431,15 @@ void ui_Screen2_screen_init(void)
     createMeter2(ui_SecondPage);
     createSpeedArrow(ui_SecondPage);
     createSpeedText(ui_SecondPage);
+
+    ui_ThirdPage = lv_obj_create(ui_Screen2);
+    lv_obj_remove_style_all(ui_ThirdPage);
+    lv_obj_set_width(ui_ThirdPage, 240);
+    lv_obj_set_height(ui_ThirdPage, 135);
+    lv_obj_set_align(ui_ThirdPage, LV_ALIGN_CENTER);
+    lv_obj_clear_flag(ui_ThirdPage, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
+
 
     lv_obj_add_event_cb(ui_Screen2, ui_event_Screen2, LV_EVENT_ALL, NULL);
 

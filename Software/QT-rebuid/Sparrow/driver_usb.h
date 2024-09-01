@@ -18,6 +18,7 @@
 #define SERIAL_CMD_DISK_INFO        (0x07)
 #define SERIAL_CMD_SYS_INFO         (0x08)
 #define SERIAL_CMD_CLEAR_WIFI_INFO  (0x09)
+#define USB_PROTOCOL_CMD_SET_WIFI_INFO (0x0A)
 
 extern QSerialPort serial;
 
@@ -29,6 +30,7 @@ public:
     void sendDiskInfo();
     void sendSysInfo();
     void usbClearWifiInfo();
+    void usbSetWifiInfo(uint8_t * ssid, uint8_t ssidLen, uint8_t* password, uint8_t passwordLen);
     void run();
 private:
 

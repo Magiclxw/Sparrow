@@ -1,9 +1,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "driver_usb.h"
 #include "interface/usblistener.h"
 #include "system.h"
 #include <QDebug>
+#include "dialog_wifi_cfg.h"
+
 
 Driver_Usb *usbDriver;
 usblistener *listener = Q_NULLPTR;
@@ -107,5 +108,13 @@ void MainWindow::on_pushButton_clicked()
     qDebug() << "send disk info";
 
     //free(data);
+}
+
+
+void MainWindow::on_btnSetWifi_clicked()
+{
+    Dialog_Wifi_CFG dialog(this);
+
+    dialog.exec();
 }
 

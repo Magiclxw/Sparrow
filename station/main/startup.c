@@ -10,6 +10,7 @@
 #include "task_display.h"
 #include "drv_usb.h"
 #include "systemInfo.h"
+#include "drv_led.h"
 
 SemaphoreHandle_t preStartupSemaphore;
 
@@ -19,6 +20,7 @@ void preStartup()
 
     initNvs();
     //clearWifiData();
+    setLed(LED_RED);
     //wifi初始化
     initWifi();
     //mqtt初始化，建立mqtt连接

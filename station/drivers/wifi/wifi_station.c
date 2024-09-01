@@ -13,6 +13,7 @@
 #include "esp_smartconfig.h"
 #include "../drv_nvs/drv_nvs.h"
 #include "esp_netif_sntp.h"
+#include "drv_led.h"
 
 /* FreeRTOS event group to signal when we are connected & ready to make a request */
 static EventGroupHandle_t s_wifi_event_group;
@@ -158,11 +159,12 @@ static void taskSmartconfig(void * parm)
         printf("ret = %x\r\n",ret);
         if(ret == ESP_OK)
         {
-            printf("ssid = %s\r\n",str_ssid);
+            ESP_LOGI(TAG,"ssid = %s\r\n",str_ssid);
             size_t passwordLength ;
             nvsGetStr("password", NULL, &passwordLength);  //获取长度
             ret = nvsGetStr("password", str_password, &passwordLength);
 
+            ESP_LOGI(TAG,"password = %s\r\n",str_password);
             if(ret == ESP_OK)
             {
                 wifi_config_t wifi_config;
@@ -182,6 +184,7 @@ static void taskSmartconfig(void * parm)
         uxBits = xEventGroupWaitBits(s_wifi_event_group, CONNECTED_BIT | ESPTOUCH_DONE_BIT, true, false, portMAX_DELAY);
         if(uxBits & CONNECTED_BIT) {
             ESP_LOGI(TAG, "WiFi Connected to ap");
+            setLed(LED_GREEN);
         }
         if(uxBits & ESPTOUCH_DONE_BIT) {
             ESP_LOGI(TAG, "smartconfig over");

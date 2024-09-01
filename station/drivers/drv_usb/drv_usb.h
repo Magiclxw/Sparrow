@@ -25,6 +25,7 @@
 #define USB_PROTOCOL_CMD_DISK_INFO      (0x07)
 #define USB_PROTOCOL_CMD_SYSTEM_INFO    (0x08)
 #define USB_PROTOCOL_CMD_CLEAR_WIFI_INFO    (0x09)
+#define USB_PROTOCOL_CMD_SET_WIFI_INFO (0x0A)
 
 typedef enum MouseClickState
 {

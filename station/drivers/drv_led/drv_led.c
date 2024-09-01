@@ -12,9 +12,11 @@ void initLed(void)
     gpio_set_direction(GPIO_LED_B, GPIO_MODE_OUTPUT);
 }
 
-void setLed(uint8_t r, uint8_t g, uint8_t b)
+void setLed(LedColorEnum color)
 {
-    gpio_set_level(GPIO_LED_R, r);
-    gpio_set_level(GPIO_LED_G, g);
-    gpio_set_level(GPIO_LED_B, b);
+    uint8_t rgb = 0x01;
+    rgb = ~(rgb << color);
+    gpio_set_level(GPIO_LED_R, rgb&0x01);
+    gpio_set_level(GPIO_LED_G, rgb&0x02);
+    gpio_set_level(GPIO_LED_B, rgb&0x04);
 }

@@ -1,3 +1,4 @@
+debug/dialog_wifi_cfg.o
 debug/driver_usb.o
 debug/jqcpumonitor.o
 debug/usblistener.o
@@ -5,6 +6,7 @@ debug/main.o
 debug/mainwindow.o
 debug/system.o
 debug/qrc_Resources.o
+debug/moc_dialog_wifi_cfg.o
 debug/moc_jqcpumonitor.o
 debug/moc_usblistener.o
 debug/moc_mainwindow.o

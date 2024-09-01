@@ -35,6 +35,7 @@ lv_obj_t * ui_LabelSlash2;
 lv_obj_t * ui_LabelDate;
 lv_obj_t * ui_Label9;
 lv_obj_t * ui_SecondPage;
+lv_obj_t * ui_ThirdPage;
 lv_obj_t * ui_LabelDownloadSpeedText;
 lv_obj_t * ui_LabelDownloadSpeedTextUnit;
 lv_obj_t * ui_LabelUploadSpeedText;

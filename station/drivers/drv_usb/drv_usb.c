@@ -233,7 +233,7 @@ static void usbDataHandler(uint8_t data[])
                 uint64_t uploadSpeed;
                 memcpy(&daownLoadSpeed, &data[7], sizeof(daownLoadSpeed));
                 memcpy(&uploadSpeed, &data[15], sizeof(uploadSpeed));
-                setLed(0,1,1);
+                setLed(LED_BLUE);
                 screen2SetMeter(cpu, memery);
                 screen2SetNetSpeed(daownLoadSpeed, uploadSpeed);
 
@@ -242,7 +242,36 @@ static void usbDataHandler(uint8_t data[])
             case USB_PROTOCOL_CMD_CLEAR_WIFI_INFO:
             {
                 clearWifiData();
-                setLed(0,1,1);
+                setLed(LED_BLUE);
+                break;
+            }
+            case USB_PROTOCOL_CMD_SET_WIFI_INFO:
+            {
+                uint8_t ssidLen = data[5];
+                uint8_t pwdLen = data[5 + ssidLen + 1];
+                char ssid[ssidLen];
+                char pwd[pwdLen];
+                memcpy(ssid, &data[6], ssidLen);
+                memcpy(pwd, &data[6 + ssidLen + 1], pwdLen);
+
+                esp_err_t ret = nvsOpen(USER_NAMESPACE_0, NVS_READWRITE);
+
+                ret = nvsSetStr("ssid",(char*)ssid);
+
+                if(ret == ESP_OK)
+                {
+                    ret = nvsSetStr("password",(char*)pwd);
+
+                    ret = nvsCommit();
+
+                    nvsClose();
+
+                    if(ret == ESP_OK)
+                    {
+                        printf("wifi message store success!");
+                        setLed(LED_RED);
+                    }
+                }
                 break;
             }
         }
