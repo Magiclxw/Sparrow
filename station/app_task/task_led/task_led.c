@@ -2,6 +2,7 @@
 #include "drv_led.h"
 #include "../../sys_config.h"
 #include "drv_usb.h"
+#include "drv_http.h"
 
 TaskHandle_t Led_Task__Handle = NULL;
 
@@ -34,7 +35,7 @@ static void Led_Task()
             // //tud_cdc_write_char(data[0]);
             // tud_cdc_write_flush();
         }
-        
-        vTaskDelay(pdMS_TO_TICKS(1000));
+  
+        vTaskDelay(pdMS_TO_TICKS(3000));
     }
 }

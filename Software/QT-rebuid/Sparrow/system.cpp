@@ -11,8 +11,10 @@
 #include <psapi.h>
 #include <Windows.h>
 #include <winioctl.h>
+#include <QSettings>
 
 QString fileFolder = "file";
+QString sysConfig = "config/systemConfig.ini";
 
 //上传速度
 static DWORD dwIn = 0;
@@ -22,13 +24,6 @@ static DWORD dwOut = 0;
 static DWORD dwLastIn = 0;
 //下载最后字节
 static DWORD dwLastOut = 0;
-
-FILETIME preIdleTime;
-    FILETIME preKernelTime;
-    FILETIME preUserTime;
-    FILETIME idleTime;
-    FILETIME kernelTime;
-    FILETIME userTime;
 
 bool sysSaveDataToFile(QString fileName, uint8_t data[], int dataLen)
 {
@@ -129,14 +124,6 @@ void sysGetNetSpeed(uint64_t* downLoadSpeed, uint64_t* uploadSpeed)
     *uploadSpeed = dwOut/8;
 }
 
-long long CompareFileTime(FILETIME time1, FILETIME time2)
-{
-    __int64 a = time1.dwHighDateTime << 32 | time1.dwLowDateTime;
-    __int64 b = time2.dwHighDateTime << 32 | time2.dwLowDateTime;
-
-    return (b - a);
-}
-
 double nCpuRate = 0;
 
 uint8_t sysGetMemeryUsage()
@@ -163,3 +150,22 @@ uint8_t sysGetMemeryUsage()
      return (uint8_t)(100 - memery*100);
 }
 
+void sysSaveCfg(QString key, QString value)
+{
+    QSettings *iniWrite = new QSettings(sysConfig,QSettings::IniFormat);
+    iniWrite->setValue(key, value);
+}
+
+QString sysGetCfg(QString key)
+{
+    QFile file(sysConfig);
+
+    QString data;
+
+    if(file.open(QIODevice::ReadOnly)){    //文件存在
+        QSettings *iniRead = new QSettings(sysConfig, QSettings::IniFormat);
+        data = iniRead->value(key, 0).toString();
+    }
+
+    return data;
+}

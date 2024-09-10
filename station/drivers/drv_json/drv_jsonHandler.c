@@ -7,6 +7,7 @@ static DeviceRetainedStateStruct s_deviceRetainedState = {0};
 static DeviceRetainedStatisticsStruct s_deviceRetainedStateStatistics = {0};
 static DeviceDisretainedStatisticsStruct s_deviceDisretainedStatistics = {0};
 
+
 /**
  * @brief 解析app端发送的保留设置数据
  * @param[in] data : 原始JSON数据

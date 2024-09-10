@@ -11,6 +11,7 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
@@ -34,6 +35,7 @@ public:
     QVBoxLayout *verticalLayout_2;
     QPushButton *btnSetWifi;
     QPushButton *pushButton_3;
+    QCheckBox *cbPCMonitor;
     QWidget *widget;
     QStatusBar *statusbar;
 
@@ -75,6 +77,11 @@ public:
 
         verticalLayout_2->addWidget(pushButton_3);
 
+        cbPCMonitor = new QCheckBox(tab_4);
+        cbPCMonitor->setObjectName(QString::fromUtf8("cbPCMonitor"));
+
+        verticalLayout_2->addWidget(cbPCMonitor);
+
         tabWidget->addTab(tab_4, QString());
         widget = new QWidget();
         widget->setObjectName(QString::fromUtf8("widget"));
@@ -104,6 +111,7 @@ public:
         tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("MainWindow", "\346\225\260\346\215\256\344\274\240\350\276\223", nullptr));
         btnSetWifi->setText(QApplication::translate("MainWindow", "wifi\350\256\276\347\275\256", nullptr));
         pushButton_3->setText(QApplication::translate("MainWindow", "  \346\234\215\345\212\241\345\231\250\350\256\276\347\275\256", nullptr));
+        cbPCMonitor->setText(QApplication::translate("MainWindow", "   \347\224\265\350\204\221\347\233\221\346\216\247", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab_4), QApplication::translate("MainWindow", "\350\256\276\347\275\256", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(widget), QApplication::translate("MainWindow", "\344\277\241\346\201\257", nullptr));
     } // retranslateUi

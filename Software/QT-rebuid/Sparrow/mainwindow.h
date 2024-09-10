@@ -23,6 +23,13 @@ private slots:
 
     void on_btnSetWifi_clicked();
 
+    void on_pushButton_3_clicked();
+
+    void on_cbPCMonitor_stateChanged(int arg1);
+
+signals:
+    void signalSetPcMonitor(uint8_t key);
+
 private:
     Ui::MainWindow *ui;
 };

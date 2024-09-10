@@ -12,5 +12,6 @@
 
 void initWifi(void);
 esp_err_t clearWifiData();
+uint8_t wifiGetConnectState(void);
 
 #endif

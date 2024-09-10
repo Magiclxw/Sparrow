@@ -10,6 +10,7 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    dialog_mqtt_cfg.cpp \
     dialog_wifi_cfg.cpp \
     driver_usb.cpp \
     interface/jqcpumonitor.cpp \
@@ -19,6 +20,7 @@ SOURCES += \
     system.cpp
 
 HEADERS += \
+    dialog_mqtt_cfg.h \
     dialog_wifi_cfg.h \
     driver_usb.h \
     interface/jqcpumonitor.h \
@@ -29,6 +31,7 @@ HEADERS += \
     system.h
 
 FORMS += \
+    dialog_mqtt_cfg.ui \
     dialog_wifi_cfg.ui \
     mainwindow.ui
 

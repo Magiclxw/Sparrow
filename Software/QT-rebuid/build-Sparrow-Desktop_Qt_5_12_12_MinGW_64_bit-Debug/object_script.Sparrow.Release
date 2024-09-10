@@ -1,3 +1,4 @@
+release/dialog_mqtt_cfg.o
 release/dialog_wifi_cfg.o
 release/driver_usb.o
 release/jqcpumonitor.o
@@ -6,6 +7,7 @@ release/main.o
 release/mainwindow.o
 release/system.o
 release/qrc_Resources.o
+release/moc_dialog_mqtt_cfg.o
 release/moc_dialog_wifi_cfg.o
 release/moc_jqcpumonitor.o
 release/moc_usblistener.o

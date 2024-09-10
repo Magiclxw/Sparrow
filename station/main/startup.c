@@ -11,6 +11,8 @@
 #include "drv_usb.h"
 #include "systemInfo.h"
 #include "drv_led.h"
+#include "drv_http.h"
+#include "task_http.h"
 
 SemaphoreHandle_t preStartupSemaphore;
 
@@ -23,12 +25,12 @@ void preStartup()
     setLed(LED_RED);
     //wifi初始化
     initWifi();
-    //mqtt初始化，建立mqtt连接
-    initMqtt();
+    //初始化http
+    initHttp();
 
     initBLE();
     
-    intiUsb();
+    // intiUsb();
 
     //xSemaphoreTake(preStartupSemaphore,portMAX_DELAY);
 }
@@ -42,7 +44,12 @@ void midStartup()
 
 void postStartup()
 {
+    //mqtt初始化，建立mqtt连接
+    // initMqtt();
+    
+
     createLedTask();
+    createHttpTask();
 
     createBleRecTask();
     createBleTransTask();

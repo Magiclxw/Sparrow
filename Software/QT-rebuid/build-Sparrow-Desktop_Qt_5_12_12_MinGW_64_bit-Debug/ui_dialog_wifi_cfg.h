@@ -27,7 +27,6 @@ public:
     QVBoxLayout *verticalLayout;
     QWidget *widget;
     QVBoxLayout *verticalLayout_2;
-    QLabel *label;
     QWidget *widget_2;
     QHBoxLayout *horizontalLayout;
     QLabel *label_2;
@@ -52,11 +51,6 @@ public:
         widget->setObjectName(QString::fromUtf8("widget"));
         verticalLayout_2 = new QVBoxLayout(widget);
         verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
-        label = new QLabel(widget);
-        label->setObjectName(QString::fromUtf8("label"));
-
-        verticalLayout_2->addWidget(label);
-
         widget_2 = new QWidget(widget);
         widget_2->setObjectName(QString::fromUtf8("widget_2"));
         horizontalLayout = new QHBoxLayout(widget_2);
@@ -120,8 +114,7 @@ public:
 
     void retranslateUi(QDialog *Dialog_Wifi_CFG)
     {
-        Dialog_Wifi_CFG->setWindowTitle(QApplication::translate("Dialog_Wifi_CFG", "Dialog", nullptr));
-        label->setText(QApplication::translate("Dialog_Wifi_CFG", "wifi\350\256\276\347\275\256", nullptr));
+        Dialog_Wifi_CFG->setWindowTitle(QApplication::translate("Dialog_Wifi_CFG", "WIFI\350\256\276\347\275\256", nullptr));
         label_2->setText(QApplication::translate("Dialog_Wifi_CFG", "\345\220\215\347\247\260", nullptr));
         label_3->setText(QApplication::translate("Dialog_Wifi_CFG", "\345\257\206\347\240\201", nullptr));
         btnWifiSave->setText(QApplication::translate("Dialog_Wifi_CFG", "\344\277\235\345\255\230", nullptr));

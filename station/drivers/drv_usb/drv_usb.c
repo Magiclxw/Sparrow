@@ -6,6 +6,7 @@
 #include "task_bluetooth.h"
 #include "ui.h"
 #include "wifi_station.h"
+#include "drv_mqtt.h"
 
 #define TUSB_DESC_TOTAL_LEN      (TUD_CONFIG_DESC_LEN + TUD_CDC_DESC_LEN + TUD_HID_INOUT_DESC_LEN)
 
@@ -165,7 +166,7 @@ static esp_err_t dataCheck(uint8_t data[])
 
 static void usbDataHandler(uint8_t data[])
 {
-    //if (dataCheck(data) == ESP_OK)
+    if (dataCheck(data) == ESP_OK)
     {
         uint8_t cmd = data[2];
         uint8_t* dataPtr = &data[5];
@@ -272,6 +273,39 @@ static void usbDataHandler(uint8_t data[])
                         setLed(LED_RED);
                     }
                 }
+                break;
+            }
+            case USB_PROTOCOL_CMD_SET_MQTT_INFO:
+            {
+                uint8_t dataType = data[5];
+                uint8_t dataLength = data[6];
+
+                // printf("data len = %d\r\n",dataLength);
+
+                char cmbData[dataLength];
+
+                memcpy(cmbData, &data[7], dataLength);
+
+                // printf("addr = %s, username = %s, password = %s\r\n", addr, username, password);
+                //for (int i = 0; i < dataLength; i++)
+                // {
+                //     printf("%s\r\n", cmbData);
+                // }
+                
+                if (dataType == MQTT_DATA_ADDR)
+                {
+                    mqttSetBrokerAddr(cmbData);
+                }
+                else if (dataType == MQTT_DATA_USERNAME)
+                {
+                    mqttSetBrokerUsername(cmbData);
+                }
+                else
+                {
+                    mqttSetBrokerPassword(cmbData);
+                }
+                
+                setLed(LED_RED);
                 break;
             }
         }

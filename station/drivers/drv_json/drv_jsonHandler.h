@@ -108,6 +108,7 @@ typedef struct deviceDisretainedStatisticsStruct
     uint16_t voltage;   //当前电压
 }DeviceDisretainedStatisticsStruct;
 
+
 esp_err_t setAppRetainedSettings(char *data);
 AppRetainedSettingsStruct getAppRetainedSettings();
 esp_err_t setAppDisretainedSettings(char *data);

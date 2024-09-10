@@ -204,7 +204,7 @@ void initMqtt(void)
     usernameLen = mqttGetBrokerUsername();
     passwordLen = mqttGetBrokerPassword();
 
-    //if (addrLen != 0 && usernameLen != 0 && passwordLen != 0)
+    if (addrLen != 0 && usernameLen != 0 && passwordLen != 0)
     {
         addr = pvPortMalloc(addrLen);
         username = pvPortMalloc(usernameLen);
@@ -214,20 +214,26 @@ void initMqtt(void)
         memcpy(username, s_username, usernameLen);
         memcpy(password, s_password, passwordLen);
 
+        printf("addr: %s, username: %s, password: %s\r\n", addr, username, password);
+
         const esp_mqtt_client_config_t mqtt_cfg = {
-        // .broker.address.uri = addr,
-        // .credentials = {
-        //     .username = username,
-        // .authentication = {
-        //     .password = password,
-        .broker.address.uri = "mqtts://j1aa1aff.ala.cn-hangzhou.emqxsl.cn:8883",
+        .broker.address.uri = addr,
         .credentials = {
-            .username = "test1",
+            .username = username,
         .authentication = {
-            .password = "asd13579",
+            .password = password,
+        // .broker.address.uri = "mqtts://j1aa1aff.ala.cn-hangzhou.emqxsl.cn:8883",
+        // .credentials = {
+        //     .username = "test1",
+        // .authentication = {
+        //     .password = "asd13579",
                 },
             }
         };
+
+        // vPortFree(addr);
+        // vPortFree(username);
+        // vPortFree(password);
 
         ESP_LOGI(TAG, "[APP] Free memory: %" PRIu32 " bytes", esp_get_free_heap_size());
         client = esp_mqtt_client_init(&mqtt_cfg);

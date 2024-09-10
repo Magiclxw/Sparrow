@@ -37,8 +37,7 @@ Driver_Usb::Driver_Usb(QObject *parent) : QThread(parent)
     connect(&serial, &QSerialPort::readyRead, this, &Driver_Usb::serialReadData);
     connect(&serial, static_cast<void (QSerialPort::*)(QSerialPort::SerialPortError)>(&QSerialPort::error),  this, &Driver_Usb::handleSerialError);
     connect(timer, &QTimer::timeout, this, &Driver_Usb::sendSysInfo);
-
-    timer->start(1000);
+//    timer->start(1000);
 }
 
 
@@ -287,6 +286,7 @@ static void recDataHandler(uint8_t data[])
 int sendCdcData(uint8_t cmd, uint8_t data[], uint16_t dataLen)
 {
     uint8_t sendData[1024];
+    uint8_t sendSize = 0;
 
     sendData[0] = SERIAL_PROTOCOL_START_H;
     sendData[1] = SERIAL_PROTOCOL_START_L;
@@ -304,9 +304,9 @@ int sendCdcData(uint8_t cmd, uint8_t data[], uint16_t dataLen)
     sendData[dataLen+5+1] = SERIAL_PROTOCOL_STOP_H;
     sendData[dataLen+5+2] = SERIAL_PROTOCOL_STOP_L;
 
-    serial.write((char*)sendData, dataLen + 8);
+    sendSize = serial.write((char*)sendData, dataLen + 8);
 
-    return 1;
+    return sendSize;
 }
 
 static QList<QStorageInfo> msg;
@@ -397,4 +397,28 @@ void Driver_Usb::usbSetWifiInfo(uint8_t * ssid, uint8_t ssidLen, uint8_t* passwo
     data[ssidLen + 1 + passwordLen] = '\0';
 
     sendCdcData(USB_PROTOCOL_CMD_SET_WIFI_INFO, data, ssidLen + passwordLen + 2);
+}
+
+void Driver_Usb::usbSetMqttInfo(MqttDataEnum dataType, uint8_t * data, uint8_t dataLen)
+{
+    uint8_t cmbData[dataLen + 2];
+
+    cmbData[0] = dataType;
+    cmbData[1] = dataLen;
+    memcpy(&cmbData[2], data, dataLen);
+    cmbData[dataLen + 1] = '\0';
+
+    sendCdcData(USB_PROTOCOL_CMD_SET_MQTT_INFO, cmbData, dataLen + 2);
+}
+
+void Driver_Usb::usbPcMonitorCtrl(uint8_t ctrl)
+{
+    if (ctrl == 0)
+    {
+        timer->stop();
+    }
+    else
+    {
+        timer->start(1000);
+    }
 }

@@ -4,7 +4,7 @@
 #include "system.h"
 #include <QDebug>
 #include "dialog_wifi_cfg.h"
-
+#include "dialog_mqtt_cfg.h"
 
 Driver_Usb *usbDriver;
 usblistener *listener = Q_NULLPTR;
@@ -18,12 +18,19 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->setFixedSize(this->width(),this->height());
 
-
     listener = new usblistener;
 
     qApp -> installNativeEventFilter(listener);
     usbDriver = new Driver_Usb;
     usbDriver->start();
+
+    QString pcMonitor = sysGetCfg("pcMonitor");
+    if (pcMonitor == "true")
+    {
+        ui->cbPCMonitor->setCheckState(Qt::Checked);
+        usbDriver->usbPcMonitorCtrl(1);
+    }
+
 //    QList<QStorageInfo> msg;
 //    sysGetDiskMsg(&msg);
 
@@ -117,4 +124,33 @@ void MainWindow::on_btnSetWifi_clicked()
 
     dialog.exec();
 }
+
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    Dialog_Mqtt_cfg dialog(this);
+
+    dialog.exec();
+}
+
+
+void MainWindow::on_cbPCMonitor_stateChanged(int arg1)
+{
+    if (arg1 == Qt::Checked)
+    {
+        sysSaveCfg("pcMonitor", "true");
+        usbDriver->usbPcMonitorCtrl(1);
+    }
+    else if (arg1 == Qt::Unchecked)
+    {
+        sysSaveCfg("pcMonitor", "false");
+        usbDriver->usbPcMonitorCtrl(0);
+    }
+}
+
+
+
+
+/* signal */
+
 

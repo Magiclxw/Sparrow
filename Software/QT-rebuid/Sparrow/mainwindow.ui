@@ -70,6 +70,13 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QCheckBox" name="cbPCMonitor">
+          <property name="text">
+           <string>   电脑监控</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="widget">

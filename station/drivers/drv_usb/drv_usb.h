@@ -26,6 +26,7 @@
 #define USB_PROTOCOL_CMD_SYSTEM_INFO    (0x08)
 #define USB_PROTOCOL_CMD_CLEAR_WIFI_INFO    (0x09)
 #define USB_PROTOCOL_CMD_SET_WIFI_INFO (0x0A)
+#define USB_PROTOCOL_CMD_SET_MQTT_INFO  (0x0B)
 
 typedef enum MouseClickState
 {
@@ -33,6 +34,13 @@ typedef enum MouseClickState
     MouseClickState_Released,
     MouseClickState_Clicked,
 }MouseClickState_e;
+
+typedef enum mqttDataEnum
+{
+    MQTT_DATA_ADDR,
+    MQTT_DATA_USERNAME,
+    MQTT_DATA_PASSWORD,
+}MqttDataEnum;
 
 void intiUsb(void);
 void hid_input_char(char c);
