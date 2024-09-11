@@ -3,6 +3,7 @@
 #include "drv_http.h"
 #include "wifi_station.h"
 #include "drv_jsonHandler.h"
+#include "ui.h"
 
 TaskHandle_t taskHttpHandle = NULL;
 
@@ -51,8 +52,9 @@ static void httpTask()
             printf("weatherCode = %s\r\n", weatherCode);
             drvHttpGetWeatherTemperature(weatherTemperature);
             printf("weatherTemperature = %s\r\n", weatherTemperature);
-
-
+            
+            ui_screen2SetWeatherIcon(atoi(weatherCode));
+            ui_screen2SetWeatherTemperature(weatherTemperature);
             //释放json数据
             drvHttpDeleteJsonData();
         }

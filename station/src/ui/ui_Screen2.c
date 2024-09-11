@@ -17,7 +17,49 @@ static lv_obj_t * arcCpu;
 static lv_obj_t * arcMemory;
 static lv_obj_t * labelCpu;
 static lv_obj_t * labelMemory;
-
+const lv_img_dsc_t *weatherImage[40] = 
+{
+    &ui_img_weather0_png,
+    &ui_img_weather1_png,
+    &ui_img_weather2_png,
+    &ui_img_weather3_png,
+    &ui_img_weather4_png,
+    &ui_img_weather5_png,
+    &ui_img_weather6_png,
+    &ui_img_weather7_png,
+    &ui_img_weather8_png,
+    &ui_img_weather9_png,
+    &ui_img_weather10_png,
+    &ui_img_weather11_png,
+    &ui_img_weather12_png,
+    &ui_img_weather13_png,
+    &ui_img_weather14_png,
+    &ui_img_weather15_png,
+    &ui_img_weather16_png,
+    &ui_img_weather17_png,
+    &ui_img_weather18_png,
+    &ui_img_weather19_png,
+    &ui_img_weather20_png,
+    &ui_img_weather21_png,
+    &ui_img_weather22_png,
+    &ui_img_weather23_png,
+    &ui_img_weather24_png,
+    &ui_img_weather25_png,
+    &ui_img_weather26_png,
+    &ui_img_weather27_png,
+    &ui_img_weather28_png,
+    &ui_img_weather29_png,
+    &ui_img_weather30_png,
+    &ui_img_weather31_png,
+    &ui_img_weather32_png,
+    &ui_img_weather33_png,
+    &ui_img_weather34_png,
+    &ui_img_weather35_png,
+    &ui_img_weather36_png,
+    &ui_img_weather37_png,
+    &ui_img_weather38_png,
+    &ui_img_weather99_png
+};
 
 static lv_disp_rot_t rotation = LV_DISP_ROT_NONE;
 
@@ -439,7 +481,15 @@ void ui_Screen2_screen_init(void)
     lv_obj_set_align(ui_ThirdPage, LV_ALIGN_CENTER);
     lv_obj_clear_flag(ui_ThirdPage, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
-
+    // 创建天气图标
+    ui_weather_icon = lv_img_create(ui_MainPage);
+    lv_img_set_src(ui_weather_icon, weatherImage[39]);
+    lv_obj_set_pos(ui_weather_icon, 0, 0);
+    // 创建温度标签
+    ui_weather_temperature = lv_label_create(ui_MainPage);
+    lv_label_set_text(ui_weather_temperature, "NULL");
+    lv_obj_set_pos(ui_weather_temperature, 0, 60);
+    lv_obj_set_style_text_font(ui_weather_temperature, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_Screen2, ui_event_Screen2, LV_EVENT_ALL, NULL);
 
@@ -448,3 +498,18 @@ void ui_Screen2_screen_init(void)
     lv_timer_set_repeat_count(timer, -1);
 }
 
+void ui_screen2SetWeatherIcon(uint8_t index)
+{
+    // lv_mem_free(ui_weather_icon);
+    // printf("img weatherCode = %d\r\n", index);
+    // ui_weather_icon = lv_img_create(ui_Screen2);
+    lv_img_set_src(ui_weather_icon, weatherImage[index]);
+}
+
+void ui_screen2SetWeatherTemperature(char *temperature)
+{
+    char cmbTemperature[5];
+    strcpy(cmbTemperature, temperature);
+    strcat(cmbTemperature,"°C");
+    lv_label_set_text(ui_weather_temperature, temperature);
+}

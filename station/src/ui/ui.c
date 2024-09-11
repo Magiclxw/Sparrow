@@ -40,7 +40,8 @@ lv_obj_t * ui_LabelDownloadSpeedText;
 lv_obj_t * ui_LabelDownloadSpeedTextUnit;
 lv_obj_t * ui_LabelUploadSpeedText;
 lv_obj_t * ui_LabelUploadSpeedTextUnit;
-
+lv_obj_t * ui_weather_icon;
+lv_obj_t * ui_weather_temperature;
 
 // SCREEN: ui_Screen3
 void ui_Screen3_screen_init(void);
