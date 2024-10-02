@@ -131,6 +131,8 @@ esp_err_t setAppDisretainedSettings(char *data)
     s_appDisretainedSettings.turnAngle = jsonTurnAngle->valueint;
     s_appDisretainedSettings.saveAngle = jsonSaveAngle->valueint;
 
+    cJSON_Delete(jsonData);
+
     return ESP_OK;
 }
 

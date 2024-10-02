@@ -30,6 +30,14 @@ static void httpTask()
     int bilibiliFollowing = 0;
     int bilibiliFollower = 0;
 
+    //初始化http
+    esp_err_t ret = initHttp();
+
+    if (ret == ESP_FAIL)
+    {
+        vTaskDelete(NULL);
+    }
+
     while (1)
     {
         //等待wifi连接
@@ -56,7 +64,8 @@ static void httpTask()
             ui_screen2SetWeatherIcon(atoi(weatherCode));
             ui_screen2SetWeatherTemperature(weatherTemperature);
             //释放json数据
-            drvHttpDeleteJsonData();
+            // drvHttpDeleteJsonData();
+            ESP_LOGI("TAG", "[APP] Free memory: %" PRIu32 " bytes", esp_get_free_heap_size());
         }
         vTaskDelay(pdMS_TO_TICKS(3000));
     }

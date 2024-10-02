@@ -10,10 +10,10 @@
 #include "cJSON.h"
 
 #define MAX_HTTP_WEATHER_RECV_BUFFER 300
-#define MAX_HTTP_BILIBILI_RECV_BUFFER 150
+#define MAX_HTTP_BILIBILI_RECV_BUFFER 300
 #define MAX_HTTP_OUTPUT_BUFFER  512
 
-void initHttp(void);
+esp_err_t initHttp(void);
 void httpRefreshData();
 esp_err_t jsonGetWeatherData();
 esp_err_t jsonGetBilibiliData();
@@ -24,5 +24,8 @@ esp_err_t drvHttpGetWeatherName(char *buffer);
 esp_err_t drvHttpGetWeatherText(char *buffer);
 esp_err_t drvHttpGetWeatherCode(char *buffer);
 esp_err_t drvHttpGetWeatherTemperature(char *buffer);
+
+esp_err_t httpSetWeatherUrl(const char *url);
+esp_err_t httpSetBilibiliUrl(const char *url);
 
 #endif

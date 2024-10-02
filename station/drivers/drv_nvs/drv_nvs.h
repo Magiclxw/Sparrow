@@ -11,6 +11,8 @@
 #define SERVER_USERNAME ("server_username")
 #define SERVER_PASSWORD ("server_password")
 #define NVS_KEY_BACKGROUND ("nvs_key_background")
+#define NVS_WEATHER ("weather")
+#define NVS_BILIBILI ("bilibili")
 
 esp_err_t initNvs(void);
 esp_err_t nvsOpen(const char* namespace_name, nvs_open_mode_t open_mode);

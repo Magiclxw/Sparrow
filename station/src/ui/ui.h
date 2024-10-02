@@ -37,6 +37,7 @@ void screen2SetMeter(uint8_t cpuValue, uint8_t memValue);
 void screen2SetNetSpeed(uint64_t downloadSpeed, uint64_t uploadSpeed);
 void ui_screen2SetWeatherIcon(uint8_t index);
 void ui_screen2SetWeatherTemperature(char *temperature);
+void ui_screen2SetNotification(char *notification);
 extern lv_obj_t * ui_Screen2;
 extern lv_obj_t * ui_MainPage;
 extern lv_obj_t * ui_LabelHour;
@@ -56,6 +57,7 @@ extern lv_obj_t * ui_LabelUploadSpeedText;
 extern lv_obj_t * ui_LabelUploadSpeedTextUnit;
 extern lv_obj_t * ui_weather_icon;
 extern lv_obj_t * ui_weather_temperature;
+extern lv_obj_t * ui_notification;
 // SCREEN: ui_Screen3
 void ui_Screen3_screen_init(void);
 extern lv_obj_t * ui_Screen3;

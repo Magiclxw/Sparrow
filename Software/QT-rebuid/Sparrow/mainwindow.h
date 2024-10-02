@@ -23,9 +23,13 @@ private slots:
 
     void on_btnSetWifi_clicked();
 
-    void on_pushButton_3_clicked();
-
     void on_cbPCMonitor_stateChanged(int arg1);
+
+    void on_btnSetWeather_clicked();
+
+    void on_btnSetMqtt_clicked();
+
+    void on_btnSetBilibili_clicked();
 
 signals:
     void signalSetPcMonitor(uint8_t key);

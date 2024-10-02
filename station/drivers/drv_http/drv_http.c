@@ -3,6 +3,7 @@
 #include "esp_netif.h"
 #include "esp_crt_bundle.h"
 #include "esp_tls.h"
+#include "drv_nvs.h"
 #include "../../sys_config.h"
 
 
@@ -10,41 +11,38 @@ static const char *TAG = "HTTP_CLIENT";
 static char weatherBuffer[MAX_HTTP_WEATHER_RECV_BUFFER] = {0};
 static char bilibiliBuffer[MAX_HTTP_BILIBILI_RECV_BUFFER] = {0};
 
+static char s_weatherUrl[256] = {0};
+static char s_bilibiliUrl[256] = {0};
+
 static esp_http_client_handle_t s_weatherClient = NULL;
 static esp_http_client_handle_t s_bilibiliClient = NULL;
 
-static cJSON *jsonWeatherFormat = NULL;
+static size_t s_weatherGetUrl();
+static size_t s_bilibiliGetUrl();
 
-static cJSON *jsonWeatherSubData = NULL;
+static char jsonWeatherIdData[50] = {0};
+static char jsonWeatherNameData[50] = {0};
+static char jsonWeatheCountryData[50] = {0};
+static char jsonWeathePathData[50] = {0};
+static char jsonWeatheTimeZoneData[50] = {0};
+static char jsonWeatheOffsetData[50] = {0};
 
-static cJSON *jsonWeatherResult = NULL;
+static char jsonWeatheTextData[10] = {0};
+static char jsonWeatheCodeData[10] = {0};
+static char jsonWeatheTemperatureData[10] = {0};
 
-static cJSON *jsonWeatherLocation = NULL;
-static cJSON *jsonWeatherNow = NULL;
+static char jsonBilibiliData[10] = {0};
 
-static cJSON *jsonWeatherId = NULL;
-static cJSON *jsonWeatherName = NULL;
-static cJSON *jsonWeatheCountry = NULL;
-static cJSON *jsonWeathePath = NULL;
-static cJSON *jsonWeatheTimeZone = NULL;
-static cJSON *jsonWeatheOffset = NULL;
+static int jsonBilibiliCodeData = 0;
+static char jsonBilibiliMessageData[10] = {0};
+static int jsonBilibiliTtlData = 0;
+static char jsonBilibiliDataData[10] = {0};
 
-static cJSON *jsonWeatheText = NULL;
-static cJSON *jsonWeatheCode = NULL;
-static cJSON *jsonWeatheTemperature = NULL;
-
-static cJSON *jsonBilibiliFormat = NULL;
-
-static cJSON *jsonBilibiliCode = NULL;
-static cJSON *jsonBilibiliMessage = NULL;
-static cJSON *jsonBilibiliTtl = NULL;
-static cJSON *jsonBilibiliData = NULL;
-
-static cJSON *jsonBilibiliMid = NULL;
-static cJSON *jsonBilibiliFollowing = NULL;
-static cJSON *jsonBilibiliWhisper = NULL;
-static cJSON *jsonBilibiliBlack = NULL;
-static cJSON *jsonBilibiliFollower = NULL;
+static int jsonBilibiliMidData = 0;
+static int jsonBilibiliFollowingData = 0;
+static int jsonBilibiliWhisperData = 0;
+static int jsonBilibiliBlackData = 0;
+static int jsonBilibiliFollowerData = 0;
 
 esp_err_t _http_event_handler(esp_http_client_event_t *evt)
 {
@@ -130,51 +128,85 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
     return ESP_OK;
 }
 
-void initHttp(void)
+esp_err_t initHttp(void)
 {
-    printf("init http\r\n");
-    esp_http_client_config_t weatherConfig = {
-        .url = "https://api.seniverse.com/v3/weather/now.json?key=S5XFRDn4rnHvwDwu8&location=ip&language=zh-Hans&unit=c",
+    static char* weatherUrl = NULL;
+    static char* bilibiliUrl = NULL;
+    uint8_t weatherUrlLength = 0;
+    uint8_t bilibiliUrlLength = 0;
+
+    weatherUrlLength = s_weatherGetUrl();
+    bilibiliUrlLength = s_bilibiliGetUrl();
+
+    if (weatherUrlLength != 0)
+    {
+        weatherUrl = pvPortMalloc(weatherUrlLength);
+
+        memcpy(weatherUrl, s_weatherUrl, weatherUrlLength);
+
+        printf("weatherUrl: %s\n", weatherUrl);
+
+        esp_http_client_config_t weatherConfig = {
+        .url = weatherUrl,
         .method = HTTP_METHOD_GET,
         .user_data = weatherBuffer,
         .event_handler = _http_event_handler,
         .crt_bundle_attach = esp_crt_bundle_attach,
-    };
-    s_weatherClient = esp_http_client_init(&weatherConfig);
+        };
 
-     esp_http_client_config_t bilibiliConfig = {
-        .url = "https://api.bilibili.com/x/relation/stat?vmid=151971283",
-        .method = HTTP_METHOD_GET,
-        .user_data = bilibiliBuffer,
-        .event_handler = _http_event_handler,
-        .crt_bundle_attach = esp_crt_bundle_attach,
-    };
-    s_bilibiliClient = esp_http_client_init(&bilibiliConfig);
+        s_weatherClient = esp_http_client_init(&weatherConfig);
 
-    // esp_err_t err = esp_http_client_perform(s_bilibiliClient);
-    
-    // if (err == ESP_OK) {
-    //     ESP_LOGI(TAG, "HTTPS Status = %d, content_length = %"PRIu64,
-    //             esp_http_client_get_status_code(s_bilibiliClient),
-    //             esp_http_client_get_content_length(s_bilibiliClient));
-    // } else {
-    //     ESP_LOGE(TAG, "Error perform http request %s", esp_err_to_name(err));
-    // }
+        vPortFree(weatherUrl);
+    }
+    else
+    {
+        // esp_http_client_config_t weatherConfig = {
+        // .url = "https://api.seniverse.com/v3/weather/now.json?key=S5XFRDn4rnHvwDwu8&location=ip&language=zh-Hans&unit=c",
+        // .method = HTTP_METHOD_GET,
+        // .user_data = weatherBuffer,
+        // .event_handler = _http_event_handler,
+        // .crt_bundle_attach = esp_crt_bundle_attach,
+        // };
 
+        // s_weatherClient = esp_http_client_init(&weatherConfig);
 
-    // err = esp_http_client_perform(s_weatherClient);
+        return ESP_FAIL;
+    }
 
-    // if (err == ESP_OK) {
-    //     ESP_LOGI(TAG, "HTTPS Status = %d, content_length = %"PRIu64,
-    //             esp_http_client_get_status_code(s_weatherClient),
-    //             esp_http_client_get_content_length(s_weatherClient));
-    // } else {
-    //     ESP_LOGE(TAG, "Error perform http request %s", esp_err_to_name(err));
-    // }
+    if (bilibiliUrlLength != 0)
+    {
+        bilibiliUrl = pvPortMalloc(bilibiliUrlLength);
 
-    // ESP_LOG_BUFFER_HEX(TAG, local_response_buffer, strlen(local_response_buffer));
-    // printf("HTTP Response : %s\n", local_response_buffer);
-    // esp_http_client_cleanup(client);
+        memcpy(bilibiliUrl, s_bilibiliUrl, bilibiliUrlLength);
+
+        printf("bilibiliUrl: %s\n", bilibiliUrl);
+
+        esp_http_client_config_t bilibiliConfig = {
+            .url = bilibiliUrl,
+            .method = HTTP_METHOD_GET,
+            .user_data = bilibiliBuffer,
+            .event_handler = _http_event_handler,
+            .crt_bundle_attach = esp_crt_bundle_attach,
+        };
+        s_bilibiliClient = esp_http_client_init(&bilibiliConfig);
+
+        vPortFree(bilibiliUrl);
+    }
+    else
+    {
+        // esp_http_client_config_t bilibiliConfig = {
+        // .url = "https://api.bilibili.com/x/relation/stat?vmid=151971283",
+        // .method = HTTP_METHOD_GET,
+        // .user_data = bilibiliBuffer,
+        // .event_handler = _http_event_handler,
+        // .crt_bundle_attach = esp_crt_bundle_attach,
+        // };
+        // s_bilibiliClient = esp_http_client_init(&bilibiliConfig);
+
+        return ESP_FAIL;
+    }
+
+    return ESP_OK;
 }
 
 static uint8_t flag = 0;
@@ -183,7 +215,7 @@ void httpRefreshData()
 {
     esp_err_t err = ESP_OK;
 
-    // if (flag == 0)
+    if (flag == 0)
     {
         err = esp_http_client_perform(s_weatherClient);
 
@@ -197,11 +229,9 @@ void httpRefreshData()
 
         flag = 1;
 
-        esp_http_client_close(s_weatherClient);
-
-        // printf("HTTP weather response : %s\n", weatherBuffer);
+        printf("HTTP weather response : %s\n", weatherBuffer);
     }
-    // else
+    else
     {
         err = esp_http_client_perform(s_bilibiliClient);
 
@@ -215,11 +245,11 @@ void httpRefreshData()
 
         flag = 0;
 
-        esp_http_client_close(s_bilibiliClient);
-
-        // printf("HTTP bilibili response : %s\n", bilibiliBuffer);
+        printf("HTTP bilibili response : %s\n", bilibiliBuffer);
     }
 
+    esp_http_client_close(s_weatherClient);
+    esp_http_client_close(s_bilibiliClient);
     
 }
 
@@ -248,6 +278,25 @@ esp_err_t jsonGetWeatherData()
     //             }
     //     ]
     // }
+     cJSON *jsonWeatherFormat = NULL;
+
+     cJSON *jsonWeatherSubData = NULL;
+
+     cJSON *jsonWeatherResult = NULL;
+
+     cJSON *jsonWeatherLocation = NULL;
+     cJSON *jsonWeatherNow = NULL;
+
+     cJSON *jsonWeatherId = NULL;
+     cJSON *jsonWeatherName = NULL;
+     cJSON *jsonWeatheCountry = NULL;
+     cJSON *jsonWeathePath = NULL;
+     cJSON *jsonWeatheTimeZone = NULL;
+     cJSON *jsonWeatheOffset = NULL;
+
+     cJSON *jsonWeatheText = NULL;
+     cJSON *jsonWeatheCode = NULL;
+     cJSON *jsonWeatheTemperature = NULL;
 
     jsonWeatherFormat = cJSON_Parse(weatherBuffer);
 
@@ -299,6 +348,18 @@ esp_err_t jsonGetWeatherData()
     jsonWeatheTemperature = cJSON_GetObjectItem(jsonWeatherNow, "temperature");
 
     
+    strcpy(jsonWeatherIdData, jsonWeatherId->valuestring);
+    strcpy(jsonWeatherNameData, jsonWeatherName->valuestring);
+    strcpy(jsonWeatheCountryData, jsonWeatheCountry->valuestring);
+    strcpy(jsonWeathePathData, jsonWeathePath->valuestring);
+    strcpy(jsonWeatheTimeZoneData, jsonWeatheTimeZone->valuestring);
+    strcpy(jsonWeatheOffsetData, jsonWeatheOffset->valuestring);
+    strcpy(jsonWeatheTextData, jsonWeatheText->valuestring);
+    strcpy(jsonWeatheCodeData, jsonWeatheCode->valuestring);
+    strcpy(jsonWeatheTemperatureData, jsonWeatheTemperature->valuestring);
+
+
+    cJSON_Delete(jsonWeatherFormat);
 
     // printf("jsonWeatherId: %s\n", jsonWeatherId->valuestring);
     // printf("jsonWeatherFormat: %s\n", jsonWeatherName->valuestring);
@@ -327,6 +388,20 @@ esp_err_t jsonGetBilibiliData()
     //     "follower": 191
     //     }
     // }
+
+     cJSON *jsonBilibiliFormat = NULL;
+
+     cJSON *jsonBilibiliCode = NULL;
+     cJSON *jsonBilibiliMessage = NULL;
+     cJSON *jsonBilibiliTtl = NULL;
+     cJSON *jsonBilibiliData = NULL;
+
+     cJSON *jsonBilibiliMid = NULL;
+     cJSON *jsonBilibiliFollowing = NULL;
+     cJSON *jsonBilibiliWhisper = NULL;
+     cJSON *jsonBilibiliBlack = NULL;
+     cJSON *jsonBilibiliFollower = NULL;
+
     jsonBilibiliFormat = cJSON_Parse(bilibiliBuffer);
 
     if (jsonBilibiliFormat == NULL)
@@ -397,6 +472,16 @@ esp_err_t jsonGetBilibiliData()
         return ESP_FAIL;
     }
 
+    jsonBilibiliCodeData = jsonBilibiliCode->valueint;
+    strcpy(jsonBilibiliMessageData, jsonBilibiliMessage->valuestring);
+    jsonBilibiliTtlData = jsonBilibiliTtl->valueint;
+    jsonBilibiliMidData = jsonBilibiliMid->valueint;
+    jsonBilibiliFollowingData = jsonBilibiliFollowing->valueint;
+    jsonBilibiliWhisperData = jsonBilibiliWhisper->valueint;
+    jsonBilibiliBlackData = jsonBilibiliBlack->valueint;
+    jsonBilibiliFollowerData = jsonBilibiliFollower->valueint;
+
+    cJSON_Delete(jsonBilibiliFormat);
     // printf("jsonBilibiliCode = %d\n", jsonBilibiliCode->valueint);
     // printf("jsonBilibiliMessage = %s\n", jsonBilibiliMessage->valuestring);
     // printf("jsonBilibiliTtl = %d\n", jsonBilibiliTtl->valueint);
@@ -411,70 +496,105 @@ esp_err_t jsonGetBilibiliData()
     return ESP_OK;
 }
 
-void drvHttpDeleteJsonData()
-{
-    cJSON_Delete(jsonWeatherFormat);
-    cJSON_Delete(jsonBilibiliFormat);
-}
+// void drvHttpDeleteJsonData()
+// {
+//     cJSON_Delete(jsonWeatherFormat);
+//     cJSON_Delete(jsonBilibiliFormat);
+// }
 
 esp_err_t jsonGetBilibiliFollowing(int *buffer)
 {
-    if (jsonBilibiliFollowing == NULL)
-    {
-        return ESP_FAIL;
-    }
-    *buffer = jsonBilibiliFollowing->valueint;
+    *buffer = jsonBilibiliFollowingData;
     return ESP_OK;
 }
 
 esp_err_t jsonGetBilibiliFollower(int *buffer)
 {
-    if (jsonBilibiliFollower == NULL)
-    {
-        return ESP_FAIL;
-    }
-    *buffer = jsonBilibiliFollower->valueint;
+    *buffer = jsonBilibiliFollowerData;
     return ESP_OK;
 }
 
 esp_err_t drvHttpGetWeatherName(char *buffer)
 {
-    if (jsonWeatherName == NULL)
+    if (strlen(jsonWeatherNameData) != 0)
     {
-        return ESP_FAIL;
+        strcpy(buffer, jsonWeatherNameData);
+        return ESP_OK;
     }
-
-    strcpy(buffer, jsonWeatherName->valuestring);
-
-    return ESP_OK;
+    return ESP_FAIL;
 }
 
 esp_err_t drvHttpGetWeatherText(char *buffer)
 {
-    if (jsonWeatheText == NULL)
+    if (strlen(jsonWeatheTextData) != 0)
     {
-        return ESP_FAIL;
+        strcpy(buffer, jsonWeatheTextData);
+        return ESP_OK;
     }
-    strcpy(buffer, jsonWeatheText->valuestring);
-    return ESP_OK;
+    return ESP_FAIL;
 }
 
 esp_err_t drvHttpGetWeatherCode(char *buffer)
 {
-    if (jsonWeatheCode == NULL)
+    if (strlen(jsonWeatheCodeData) != 0)
     {
-        return ESP_FAIL;
+        strcpy(buffer, jsonWeatheCodeData);
+        return ESP_OK;
     }
-    strcpy(buffer, jsonWeatheCode->valuestring);
-    return ESP_OK;
+    return ESP_FAIL;
 }
 
 esp_err_t drvHttpGetWeatherTemperature(char *buffer)
 {
-    if (jsonWeatheTemperature == NULL)
+    if (strlen(jsonWeatheTemperatureData) != 0)
     {
-        return ESP_FAIL;
+        strcpy(buffer, jsonWeatheTemperatureData);
+        return ESP_OK;
     }
-    strcpy(buffer, jsonWeatheTemperature->valuestring);
-    return ESP_OK;
+    return ESP_FAIL;
+}
+
+
+esp_err_t httpSetWeatherUrl(const char *url)
+{
+    esp_err_t ret = nvsSaveValue(USER_NAMESPACE_0, NVS_READWRITE, NVS_WEATHER, url);
+    return ret;
+}
+
+esp_err_t httpSetBilibiliUrl(const char *url)
+{
+    esp_err_t ret = nvsSaveValue(USER_NAMESPACE_0, NVS_READWRITE, NVS_BILIBILI, url);
+    return ret;
+}
+
+static size_t s_weatherGetUrl()
+{
+    size_t length = 0;
+
+    esp_err_t ret = nvsLoadValue(USER_NAMESPACE_0, NVS_READWRITE, NVS_WEATHER, s_weatherUrl, &length);
+
+    if (ret == ESP_OK)
+    {
+        return length;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+static size_t s_bilibiliGetUrl()
+{
+    size_t length = 0;
+
+    esp_err_t ret = nvsLoadValue(USER_NAMESPACE_0, NVS_READWRITE, NVS_BILIBILI, s_bilibiliUrl, &length);
+
+    if (ret == ESP_OK)
+    {
+        return length;
+    }
+    else
+    {
+        return 0;
+    }
 }

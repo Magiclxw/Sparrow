@@ -5,6 +5,8 @@
 #include <QDebug>
 #include "dialog_wifi_cfg.h"
 #include "dialog_mqtt_cfg.h"
+#include "dialog_weather_cfg.h"
+#include "dialog_bilibili_cfg.h"
 
 Driver_Usb *usbDriver;
 usblistener *listener = Q_NULLPTR;
@@ -125,10 +127,23 @@ void MainWindow::on_btnSetWifi_clicked()
     dialog.exec();
 }
 
-
-void MainWindow::on_pushButton_3_clicked()
+void MainWindow::on_btnSetMqtt_clicked()
 {
     Dialog_Mqtt_cfg dialog(this);
+
+    dialog.exec();
+}
+
+void MainWindow::on_btnSetWeather_clicked()
+{
+    Dialog_Weather_Cfg dialog(this);
+
+    dialog.exec();
+}
+
+void MainWindow::on_btnSetBilibili_clicked()
+{
+    Dialog_Bilibili_Cfg dialog(this);
 
     dialog.exec();
 }
@@ -151,6 +166,5 @@ void MainWindow::on_cbPCMonitor_stateChanged(int arg1)
 
 
 
-/* signal */
 
 

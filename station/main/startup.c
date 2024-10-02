@@ -22,15 +22,13 @@ void preStartup()
 
     initNvs();
     //clearWifiData();
-    setLed(LED_RED);
+    
     //wifi初始化
     initWifi();
-    //初始化http
-    initHttp();
 
     initBLE();
     
-    // intiUsb();
+    intiUsb();
 
     //xSemaphoreTake(preStartupSemaphore,portMAX_DELAY);
 }
@@ -45,9 +43,8 @@ void midStartup()
 void postStartup()
 {
     //mqtt初始化，建立mqtt连接
-    // initMqtt();
+    initMqtt();
     
-
     createLedTask();
     createHttpTask();
 

@@ -34,7 +34,9 @@ public:
     QWidget *tab_4;
     QVBoxLayout *verticalLayout_2;
     QPushButton *btnSetWifi;
-    QPushButton *pushButton_3;
+    QPushButton *btnSetWeather;
+    QPushButton *btnSetMqtt;
+    QPushButton *btnSetBilibili;
     QCheckBox *cbPCMonitor;
     QWidget *widget;
     QStatusBar *statusbar;
@@ -72,10 +74,20 @@ public:
 
         verticalLayout_2->addWidget(btnSetWifi);
 
-        pushButton_3 = new QPushButton(tab_4);
-        pushButton_3->setObjectName(QString::fromUtf8("pushButton_3"));
+        btnSetWeather = new QPushButton(tab_4);
+        btnSetWeather->setObjectName(QString::fromUtf8("btnSetWeather"));
 
-        verticalLayout_2->addWidget(pushButton_3);
+        verticalLayout_2->addWidget(btnSetWeather);
+
+        btnSetMqtt = new QPushButton(tab_4);
+        btnSetMqtt->setObjectName(QString::fromUtf8("btnSetMqtt"));
+
+        verticalLayout_2->addWidget(btnSetMqtt);
+
+        btnSetBilibili = new QPushButton(tab_4);
+        btnSetBilibili->setObjectName(QString::fromUtf8("btnSetBilibili"));
+
+        verticalLayout_2->addWidget(btnSetBilibili);
 
         cbPCMonitor = new QCheckBox(tab_4);
         cbPCMonitor->setObjectName(QString::fromUtf8("cbPCMonitor"));
@@ -110,7 +122,9 @@ public:
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Tab 2", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("MainWindow", "\346\225\260\346\215\256\344\274\240\350\276\223", nullptr));
         btnSetWifi->setText(QApplication::translate("MainWindow", "wifi\350\256\276\347\275\256", nullptr));
-        pushButton_3->setText(QApplication::translate("MainWindow", "  \346\234\215\345\212\241\345\231\250\350\256\276\347\275\256", nullptr));
+        btnSetWeather->setText(QApplication::translate("MainWindow", "  \345\244\251\346\260\224\346\234\215\345\212\241\350\256\276\347\275\256", nullptr));
+        btnSetMqtt->setText(QApplication::translate("MainWindow", "\344\272\221\346\234\215\345\212\241\350\256\276\347\275\256", nullptr));
+        btnSetBilibili->setText(QApplication::translate("MainWindow", "   bilibili\346\216\245\345\217\243\350\256\276\347\275\256", nullptr));
         cbPCMonitor->setText(QApplication::translate("MainWindow", "   \347\224\265\350\204\221\347\233\221\346\216\247", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab_4), QApplication::translate("MainWindow", "\350\256\276\347\275\256", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(widget), QApplication::translate("MainWindow", "\344\277\241\346\201\257", nullptr));

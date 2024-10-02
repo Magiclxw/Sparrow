@@ -3,6 +3,7 @@
 #include "../../main/systemInfo.h"
 #include "../drv_json/drv_jsonHandler.h"
 #include "string.h"
+#include "ui.h"
 
 static const char *TAG = "MQTT station";
 
@@ -46,6 +47,9 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         msg_id = esp_mqtt_client_subscribe(client, MQTT_TOPIC_APP_DISRETAINED_SETTINGS, 0);
         ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
 
+        msg_id = esp_mqtt_client_subscribe(client, MQTT_TOPIC_DEVICE_NOTIFICATION, 0);
+        ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+
         // int times = 0;
         // sysInfoGetPowerOnTimes(&times);
         // char powerOnTimes[5] = {0};
@@ -78,7 +82,10 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         ESP_LOGI(TAG, "MQTT_EVENT_DATA");
         printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
         printf("DATA=%.*s\r\n", event->data_len, event->data);
-
+        printf("data len = %d\r\n", event->data_len);
+        char data[300] = {0};
+        memcpy(data, event->data, event->data_len);
+        // data[event->data_len+1] = "\n";
         // if(strcmp("/config/angle",event->topic))
         // {
         //     ServoAngleState_t angleState;
@@ -101,10 +108,19 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         //     }
         // }
 
+
+
         if(memcmp(MQTT_TOPIC_APP_RETAINED_SETTINGS,event->topic,event->topic_len) == 0)
         {
+            printf("app retained settings = %s\n",event->data);
             setAppRetainedSettings(event->data);
         }
+        else if (memcmp(MQTT_TOPIC_DEVICE_NOTIFICATION, event->topic,event->topic_len) == 0)
+        {
+            printf("notification = %s\r\n",data);
+            ui_screen2SetNotification(data);
+        }
+        
         break;
     case MQTT_EVENT_ERROR:
         ESP_LOGI(TAG, "MQTT_EVENT_ERROR");

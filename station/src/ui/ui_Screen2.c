@@ -17,6 +17,8 @@ static lv_obj_t * arcCpu;
 static lv_obj_t * arcMemory;
 static lv_obj_t * labelCpu;
 static lv_obj_t * labelMemory;
+static lv_timer_t *notificationTimer ;
+
 const lv_img_dsc_t *weatherImage[40] = 
 {
     &ui_img_weather0_png,
@@ -85,6 +87,9 @@ void screen2SetMemValue(uint8_t v)
     }
 }
 
+/**
+ * @brief 时间刷新定时器
+ */
 void timeUpdateTimer(lv_timer_t *timer)
 {
     time_t now;
@@ -112,7 +117,13 @@ void timeUpdateTimer(lv_timer_t *timer)
     lv_label_set_text(ui_LabelDate,date);
     lv_label_set_text(ui_LabelHour,hour);
     lv_label_set_text(ui_LabelMinute,minute);
+}
 
+void ui_Screen2NotificationTimer()
+{
+    lv_label_set_text(ui_notification, "");
+    // 实现刷新效果
+    lv_obj_invalidate(ui_MainPage);
 }
 
 void diskSetInfo()
@@ -491,11 +502,23 @@ void ui_Screen2_screen_init(void)
     lv_obj_set_pos(ui_weather_temperature, 0, 60);
     lv_obj_set_style_text_font(ui_weather_temperature, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+    // 通知标签
+    ui_notification = lv_label_create(ui_MainPage);
+    lv_label_set_text(ui_notification, "通知:项目进度-90123");
+    lv_obj_align(ui_notification, LV_ALIGN_TOP_RIGHT, 0, 0);
+    lv_obj_set_width(ui_notification, 150);
+    lv_obj_set_style_text_font(ui_notification, &lv_font_source_han_sans_normal_30, LV_STATE_DEFAULT);
+    lv_label_set_long_mode(ui_notification, LV_LABEL_LONG_SCROLL);
+
+
     lv_obj_add_event_cb(ui_Screen2, ui_event_Screen2, LV_EVENT_ALL, NULL);
 
     static uint32_t user_data = 100;
     timer = lv_timer_create(timeUpdateTimer, 1000, &user_data);
     lv_timer_set_repeat_count(timer, -1);
+
+    notificationTimer = lv_timer_create(ui_Screen2NotificationTimer, 10000, NULL);
+    lv_timer_set_repeat_count(notificationTimer, 1);
 }
 
 void ui_screen2SetWeatherIcon(uint8_t index)
@@ -508,8 +531,16 @@ void ui_screen2SetWeatherIcon(uint8_t index)
 
 void ui_screen2SetWeatherTemperature(char *temperature)
 {
-    char cmbTemperature[5];
+    char cmbTemperature[10];
     strcpy(cmbTemperature, temperature);
     strcat(cmbTemperature,"°C");
-    lv_label_set_text(ui_weather_temperature, temperature);
+    lv_label_set_text(ui_weather_temperature, cmbTemperature);
+}
+
+void ui_screen2SetNotification(char *notification)
+{
+    lv_label_set_text(ui_notification, notification);
+    // 实现刷新效果
+    lv_obj_invalidate(ui_MainPage);
+    lv_timer_set_repeat_count(notificationTimer, 1);
 }

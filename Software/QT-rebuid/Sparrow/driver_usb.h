@@ -20,6 +20,8 @@
 #define SERIAL_CMD_CLEAR_WIFI_INFO  (0x09)
 #define USB_PROTOCOL_CMD_SET_WIFI_INFO (0x0A)
 #define USB_PROTOCOL_CMD_SET_MQTT_INFO  (0x0B)
+#define USB_PROTOCOL_CMD_SET_WEATHER_URL (0x0C)
+#define USB_PROTOCOL_CMD_SET_BILIBILI_URL (0x0D)
 
 typedef enum mqttDataEnum
 {
@@ -41,6 +43,8 @@ public:
     void usbSetWifiInfo(uint8_t * ssid, uint8_t ssidLen, uint8_t* password, uint8_t passwordLen);
     void usbSetMqttInfo(MqttDataEnum dataType, uint8_t * data, uint8_t dataLen);
     void usbPcMonitorCtrl(uint8_t ctrl);
+    void usbSetWeatherUrl(uint8_t* url, uint8_t urlLen);
+    void usbSetBilibiliUrl(uint8_t* url, uint8_t urlLen);
     void run();
 private:
 

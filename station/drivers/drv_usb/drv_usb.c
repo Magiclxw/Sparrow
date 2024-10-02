@@ -7,6 +7,7 @@
 #include "ui.h"
 #include "wifi_station.h"
 #include "drv_mqtt.h"
+#include "drv_http.h"
 
 #define TUSB_DESC_TOTAL_LEN      (TUD_CONFIG_DESC_LEN + TUD_CDC_DESC_LEN + TUD_HID_INOUT_DESC_LEN)
 
@@ -306,6 +307,32 @@ static void usbDataHandler(uint8_t data[])
                 }
                 
                 setLed(LED_RED);
+                break;
+            }
+            case USB_PROTOCOL_CMD_SET_WEATHER_URL:
+            {
+                uint8_t weatherUrlLen = data[5];
+
+                char weatherData[weatherUrlLen];
+
+                memcpy(weatherData, &data[6], weatherUrlLen);
+
+                httpSetWeatherUrl(weatherData);
+
+                setLed(LED_GREEN);
+                break;
+            }
+            case USB_PROTOCOL_CMD_SET_BILIBILI_URL:
+            {
+                uint8_t biliBiliUrlLen = data[5];
+
+                char biliBiliData[biliBiliUrlLen];
+
+                memcpy(biliBiliData, &data[6], biliBiliUrlLen);
+
+                httpSetBilibiliUrl(biliBiliData);
+
+                setLed(LED_GREEN);
                 break;
             }
         }

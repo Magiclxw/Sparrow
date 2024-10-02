@@ -411,6 +411,28 @@ void Driver_Usb::usbSetMqttInfo(MqttDataEnum dataType, uint8_t * data, uint8_t d
     sendCdcData(USB_PROTOCOL_CMD_SET_MQTT_INFO, cmbData, dataLen + 2);
 }
 
+void Driver_Usb::usbSetWeatherUrl(uint8_t* url, uint8_t urlLen)
+{
+    uint8_t cmbData[urlLen + 1];
+
+    memcpy(cmbData, url, urlLen);
+
+    cmbData[urlLen] = '\0';
+
+    sendCdcData(USB_PROTOCOL_CMD_SET_WEATHER_URL, cmbData, urlLen + 1);
+}
+
+void Driver_Usb::usbSetBilibiliUrl(uint8_t* url, uint8_t urlLen)
+{
+    uint8_t cmbData[urlLen + 1];
+
+    memcpy(cmbData, url, urlLen);
+
+    cmbData[urlLen] = '\0';
+
+    sendCdcData(USB_PROTOCOL_CMD_SET_BILIBILI_URL, cmbData, urlLen + 1);
+}
+
 void Driver_Usb::usbPcMonitorCtrl(uint8_t ctrl)
 {
     if (ctrl == 0)

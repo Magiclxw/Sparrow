@@ -64,9 +64,23 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_3">
+         <widget class="QPushButton" name="btnSetWeather">
           <property name="text">
-           <string>  服务器设置</string>
+           <string>  天气服务设置</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnSetMqtt">
+          <property name="text">
+           <string>云服务设置</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnSetBilibili">
+          <property name="text">
+           <string>   bilibili接口设置</string>
           </property>
          </widget>
         </item>
