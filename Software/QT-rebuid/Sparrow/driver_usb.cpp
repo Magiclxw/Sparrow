@@ -415,9 +415,11 @@ void Driver_Usb::usbSetWeatherUrl(uint8_t* url, uint8_t urlLen)
 {
     uint8_t cmbData[urlLen + 1];
 
-    memcpy(cmbData, url, urlLen);
+    cmbData[0] = urlLen;
 
-    cmbData[urlLen] = '\0';
+    memcpy(&cmbData[1], url, urlLen);
+
+    cmbData[urlLen + 1] = '\0';
 
     sendCdcData(USB_PROTOCOL_CMD_SET_WEATHER_URL, cmbData, urlLen + 1);
 }
@@ -426,11 +428,21 @@ void Driver_Usb::usbSetBilibiliUrl(uint8_t* url, uint8_t urlLen)
 {
     uint8_t cmbData[urlLen + 1];
 
-    memcpy(cmbData, url, urlLen);
+    cmbData[0] = urlLen;
 
-    cmbData[urlLen] = '\0';
+    memcpy(&cmbData[1], url, urlLen);
+
+    cmbData[urlLen + 1] = '\0';
 
     sendCdcData(USB_PROTOCOL_CMD_SET_BILIBILI_URL, cmbData, urlLen + 1);
+}
+
+void Driver_Usb::usbSetSleepTime(uint32_t sleepTime)
+{
+    uint8_t cmbData[4];
+    memcpy(cmbData, &sleepTime, 4);
+
+    sendCdcData(USB_PROTOCOL_CMD_SET_SLEEP_TIME, cmbData, 4);
 }
 
 void Driver_Usb::usbPcMonitorCtrl(uint8_t ctrl)

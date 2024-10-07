@@ -31,6 +31,8 @@ private slots:
 
     void on_btnSetBilibili_clicked();
 
+    void on_btnSleepTime_clicked();
+
 signals:
     void signalSetPcMonitor(uint8_t key);
 

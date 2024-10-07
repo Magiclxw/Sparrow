@@ -21,7 +21,7 @@ void Dialog_Bilibili_Cfg::on_btnSetBilibili_clicked()
     uint8_t *bytesBilibili;
     QByteArray baBilibili;
 
-    QString bilibili = ui->btnSetBilibili->text();
+    QString bilibili = ui->leSetBilibili->text();
     uint8_t bilibiliLen = bilibili.size() + 1;
 
     baBilibili = bilibili.toLatin1();

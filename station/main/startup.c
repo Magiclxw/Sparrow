@@ -13,22 +13,26 @@
 #include "drv_led.h"
 #include "drv_http.h"
 #include "task_http.h"
+#include "task_usb.h"
 
 SemaphoreHandle_t preStartupSemaphore;
 
 void preStartup()
 {
+    uint32_t sleepTime = 0;
     preStartupSemaphore = xSemaphoreCreateBinary();
 
     initNvs();
     //clearWifiData();
+
+    sysGetSleepTime(&sleepTime);
     
     //wifi初始化
     initWifi();
 
     initBLE();
     
-    intiUsb();
+    // intiUsb();
 
     //xSemaphoreTake(preStartupSemaphore,portMAX_DELAY);
 }
@@ -36,6 +40,7 @@ void preStartup()
 void midStartup()
 {
     //esp_deep_sleep(1000000LL * 3600);
+    // esp_deep_sleep(1000000LL * 60);
     vTaskDelay(pdMS_TO_TICKS(100));
     createDisplayTask();
 }
@@ -45,6 +50,8 @@ void postStartup()
     //mqtt初始化，建立mqtt连接
     initMqtt();
     
+    // createUsbTask();
+
     createLedTask();
     createHttpTask();
 

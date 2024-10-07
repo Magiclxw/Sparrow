@@ -29,6 +29,9 @@
 #define USB_PROTOCOL_CMD_SET_MQTT_INFO  (0x0B)
 #define USB_PROTOCOL_CMD_SET_WEATHER_URL (0x0C)
 #define USB_PROTOCOL_CMD_SET_BILIBILI_URL (0x0D)
+#define USB_PROTOCOL_CMD_SET_SLEEP_TIME     (0x0E)
+
+extern QueueHandle_t Usb_Queue_Handle;
 
 typedef enum MouseClickState
 {

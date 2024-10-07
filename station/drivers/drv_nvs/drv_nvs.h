@@ -13,6 +13,7 @@
 #define NVS_KEY_BACKGROUND ("nvs_key_background")
 #define NVS_WEATHER ("weather")
 #define NVS_BILIBILI ("bilibili")
+#define NVS_SLEEP_TIME ("sleepTime")
 
 esp_err_t initNvs(void);
 esp_err_t nvsOpen(const char* namespace_name, nvs_open_mode_t open_mode);
@@ -23,6 +24,8 @@ esp_err_t nvsCommit();
 esp_err_t nvsEraseKey(const char* key);
 esp_err_t nvsSaveValue(const char* namespace_name, nvs_open_mode_t open_mode, const char* key, const char* value);
 esp_err_t nvsLoadValue(const char* namespace_name, nvs_open_mode_t open_mode, const char* key, char* out_value, size_t *length);
+esp_err_t nvsSaveU32(const char* namespace_name, nvs_open_mode_t open_mode, const char* key, const uint32_t value);
+esp_err_t nvsLoadU32(const char* namespace_name, nvs_open_mode_t open_mode, const char* key, uint32_t *value);
 esp_err_t nvsSaveBlobData(const char* namespace_name, nvs_open_mode_t open_mode, const char* key, uint8_t *out_value, size_t length);
 esp_err_t nvsLoadBlobData(const char* namespace_name, nvs_open_mode_t open_mode, const char* key, uint8_t *out_value);
 

@@ -130,24 +130,30 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
 
 esp_err_t initHttp(void)
 {
-    static char* weatherUrl = NULL;
-    static char* bilibiliUrl = NULL;
+    static char* weatherKey = NULL;
+    static char* bilibiliMid = NULL;
+    char weatherData[256] = WEATHER_KEY_HEAD;
+    char bilibiliData[256] = BILIBILI_VMID;
     uint8_t weatherUrlLength = 0;
     uint8_t bilibiliUrlLength = 0;
 
     weatherUrlLength = s_weatherGetUrl();
     bilibiliUrlLength = s_bilibiliGetUrl();
 
-    if (weatherUrlLength != 0)
+    if (weatherUrlLength > 1)
     {
-        weatherUrl = pvPortMalloc(weatherUrlLength);
+        weatherKey = pvPortMalloc(weatherUrlLength);
 
-        memcpy(weatherUrl, s_weatherUrl, weatherUrlLength);
+        memcpy(weatherKey, s_weatherUrl, weatherUrlLength);
 
-        printf("weatherUrl: %s\n", weatherUrl);
+        strcat(weatherData, weatherKey);
+
+        strcat(weatherData, WEATHER_KEY_TAIL);
+
+        printf("weatherUrl: %s\n", weatherData);
 
         esp_http_client_config_t weatherConfig = {
-        .url = weatherUrl,
+        .url = weatherData,
         .method = HTTP_METHOD_GET,
         .user_data = weatherBuffer,
         .event_handler = _http_event_handler,
@@ -156,7 +162,7 @@ esp_err_t initHttp(void)
 
         s_weatherClient = esp_http_client_init(&weatherConfig);
 
-        vPortFree(weatherUrl);
+        vPortFree(weatherKey);
     }
     else
     {
@@ -173,16 +179,18 @@ esp_err_t initHttp(void)
         return ESP_FAIL;
     }
 
-    if (bilibiliUrlLength != 0)
+    if (bilibiliUrlLength > 1)
     {
-        bilibiliUrl = pvPortMalloc(bilibiliUrlLength);
+        bilibiliMid = pvPortMalloc(bilibiliUrlLength);
 
-        memcpy(bilibiliUrl, s_bilibiliUrl, bilibiliUrlLength);
+        memcpy(bilibiliMid, s_bilibiliUrl, bilibiliUrlLength);
 
-        printf("bilibiliUrl: %s\n", bilibiliUrl);
+        strcat(bilibiliData, bilibiliMid);
+
+        printf("bilibiliUrl: %s\n", bilibiliData);
 
         esp_http_client_config_t bilibiliConfig = {
-            .url = bilibiliUrl,
+            .url = bilibiliData,
             .method = HTTP_METHOD_GET,
             .user_data = bilibiliBuffer,
             .event_handler = _http_event_handler,
@@ -190,7 +198,7 @@ esp_err_t initHttp(void)
         };
         s_bilibiliClient = esp_http_client_init(&bilibiliConfig);
 
-        vPortFree(bilibiliUrl);
+        vPortFree(bilibiliMid);
     }
     else
     {
@@ -217,40 +225,47 @@ void httpRefreshData()
 
     if (flag == 0)
     {
-        err = esp_http_client_perform(s_weatherClient);
+        if (s_weatherClient != NULL)
+        {
+            err = esp_http_client_perform(s_weatherClient);
 
-        if (err == ESP_OK) {
-            ESP_LOGI(TAG, "HTTPS Status = %d, content_length = %"PRIu64,
-                    esp_http_client_get_status_code(s_weatherClient),
-                    esp_http_client_get_content_length(s_weatherClient));
-        } else {
-            ESP_LOGE(TAG, "Error perform http request %s", esp_err_to_name(err));
+            if (err == ESP_OK) {
+                ESP_LOGI(TAG, "HTTPS Status = %d, content_length = %"PRIu64,
+                        esp_http_client_get_status_code(s_weatherClient),
+                        esp_http_client_get_content_length(s_weatherClient));
+            } else {
+                ESP_LOGE(TAG, "Error perform http request %s", esp_err_to_name(err));
+            }
+
+            flag = 1;
+
+            printf("HTTP weather response : %s\n", weatherBuffer);
+
+            esp_http_client_close(s_weatherClient);
         }
-
-        flag = 1;
-
-        printf("HTTP weather response : %s\n", weatherBuffer);
+        
     }
     else
     {
-        err = esp_http_client_perform(s_bilibiliClient);
+        if (s_bilibiliClient != NULL)
+        {
+            err = esp_http_client_perform(s_bilibiliClient);
 
-        if (err == ESP_OK) {
-            ESP_LOGI(TAG, "HTTPS Status = %d, content_length = %"PRIu64,
-                    esp_http_client_get_status_code(s_bilibiliClient),
-                    esp_http_client_get_content_length(s_bilibiliClient));
-        } else {
-            ESP_LOGE(TAG, "Error perform http request %s", esp_err_to_name(err));
+            if (err == ESP_OK) {
+                ESP_LOGI(TAG, "HTTPS Status = %d, content_length = %"PRIu64,
+                        esp_http_client_get_status_code(s_bilibiliClient),
+                        esp_http_client_get_content_length(s_bilibiliClient));
+            } else {
+                ESP_LOGE(TAG, "Error perform http request %s", esp_err_to_name(err));
+            }
+
+            flag = 0;
+
+            printf("HTTP bilibili response : %s\n", bilibiliBuffer);
+
+            esp_http_client_close(s_bilibiliClient);
         }
-
-        flag = 0;
-
-        printf("HTTP bilibili response : %s\n", bilibiliBuffer);
     }
-
-    esp_http_client_close(s_weatherClient);
-    esp_http_client_close(s_bilibiliClient);
-    
 }
 
 esp_err_t jsonGetWeatherData()
@@ -573,6 +588,8 @@ static size_t s_weatherGetUrl()
 
     esp_err_t ret = nvsLoadValue(USER_NAMESPACE_0, NVS_READWRITE, NVS_WEATHER, s_weatherUrl, &length);
 
+    printf("Weather : %s\r\n", s_weatherUrl);
+
     if (ret == ESP_OK)
     {
         return length;
@@ -588,6 +605,8 @@ static size_t s_bilibiliGetUrl()
     size_t length = 0;
 
     esp_err_t ret = nvsLoadValue(USER_NAMESPACE_0, NVS_READWRITE, NVS_BILIBILI, s_bilibiliUrl, &length);
+
+    printf("Bilibili : %s\r\n", s_bilibiliUrl);
 
     if (ret == ESP_OK)
     {

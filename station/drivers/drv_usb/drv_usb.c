@@ -12,13 +12,12 @@
 #define TUSB_DESC_TOTAL_LEN      (TUD_CONFIG_DESC_LEN + TUD_CDC_DESC_LEN + TUD_HID_INOUT_DESC_LEN)
 
 #define APP_BUTTON (GPIO_NUM_0) // Use BOOT signal by default
-static const char *TAG = "example";
-
-static uint8_t *s_usbDataBackground = NULL;
-static uint16_t s_imageSize = 0;
-static uint16_t s_imageCount = 0;
+static const char *TAG = "drv_usb";
 
 uint8_t const conv_table[128][2] =  { HID_ASCII_TO_KEYCODE };
+
+QueueHandle_t Usb_Queue_Handle = NULL;
+
 /**
  * @brief HID report descriptor
  *
@@ -63,9 +62,7 @@ static const uint8_t hid_configuration_descriptor[] = {
 
 static uint8_t hidGenerateChecksum(uint8_t data[], uint16_t len);
 static void hidReceiveProtocol(uint8_t data[], uint8_t len);
-static esp_err_t compareCheckSum(uint8_t data[] ,uint16_t length);
-static esp_err_t dataCheck(uint8_t data[]);
-static void usbDataHandler(uint8_t data[]);
+
 
 /********* TinyUSB HID callbacks ***************/
 
@@ -110,234 +107,24 @@ void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id, hid_report_type_
 
 void tud_cdc_rx_cb(uint8_t itf)
 {
-    uint8_t readBuffer[1024] = {0};
+    uint8_t readBuffer[100] = {0};
     //uint8_t rxData = 0;
 
     //readBuffer = tud_cdc_read_char();
 
-    tud_cdc_read(readBuffer, 1024);
+    tud_cdc_read(readBuffer, 100);
     //tud_cdc_read_flush();
-    //xQueueSend(bleTransQueueHandle,readBuffer,0);
-    usbDataHandler(readBuffer);
+    if (Usb_Queue_Handle != NULL)
+    {
+        xQueueSendFromISR(Usb_Queue_Handle,readBuffer,0);
+    }
+    
+    //usbDataHandler(readBuffer);
     // setLed(0,1,1);
     // vTaskDelay(pdMS_TO_TICKS(500));
     // setLed(1,0,1);
 }
 
-static esp_err_t compareCheckSum(uint8_t data[] ,uint16_t length)
-{
-    uint8_t checksum = 0;
-
-    for (uint16_t i = 0; i < length; i++)
-    {
-        checksum += data[i];
-    }
-
-    if (checksum == data[length])
-    {
-        return ESP_OK;
-    }
-    else
-    {
-        return ESP_FAIL;
-    }
-}
-
-static esp_err_t dataCheck(uint8_t data[])
-{
-    if (data[0] == USB_PROTOCOL_START_H && data[1] == USB_PROTOCOL_START_L)
-    {
-        uint16_t dataLen = data[3] << 8 | data[4];
-
-        if (data[dataLen + BLE_PROTOCOL_START_LEN + BEL_PROTOCOL_CMD_LEN + BLE_PROTOCOL_DATALEN_LEN + BLE_PROTOCOL_CHECKSUM_LEN + 1] == USB_PROTOCOL_STOP_H 
-        && data[dataLen + BLE_PROTOCOL_START_LEN + BEL_PROTOCOL_CMD_LEN + BLE_PROTOCOL_DATALEN_LEN + BLE_PROTOCOL_CHECKSUM_LEN + 2] == USB_PROTOCOL_STOP_L )
-        {
-            if (compareCheckSum(data, dataLen + 5) == ESP_OK)
-            {
-                return ESP_OK;
-            }
-            else
-            {
-                return ESP_FAIL;
-            }
-        }
-    }
-    return ESP_FAIL;
-}
-
-static void usbDataHandler(uint8_t data[])
-{
-    if (dataCheck(data) == ESP_OK)
-    {
-        uint8_t cmd = data[2];
-        uint8_t* dataPtr = &data[5];
-        uint16_t dataLen = data[3] << 8 | data[4];
-
-        switch (cmd)
-        {
-            case USB_PROTOCOL_CMD_TEXT_START:
-            case USB_PROTOCOL_CMD_TEXT:
-            case USB_PROTOCOL_CMD_FILE_START:
-            case USB_PROTOCOL_CMD_FILE:
-            {
-                xQueueSend(bleTransQueueHandle,data,0);
-                break;
-            }
-            case USB_PROTOCOL_CMD_SET_BACKGROUND_START:
-            {
-                uint8_t ack = 0x01;
-                uint16_t s_imageSize = data[5] << 8 | data[6];
-                if (s_usbDataBackground != NULL)
-                {
-                    free(s_usbDataBackground);
-                    s_usbDataBackground = NULL;
-                }
-                s_usbDataBackground = (uint8_t*) malloc(s_imageSize);
-                cdcSendProtocol(USB_PROTOCOL_CMD_SET_BACKGROUND_START, &ack, 1);
-                break;
-            }
-            case USB_PROTOCOL_CMD_SET_BACKGROUND:
-            {
-                if (s_usbDataBackground != NULL)
-                {
-                    //uint16_t frameIndex = data[5] << 8 | data[6];
-                    uint8_t response[3] = {data[5], data[6], 0x01};
-                    uint16_t frameLength = data[7] << 8 | data[8];
-                    
-                    memcpy(&s_usbDataBackground[s_imageCount], &data[9], frameLength);
-
-                    s_imageCount += frameLength;
-                    //数据接收完成
-                    if (s_imageCount == s_imageSize)
-                    {
-                        nvsSaveBlobData(USER_NAMESPACE_0, NVS_READWRITE, NVS_KEY_BACKGROUND, s_usbDataBackground, s_imageCount);
-                        s_imageCount = 0;
-                        s_imageSize = 0;
-                        free(s_usbDataBackground);
-                        s_usbDataBackground = NULL;
-                    }
-
-                    cdcSendProtocol(USB_PROTOCOL_CMD_SET_BACKGROUND, response, 3);
-                }
-                break;
-            }
-            case USB_PROTOCOL_CMD_DISK_INFO:
-            {
-                uint8_t diskNum = data[5];
-                drawDiskInfoBar(diskNum, &data[6]);
-                break;
-            }
-            case USB_PROTOCOL_CMD_SYSTEM_INFO:
-            {
-                uint8_t memery = data[5];
-                uint8_t cpu = data[6];
-                uint64_t daownLoadSpeed;
-                uint64_t uploadSpeed;
-                memcpy(&daownLoadSpeed, &data[7], sizeof(daownLoadSpeed));
-                memcpy(&uploadSpeed, &data[15], sizeof(uploadSpeed));
-                setLed(LED_BLUE);
-                screen2SetMeter(cpu, memery);
-                screen2SetNetSpeed(daownLoadSpeed, uploadSpeed);
-
-                break;
-            }
-            case USB_PROTOCOL_CMD_CLEAR_WIFI_INFO:
-            {
-                clearWifiData();
-                setLed(LED_BLUE);
-                break;
-            }
-            case USB_PROTOCOL_CMD_SET_WIFI_INFO:
-            {
-                uint8_t ssidLen = data[5];
-                uint8_t pwdLen = data[5 + ssidLen + 1];
-                char ssid[ssidLen];
-                char pwd[pwdLen];
-                memcpy(ssid, &data[6], ssidLen);
-                memcpy(pwd, &data[6 + ssidLen + 1], pwdLen);
-
-                esp_err_t ret = nvsOpen(USER_NAMESPACE_0, NVS_READWRITE);
-
-                ret = nvsSetStr("ssid",(char*)ssid);
-
-                if(ret == ESP_OK)
-                {
-                    ret = nvsSetStr("password",(char*)pwd);
-
-                    ret = nvsCommit();
-
-                    nvsClose();
-
-                    if(ret == ESP_OK)
-                    {
-                        printf("wifi message store success!");
-                        setLed(LED_RED);
-                    }
-                }
-                break;
-            }
-            case USB_PROTOCOL_CMD_SET_MQTT_INFO:
-            {
-                uint8_t dataType = data[5];
-                uint8_t dataLength = data[6];
-
-                // printf("data len = %d\r\n",dataLength);
-
-                char cmbData[dataLength];
-
-                memcpy(cmbData, &data[7], dataLength);
-
-                // printf("addr = %s, username = %s, password = %s\r\n", addr, username, password);
-                //for (int i = 0; i < dataLength; i++)
-                // {
-                //     printf("%s\r\n", cmbData);
-                // }
-                
-                if (dataType == MQTT_DATA_ADDR)
-                {
-                    mqttSetBrokerAddr(cmbData);
-                }
-                else if (dataType == MQTT_DATA_USERNAME)
-                {
-                    mqttSetBrokerUsername(cmbData);
-                }
-                else
-                {
-                    mqttSetBrokerPassword(cmbData);
-                }
-                
-                setLed(LED_RED);
-                break;
-            }
-            case USB_PROTOCOL_CMD_SET_WEATHER_URL:
-            {
-                uint8_t weatherUrlLen = data[5];
-
-                char weatherData[weatherUrlLen];
-
-                memcpy(weatherData, &data[6], weatherUrlLen);
-
-                httpSetWeatherUrl(weatherData);
-
-                setLed(LED_GREEN);
-                break;
-            }
-            case USB_PROTOCOL_CMD_SET_BILIBILI_URL:
-            {
-                uint8_t biliBiliUrlLen = data[5];
-
-                char biliBiliData[biliBiliUrlLen];
-
-                memcpy(biliBiliData, &data[6], biliBiliUrlLen);
-
-                httpSetBilibiliUrl(biliBiliData);
-
-                setLed(LED_GREEN);
-                break;
-            }
-        }
-    }
-}
 
 void cdcSendProtocol(uint8_t cmd, uint8_t data[], uint16_t len)
 {

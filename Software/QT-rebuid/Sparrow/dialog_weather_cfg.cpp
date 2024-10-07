@@ -20,7 +20,7 @@ void Dialog_Weather_Cfg::on_btnSetWeather_clicked()
     uint8_t *bytesWeather;
     QByteArray baWeather;
 
-    QString weather = ui->btnSetWeather->text();
+    QString weather = ui->leSetWeather->text();
     uint8_t weatherLen = weather.size() + 1;
 
     baWeather = weather.toLatin1();

@@ -37,6 +37,7 @@ public:
     QPushButton *btnSetWeather;
     QPushButton *btnSetMqtt;
     QPushButton *btnSetBilibili;
+    QPushButton *btnSleepTime;
     QCheckBox *cbPCMonitor;
     QWidget *widget;
     QStatusBar *statusbar;
@@ -89,6 +90,11 @@ public:
 
         verticalLayout_2->addWidget(btnSetBilibili);
 
+        btnSleepTime = new QPushButton(tab_4);
+        btnSleepTime->setObjectName(QString::fromUtf8("btnSleepTime"));
+
+        verticalLayout_2->addWidget(btnSleepTime);
+
         cbPCMonitor = new QCheckBox(tab_4);
         cbPCMonitor->setObjectName(QString::fromUtf8("cbPCMonitor"));
 
@@ -120,11 +126,12 @@ public:
         pushButton->setText(QApplication::translate("MainWindow", "PushButton", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainWindow", "Tab 1", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Tab 2", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("MainWindow", "\346\225\260\346\215\256\344\274\240\350\276\223", nullptr));
+        tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("MainWindow", "\346\226\207\344\273\266\346\216\245\346\224\266", nullptr));
         btnSetWifi->setText(QApplication::translate("MainWindow", "wifi\350\256\276\347\275\256", nullptr));
         btnSetWeather->setText(QApplication::translate("MainWindow", "  \345\244\251\346\260\224\346\234\215\345\212\241\350\256\276\347\275\256", nullptr));
         btnSetMqtt->setText(QApplication::translate("MainWindow", "\344\272\221\346\234\215\345\212\241\350\256\276\347\275\256", nullptr));
         btnSetBilibili->setText(QApplication::translate("MainWindow", "   bilibili\346\216\245\345\217\243\350\256\276\347\275\256", nullptr));
+        btnSleepTime->setText(QApplication::translate("MainWindow", " \347\235\241\347\234\240\346\227\266\351\225\277(\347\247\222)", nullptr));
         cbPCMonitor->setText(QApplication::translate("MainWindow", "   \347\224\265\350\204\221\347\233\221\346\216\247", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab_4), QApplication::translate("MainWindow", "\350\256\276\347\275\256", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(widget), QApplication::translate("MainWindow", "\344\277\241\346\201\257", nullptr));

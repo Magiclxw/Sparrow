@@ -48,7 +48,7 @@
       </widget>
       <widget class="QWidget" name="tab_3">
        <attribute name="title">
-        <string>数据传输</string>
+        <string>文件接收</string>
        </attribute>
       </widget>
       <widget class="QWidget" name="tab_4">
@@ -81,6 +81,13 @@
          <widget class="QPushButton" name="btnSetBilibili">
           <property name="text">
            <string>   bilibili接口设置</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnSleepTime">
+          <property name="text">
+           <string> 睡眠时长(秒)</string>
           </property>
          </widget>
         </item>

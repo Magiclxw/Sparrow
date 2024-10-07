@@ -31,7 +31,17 @@ esp_err_t nvsGetStr(const char* key, char* out_value, size_t* length)
 
 esp_err_t nvsSetStr(const char* key, const char* value)
 {
-    return nvs_set_str(s_nvsHandle, key,value);
+    return nvs_set_str(s_nvsHandle, key, value);
+}
+
+esp_err_t nvsGetU32(const char* key, char* out_value)
+{
+    return nvs_get_u32(s_nvsHandle, key, out_value);
+}
+
+esp_err_t nvsSetU32(const char* key, uint32_t value)
+{
+    return nvs_set_u32(s_nvsHandle, key, value);
 }
 
 esp_err_t nvsCommit()
@@ -79,6 +89,42 @@ esp_err_t nvsLoadValue(const char* namespace_name, nvs_open_mode_t open_mode, co
     {
         ret = nvsGetStr(key, out_value, length);
     }
+
+    nvsClose();
+
+    return ret;
+}
+
+esp_err_t nvsSaveU32(const char* namespace_name, nvs_open_mode_t open_mode, const char* key, const uint32_t value)
+{
+    esp_err_t ret = ESP_OK;
+
+    ret = nvsOpen(namespace_name, open_mode);
+
+    if(ret != ESP_OK) return ret;
+
+    ret = nvsSetU32(key, value);
+
+    if(ret != ESP_OK) return ret;
+
+    ret = nvsCommit();
+
+    if(ret != ESP_OK) return ret;
+
+    nvsClose();
+    
+    return ret;
+}
+
+esp_err_t nvsLoadU32(const char* namespace_name, nvs_open_mode_t open_mode, const char* key, uint32_t *value)
+{
+    esp_err_t ret = ESP_OK;
+
+    ret = nvsOpen(namespace_name, open_mode);
+
+    if(ret != ESP_OK) return ret;
+
+    ret = nvsGetU32(key, value);
 
     nvsClose();
 

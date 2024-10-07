@@ -7,6 +7,7 @@
 #include "dialog_mqtt_cfg.h"
 #include "dialog_weather_cfg.h"
 #include "dialog_bilibili_cfg.h"
+#include "dialog_sleep_time.h"
 
 Driver_Usb *usbDriver;
 usblistener *listener = Q_NULLPTR;
@@ -164,7 +165,10 @@ void MainWindow::on_cbPCMonitor_stateChanged(int arg1)
 }
 
 
+void MainWindow::on_btnSleepTime_clicked()
+{
+    Dialog_Sleep_Time dialog(this);
 
-
-
+    dialog.exec();
+}
 

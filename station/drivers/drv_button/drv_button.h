@@ -7,10 +7,13 @@
 #include "hal/gpio_types.h"
 #include "esp_system.h"
 
+#define GPIO_POWER  (5)
 #define GPIO_BUTTON (17)
+
 
 
 void initButton();
 int buttonGetState(void);
+void powerSetState(uint8_t state);
 
 #endif

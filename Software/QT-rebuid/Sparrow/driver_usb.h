@@ -22,6 +22,7 @@
 #define USB_PROTOCOL_CMD_SET_MQTT_INFO  (0x0B)
 #define USB_PROTOCOL_CMD_SET_WEATHER_URL (0x0C)
 #define USB_PROTOCOL_CMD_SET_BILIBILI_URL (0x0D)
+#define USB_PROTOCOL_CMD_SET_SLEEP_TIME     (0x0E)
 
 typedef enum mqttDataEnum
 {
@@ -45,6 +46,7 @@ public:
     void usbPcMonitorCtrl(uint8_t ctrl);
     void usbSetWeatherUrl(uint8_t* url, uint8_t urlLen);
     void usbSetBilibiliUrl(uint8_t* url, uint8_t urlLen);
+    void usbSetSleepTime(uint32_t sleepTime);
     void run();
 private:
 

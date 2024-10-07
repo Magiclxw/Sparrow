@@ -12,6 +12,7 @@ CONFIG += c++11
 SOURCES += \
     dialog_bilibili_cfg.cpp \
     dialog_mqtt_cfg.cpp \
+    dialog_sleep_time.cpp \
     dialog_weather_cfg.cpp \
     dialog_wifi_cfg.cpp \
     driver_usb.cpp \
@@ -24,6 +25,7 @@ SOURCES += \
 HEADERS += \
     dialog_bilibili_cfg.h \
     dialog_mqtt_cfg.h \
+    dialog_sleep_time.h \
     dialog_weather_cfg.h \
     dialog_wifi_cfg.h \
     driver_usb.h \
@@ -37,6 +39,7 @@ HEADERS += \
 FORMS += \
     dialog_bilibili_cfg.ui \
     dialog_mqtt_cfg.ui \
+    dialog_sleep_time.ui \
     dialog_weather_cfg.ui \
     dialog_wifi_cfg.ui \
     mainwindow.ui

@@ -13,6 +13,10 @@
 #define MAX_HTTP_BILIBILI_RECV_BUFFER 300
 #define MAX_HTTP_OUTPUT_BUFFER  512
 
+#define WEATHER_KEY_HEAD ("https://api.seniverse.com/v3/weather/now.json?key=")
+#define WEATHER_KEY_TAIL ("&location=ip&language=zh-Hans&unit=c")
+#define BILIBILI_VMID    ("https://api.bilibili.com/x/relation/stat?vmid=")
+
 esp_err_t initHttp(void);
 void httpRefreshData();
 esp_err_t jsonGetWeatherData();
