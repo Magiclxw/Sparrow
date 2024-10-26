@@ -6,6 +6,8 @@
 #include <QDataStream>
 #include <QStorageInfo>
 
+extern QString fileFolder;
+
 bool sysSaveDataToFile(QString fileName, uint8_t data[], int dataLen);
 void sysGetDiskMsg(QList<QStorageInfo> *msg);
 void sysGetNetSpeed(uint64_t* downLoadSpeed, uint64_t* uploadSpeed);
@@ -13,5 +15,6 @@ double sysGetCpuInfo();
 uint8_t sysGetMemeryUsage();
 void sysSaveCfg(QString key, QString value);
 QString sysGetCfg(QString key);
+QStringList getFileNames();
 
 #endif // SYSTEM_H

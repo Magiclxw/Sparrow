@@ -8,6 +8,11 @@
 #include "dialog_weather_cfg.h"
 #include "dialog_bilibili_cfg.h"
 #include "dialog_sleep_time.h"
+#include <QFileIconProvider>
+#include <QLabel>
+#include <QProcess>
+#include <QFileDialog>
+#include <QDesktopServices>
 
 Driver_Usb *usbDriver;
 usblistener *listener = Q_NULLPTR;
@@ -38,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent)
 //    sysGetDiskMsg(&msg);
 
     connect(listener, &usblistener::DevicePlugIn, usbDriver, &Driver_Usb::usbConnectDevice);
+    updateRecFileList();
 }
 
 MainWindow::~MainWindow()
@@ -170,5 +176,60 @@ void MainWindow::on_btnSleepTime_clicked()
     Dialog_Sleep_Time dialog(this);
 
     dialog.exec();
+}
+
+void MainWindow::updateRecFileList()
+{
+    QStringList fileList = getFileNames();
+    uint16_t fileNum = fileList.count();
+
+//    qDebug() << "file number = " << fileNum;
+
+
+    for(int i = 0; i < fileNum; i++)
+    {
+        QListWidgetItem *listwidgetitem = new QListWidgetItem;
+        QFileInfo fileInfo(fileFolder+"/"+fileList.value(i));
+
+        QFileIconProvider iconProvider;
+        QString fileName = fileInfo.fileName();
+        QIcon icon = iconProvider.icon(fileInfo);
+        QLabel label;
+        label.setPixmap(icon.pixmap(50,50));
+
+        listwidgetitem->setIcon(icon);
+        listwidgetitem->setText(fileName);
+
+        ui->lwRecFiles->addItem(listwidgetitem);
+    }
+}
+
+void MainWindow::on_lwRecFiles_itemDoubleClicked(QListWidgetItem *item)
+{
+    uint16_t index = 0;
+
+    //获取被选中行
+    index = ui->lwRecFiles->currentIndex().row();
+
+    QString name = ui->lwRecFiles->currentIndex().data().toString();
+
+    QFileInfo fileInfo(name);
+
+    QString path = fileInfo.absoluteFilePath();
+
+    qDebug() << "clicked : " << path;
+
+    QProcess::startDetached(path);
+
+
+}
+
+
+void MainWindow::on_btnOpenFloader_clicked()
+{
+
+    QString path = QDir::currentPath();
+
+    QDesktopServices::openUrl(path + "/" +fileFolder);
 }
 

@@ -15,9 +15,10 @@
 #include "esp_lcd_ili9341.h"
 #include "../src/ui/ui_startPage.h"
 
-#define LCD_TASK_STACK_SIZE (4096)
+#define LCD_TASK_STACK_SIZE (8192)
 #define LCD_TASK_PRIORITY   (10)
 
+extern QueueHandle_t lcdQueueHandle;
 
 void createDisplayTask();
 

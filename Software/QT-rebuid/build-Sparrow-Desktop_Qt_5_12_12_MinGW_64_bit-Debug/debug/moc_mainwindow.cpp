@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_MainWindow_t {
-    QByteArrayData data[13];
-    char stringdata0[217];
+    QByteArrayData data[17];
+    char stringdata0[297];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -43,7 +43,11 @@ QT_MOC_LITERAL(8, 115, 4), // "arg1"
 QT_MOC_LITERAL(9, 120, 24), // "on_btnSetWeather_clicked"
 QT_MOC_LITERAL(10, 145, 21), // "on_btnSetMqtt_clicked"
 QT_MOC_LITERAL(11, 167, 25), // "on_btnSetBilibili_clicked"
-QT_MOC_LITERAL(12, 193, 23) // "on_btnSleepTime_clicked"
+QT_MOC_LITERAL(12, 193, 23), // "on_btnSleepTime_clicked"
+QT_MOC_LITERAL(13, 217, 31), // "on_lwRecFiles_itemDoubleClicked"
+QT_MOC_LITERAL(14, 249, 16), // "QListWidgetItem*"
+QT_MOC_LITERAL(15, 266, 4), // "item"
+QT_MOC_LITERAL(16, 271, 25) // "on_btnOpenFloader_clicked"
 
     },
     "MainWindow\0signalSetPcMonitor\0\0uint8_t\0"
@@ -51,7 +55,9 @@ QT_MOC_LITERAL(12, 193, 23) // "on_btnSleepTime_clicked"
     "on_btnSetWifi_clicked\0on_cbPCMonitor_stateChanged\0"
     "arg1\0on_btnSetWeather_clicked\0"
     "on_btnSetMqtt_clicked\0on_btnSetBilibili_clicked\0"
-    "on_btnSleepTime_clicked"
+    "on_btnSleepTime_clicked\0"
+    "on_lwRecFiles_itemDoubleClicked\0"
+    "QListWidgetItem*\0item\0on_btnOpenFloader_clicked"
 };
 #undef QT_MOC_LITERAL
 
@@ -61,7 +67,7 @@ static const uint qt_meta_data_MainWindow[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-       8,   14, // methods
+      10,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -69,16 +75,18 @@ static const uint qt_meta_data_MainWindow[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,   54,    2, 0x06 /* Public */,
+       1,    1,   64,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       5,    0,   57,    2, 0x08 /* Private */,
-       6,    0,   58,    2, 0x08 /* Private */,
-       7,    1,   59,    2, 0x08 /* Private */,
-       9,    0,   62,    2, 0x08 /* Private */,
-      10,    0,   63,    2, 0x08 /* Private */,
-      11,    0,   64,    2, 0x08 /* Private */,
-      12,    0,   65,    2, 0x08 /* Private */,
+       5,    0,   67,    2, 0x08 /* Private */,
+       6,    0,   68,    2, 0x08 /* Private */,
+       7,    1,   69,    2, 0x08 /* Private */,
+       9,    0,   72,    2, 0x08 /* Private */,
+      10,    0,   73,    2, 0x08 /* Private */,
+      11,    0,   74,    2, 0x08 /* Private */,
+      12,    0,   75,    2, 0x08 /* Private */,
+      13,    1,   76,    2, 0x08 /* Private */,
+      16,    0,   79,    2, 0x08 /* Private */,
 
  // signals: parameters
     QMetaType::Void, 0x80000000 | 3,    4,
@@ -90,6 +98,8 @@ static const uint qt_meta_data_MainWindow[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void, 0x80000000 | 14,   15,
     QMetaType::Void,
 
        0        // eod
@@ -109,6 +119,8 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 5: _t->on_btnSetMqtt_clicked(); break;
         case 6: _t->on_btnSetBilibili_clicked(); break;
         case 7: _t->on_btnSleepTime_clicked(); break;
+        case 8: _t->on_lwRecFiles_itemDoubleClicked((*reinterpret_cast< QListWidgetItem*(*)>(_a[1]))); break;
+        case 9: _t->on_btnOpenFloader_clicked(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -152,13 +164,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 8)
+        if (_id < 10)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 8;
+        _id -= 10;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 8)
+        if (_id < 10)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 8;
+        _id -= 10;
     }
     return _id;
 }

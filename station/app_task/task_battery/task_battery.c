@@ -39,60 +39,60 @@ static void Battery_Task()
 
         
 
-        //判断电源电压
-        if(battery_voltage <= 1400)  //电压过低(2800mV)
-        {
-            if(client != NULL)
-            {
-                battery_state = BATTERY_STATE_LOW_VOL;
+        // //判断电源电压
+        // if(battery_voltage <= 1400)  //电压过低(2800mV)
+        // {
+        //     if(client != NULL)
+        //     {
+        //         battery_state = BATTERY_STATE_LOW_VOL;
 
-                itoa(battery_state,str_voltage,10);
+        //         itoa(battery_state,str_voltage,10);
 
-                esp_mqtt_client_publish(client, "/status/power", str_voltage, 0, 0, 0);
-            }
+        //         esp_mqtt_client_publish(client, "/status/power", str_voltage, 0, 0, 0);
+        //     }
             
-        }
-        //else if(battery_voltage <= 2100)  //电池供电状态(4200mV)
-        //改为通过判断TP4056引脚判断状态
-        else if((GetChargeState() == 1) && (GetStandbyState() == 1))
-        {
-            if(client!= NULL)
-            {
-                battery_state = BATTERY_STATE_BATTERY;
+        // }
+        // //else if(battery_voltage <= 2100)  //电池供电状态(4200mV)
+        // //改为通过判断TP4056引脚判断状态
+        // else if((GetChargeState() == 1) && (GetStandbyState() == 1))
+        // {
+        //     if(client!= NULL)
+        //     {
+        //         battery_state = BATTERY_STATE_BATTERY;
 
-                itoa(battery_state,str_voltage,10);
+        //         itoa(battery_state,str_voltage,10);
 
-                esp_mqtt_client_publish(client, "/status/power", str_voltage, 0, 0, 0);
-            }
+        //         esp_mqtt_client_publish(client, "/status/power", str_voltage, 0, 0, 0);
+        //     }
             
-            vTaskDelay(pdMS_TO_TICKS(DEFAULT_RUNTIME));
-            printf("sleep");
-            esp_deep_sleep(1000000LL * DEFAULT_DEEP_SLEEP_SEC);
-        }
-        else if(battery_voltage <= 2600 && battery_voltage >= 2400) //usb供电状态(5V)
-        {
-            if(client!= NULL)
-            {
-                battery_state = BATTERY_STATE_USB;
+        //     vTaskDelay(pdMS_TO_TICKS(DEFAULT_RUNTIME));
+        //     printf("sleep");
+        //     esp_deep_sleep(1000000LL * DEFAULT_DEEP_SLEEP_SEC);
+        // }
+        // else if(battery_voltage <= 2600 && battery_voltage >= 2400) //usb供电状态(5V)
+        // {
+        //     if(client!= NULL)
+        //     {
+        //         battery_state = BATTERY_STATE_USB;
 
-                itoa(battery_state,str_voltage,10);
+        //         itoa(battery_state,str_voltage,10);
 
-                esp_mqtt_client_publish(client, "/status/power", str_voltage, 0, 0, 0);
-            }
-            vTaskDelay(1000);
-        }
-        else
-        {
-            //异常状态
-            if(client!= NULL)
-            {
-                battery_state = BATTERY_STATE_ERROR;
+        //         esp_mqtt_client_publish(client, "/status/power", str_voltage, 0, 0, 0);
+        //     }
+        //     vTaskDelay(1000);
+        // }
+        // else
+        // {
+        //     //异常状态
+        //     if(client!= NULL)
+        //     {
+        //         battery_state = BATTERY_STATE_ERROR;
 
-                itoa(battery_state,str_voltage,10);
+        //         itoa(battery_state,str_voltage,10);
 
-                esp_mqtt_client_publish(client, "/status/power", str_voltage, 0, 0, 0);
-            }
-        }
+        //         esp_mqtt_client_publish(client, "/status/power", str_voltage, 0, 0, 0);
+        //     }
+        // }
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }

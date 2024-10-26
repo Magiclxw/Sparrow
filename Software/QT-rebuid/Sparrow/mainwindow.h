@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "driver_usb.h"
+#include <QListWidgetItem>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -16,6 +17,7 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
+    void updateRecFileList();
     ~MainWindow();
 
 private slots:
@@ -32,6 +34,10 @@ private slots:
     void on_btnSetBilibili_clicked();
 
     void on_btnSleepTime_clicked();
+
+    void on_lwRecFiles_itemDoubleClicked(QListWidgetItem *item);
+
+    void on_btnOpenFloader_clicked();
 
 signals:
     void signalSetPcMonitor(uint8_t key);

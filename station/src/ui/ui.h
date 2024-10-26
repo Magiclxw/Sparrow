@@ -71,6 +71,9 @@ extern lv_obj_t * ui____initial_actions0;
 extern lv_obj_t * ui_Settings;
 
 LV_IMG_DECLARE(ui_img_919562436);    // assets/128乘128_画板 1 副本 2.png
+LV_IMG_DECLARE(ui_img_cpu_png);
+LV_IMG_DECLARE(ui_img_memory_png);
+LV_IMG_DECLARE(ui_img_tomato_clock);
 LV_IMG_DECLARE(ui_img_background_png);    // assets/background.png
 LV_IMG_DECLARE(ui_img_background1_png);
 LV_IMG_DECLARE(ui_img_background2_png);

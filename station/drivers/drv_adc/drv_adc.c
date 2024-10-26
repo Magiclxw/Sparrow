@@ -76,9 +76,9 @@ static void example_adc_calibration_deinit(adc_cali_handle_t handle)
 
 static int Battery_IO_Init()
 {
-    gpio_reset_pin(ADC_EN_PIN);
-    gpio_reset_pin(CHARGE_PIN);
-    gpio_reset_pin(STANDBY_PIN);
+    // gpio_reset_pin(ADC_EN_PIN);
+    // gpio_reset_pin(CHARGE_PIN);
+    // gpio_reset_pin(STANDBY_PIN);
     /* Set the GPIO as a push/pull output */
     gpio_set_direction(ADC_EN_PIN, GPIO_MODE_OUTPUT);
     gpio_set_direction(CHARGE_PIN,GPIO_MODE_INPUT);

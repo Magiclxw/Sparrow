@@ -2,8 +2,11 @@
 #include "../../src/ui/deviceBinding.h"
 #include "../../drivers/drv_button/drv_button.h"
 #include "../../src/ui/ui.h"
+#include "../../drivers/drv_power/drv_power.h"
+#include "../../src/ui/ui.h"
 
 TaskHandle_t s_lcdTaskHandle = NULL;
+QueueHandle_t lcdQueueHandle = NULL;
 
 static const char *TAG = "task_display";
 
@@ -28,64 +31,6 @@ static void btn_cb(lv_event_t * e)
     lv_disp_set_rotation(disp, rotation);
 }
 
-void example_lvgl_demo_ui(lv_disp_t *disp)
-{
-    lv_obj_t *scr = lv_disp_get_scr_act(disp);
-    meter = lv_meter_create(scr);
-    lv_obj_center(meter);
-    lv_obj_set_size(meter, 240, 135);
-
-    /*Add a scale first*/
-    lv_meter_scale_t *scale = lv_meter_add_scale(meter);
-    lv_meter_set_scale_ticks(meter, scale, 41, 2, 10, lv_palette_main(LV_PALETTE_GREY));
-    lv_meter_set_scale_major_ticks(meter, scale, 8, 4, 15, lv_color_black(), 10);
-
-    lv_meter_indicator_t *indic;
-
-    /*Add a blue arc to the start*/
-    indic = lv_meter_add_arc(meter, scale, 3, lv_palette_main(LV_PALETTE_BLUE), 0);
-    lv_meter_set_indicator_start_value(meter, indic, 0);
-    lv_meter_set_indicator_end_value(meter, indic, 20);
-
-    /*Make the tick lines blue at the start of the scale*/
-    indic = lv_meter_add_scale_lines(meter, scale, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_BLUE), false, 0);
-    lv_meter_set_indicator_start_value(meter, indic, 0);
-    lv_meter_set_indicator_end_value(meter, indic, 20);
-
-    /*Add a red arc to the end*/
-    indic = lv_meter_add_arc(meter, scale, 3, lv_palette_main(LV_PALETTE_RED), 0);
-    lv_meter_set_indicator_start_value(meter, indic, 80);
-    lv_meter_set_indicator_end_value(meter, indic, 100);
-
-    /*Make the tick lines red at the end of the scale*/
-    indic = lv_meter_add_scale_lines(meter, scale, lv_palette_main(LV_PALETTE_RED), lv_palette_main(LV_PALETTE_RED), false, 0);
-    lv_meter_set_indicator_start_value(meter, indic, 80);
-    lv_meter_set_indicator_end_value(meter, indic, 100);
-
-    /*Add a needle line indicator*/
-    indic = lv_meter_add_needle_line(meter, scale, 4, lv_palette_main(LV_PALETTE_GREY), -10);
-
-    btn = lv_btn_create(scr);
-    lv_obj_t * lbl = lv_label_create(btn);
-    lv_label_set_text_static(lbl, LV_SYMBOL_REFRESH" ROTATE");
-    lv_obj_align(btn, LV_ALIGN_BOTTOM_LEFT, 30, -30);
-    /*Button event*/
-    lv_obj_add_event_cb(btn, btn_cb, LV_EVENT_CLICKED, disp);
-
-    /*Create an animation to set the value*/
-    lv_anim_t a;
-    lv_anim_init(&a);
-    lv_anim_set_exec_cb(&a, set_value);
-    lv_anim_set_var(&a, indic);
-    lv_anim_set_values(&a, 0, 100);
-    lv_anim_set_time(&a, 2000);
-    lv_anim_set_repeat_delay(&a, 100);
-    lv_anim_set_playback_time(&a, 500);
-    lv_anim_set_playback_delay(&a, 100);
-    lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
-    lv_anim_start(&a);
-}
-
 void createDisplayTask()
 {
     xTaskCreate((TaskFunction_t)displayTask,
@@ -100,6 +45,21 @@ static void displayTask()
 {
     static lv_disp_draw_buf_t disp_buf; // contains internal graphic buffer(s) called draw buffer(s)
     static lv_disp_drv_t disp_drv;      // contains callback functions
+    BaseType_t res = pdFALSE;
+    uint8_t recData[18] = {0};
+    uint8_t memery = 0;
+    uint8_t cpu = 0;
+    uint64_t daownLoadSpeed = 0;
+    uint64_t uploadSpeed = 0;
+
+    drvPowerInitWakeupGpio();
+
+    if (drvPowerGetWakeupLevel() != 1)
+    {
+        vTaskDelete(NULL);
+    }
+
+    lcdQueueHandle = xQueueCreate(5,18); 
 
     ESP_LOGI(TAG, "Turn off LCD backlight");
     gpio_config_t bk_gpio_config = {
@@ -163,12 +123,12 @@ static void displayTask()
     lv_init();
     // alloc draw buffers used by LVGL
     // it's recommended to choose the size of the draw buffer(s) to be at least 1/10 screen sized
-    lv_color_t *buf1 = heap_caps_malloc(EXAMPLE_LCD_H_RES * 10 * sizeof(lv_color_t), MALLOC_CAP_DMA);
+    lv_color_t *buf1 = heap_caps_malloc(EXAMPLE_LCD_H_RES * 20 * sizeof(lv_color_t), MALLOC_CAP_DMA);
     assert(buf1);
-    // lv_color_t *buf2 = heap_caps_malloc(EXAMPLE_LCD_H_RES * 10 * sizeof(lv_color_t), MALLOC_CAP_DMA);
-    // assert(buf2);
+    lv_color_t *buf2 = heap_caps_malloc(EXAMPLE_LCD_H_RES * 20 * sizeof(lv_color_t), MALLOC_CAP_DMA);
+    assert(buf2);
     // initialize LVGL draw buffers
-    lv_disp_draw_buf_init(&disp_buf, buf1, NULL, EXAMPLE_LCD_H_RES * 10);
+    lv_disp_draw_buf_init(&disp_buf, buf1, NULL, EXAMPLE_LCD_H_RES * 20);
 
     ESP_LOGI(TAG, "Register display driver to LVGL");
     lv_disp_drv_init(&disp_drv);
@@ -200,5 +160,19 @@ static void displayTask()
         vTaskDelay(pdMS_TO_TICKS(10));
         // The task running lv_timer_handler should have lower priority than that running `lv_tick_inc`
         lv_timer_handler();
+        res = xQueueReceive(lcdQueueHandle,recData,0);
+
+        if (res != pdFALSE)
+        {
+            memery = recData[0];
+            cpu = recData[1];
+            memcpy(&daownLoadSpeed, &recData[2], sizeof(daownLoadSpeed));
+            memcpy(&uploadSpeed, &recData[10], sizeof(uploadSpeed));
+
+            screen2SetMeter(cpu, memery);
+            screen2SetNetSpeed(daownLoadSpeed, uploadSpeed);
+        }
+
+        
     }
 }

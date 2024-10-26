@@ -9,6 +9,7 @@
 #include "wifi_station.h"
 #include "drv_mqtt.h"
 #include "systeminfo.h"
+#include "task_display.h"
 
 TaskHandle_t Usb_Task__Handle = NULL;
 
@@ -137,15 +138,28 @@ static void usbDataHandler(uint8_t data[])
             }
             case USB_PROTOCOL_CMD_SYSTEM_INFO:
             {
-                uint8_t memery = data[5];
-                uint8_t cpu = data[6];
-                uint64_t daownLoadSpeed;
-                uint64_t uploadSpeed;
-                memcpy(&daownLoadSpeed, &data[7], sizeof(daownLoadSpeed));
-                memcpy(&uploadSpeed, &data[15], sizeof(uploadSpeed));
-                setLed(LED_BLUE);
-                screen2SetMeter(cpu, memery);
-                screen2SetNetSpeed(daownLoadSpeed, uploadSpeed);
+                // static uint8_t color = 0;
+                // uint8_t memery = data[5];
+                // uint8_t cpu = data[6];
+                // uint64_t daownLoadSpeed;
+                // uint64_t uploadSpeed;
+                // memcpy(&daownLoadSpeed, &data[7], sizeof(daownLoadSpeed));
+                // memcpy(&uploadSpeed, &data[15], sizeof(uploadSpeed));
+                // if (color == 0)
+                // {
+                //     setLed(LED_BLUE);
+                //     color = 1;
+                // }
+                // else
+                // {
+                //     setLed(LED_RED);
+                //     color = 0;
+                // }
+                
+                // screen2SetMeter(cpu, memery);
+                // screen2SetNetSpeed(daownLoadSpeed, uploadSpeed);
+
+                xQueueSend(lcdQueueHandle, &data[5], 0);
 
                 break;
             }

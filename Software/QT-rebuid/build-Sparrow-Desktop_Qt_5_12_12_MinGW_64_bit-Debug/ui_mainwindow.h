@@ -12,6 +12,8 @@
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QCheckBox>
+#include <QtWidgets/QFormLayout>
+#include <QtWidgets/QListWidget>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
@@ -31,6 +33,9 @@ public:
     QPushButton *pushButton;
     QWidget *tab_2;
     QWidget *tab_3;
+    QVBoxLayout *verticalLayout_3;
+    QListWidget *lwRecFiles;
+    QPushButton *btnOpenFloader;
     QWidget *tab_4;
     QVBoxLayout *verticalLayout_2;
     QPushButton *btnSetWifi;
@@ -38,6 +43,9 @@ public:
     QPushButton *btnSetMqtt;
     QPushButton *btnSetBilibili;
     QPushButton *btnSleepTime;
+    QWidget *widget_2;
+    QFormLayout *formLayout;
+    QCheckBox *checkBox;
     QCheckBox *cbPCMonitor;
     QWidget *widget;
     QStatusBar *statusbar;
@@ -46,7 +54,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(250, 400);
+        MainWindow->resize(258, 400);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         verticalLayout = new QVBoxLayout(centralwidget);
@@ -65,6 +73,18 @@ public:
         tabWidget->addTab(tab_2, QString());
         tab_3 = new QWidget();
         tab_3->setObjectName(QString::fromUtf8("tab_3"));
+        verticalLayout_3 = new QVBoxLayout(tab_3);
+        verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
+        lwRecFiles = new QListWidget(tab_3);
+        lwRecFiles->setObjectName(QString::fromUtf8("lwRecFiles"));
+
+        verticalLayout_3->addWidget(lwRecFiles);
+
+        btnOpenFloader = new QPushButton(tab_3);
+        btnOpenFloader->setObjectName(QString::fromUtf8("btnOpenFloader"));
+
+        verticalLayout_3->addWidget(btnOpenFloader);
+
         tabWidget->addTab(tab_3, QString());
         tab_4 = new QWidget();
         tab_4->setObjectName(QString::fromUtf8("tab_4"));
@@ -95,10 +115,23 @@ public:
 
         verticalLayout_2->addWidget(btnSleepTime);
 
-        cbPCMonitor = new QCheckBox(tab_4);
+        widget_2 = new QWidget(tab_4);
+        widget_2->setObjectName(QString::fromUtf8("widget_2"));
+        widget_2->setMaximumSize(QSize(16777215, 100));
+        formLayout = new QFormLayout(widget_2);
+        formLayout->setObjectName(QString::fromUtf8("formLayout"));
+        checkBox = new QCheckBox(widget_2);
+        checkBox->setObjectName(QString::fromUtf8("checkBox"));
+
+        formLayout->setWidget(0, QFormLayout::FieldRole, checkBox);
+
+        cbPCMonitor = new QCheckBox(widget_2);
         cbPCMonitor->setObjectName(QString::fromUtf8("cbPCMonitor"));
 
-        verticalLayout_2->addWidget(cbPCMonitor);
+        formLayout->setWidget(0, QFormLayout::LabelRole, cbPCMonitor);
+
+
+        verticalLayout_2->addWidget(widget_2);
 
         tabWidget->addTab(tab_4, QString());
         widget = new QWidget();
@@ -114,7 +147,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(3);
+        tabWidget->setCurrentIndex(2);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -126,12 +159,14 @@ public:
         pushButton->setText(QApplication::translate("MainWindow", "PushButton", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainWindow", "Tab 1", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Tab 2", nullptr));
+        btnOpenFloader->setText(QApplication::translate("MainWindow", "  \346\211\223\345\274\200\346\226\207\344\273\266\345\244\271", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("MainWindow", "\346\226\207\344\273\266\346\216\245\346\224\266", nullptr));
         btnSetWifi->setText(QApplication::translate("MainWindow", "wifi\350\256\276\347\275\256", nullptr));
         btnSetWeather->setText(QApplication::translate("MainWindow", "  \345\244\251\346\260\224\346\234\215\345\212\241\350\256\276\347\275\256", nullptr));
         btnSetMqtt->setText(QApplication::translate("MainWindow", "\344\272\221\346\234\215\345\212\241\350\256\276\347\275\256", nullptr));
         btnSetBilibili->setText(QApplication::translate("MainWindow", "   bilibili\346\216\245\345\217\243\350\256\276\347\275\256", nullptr));
         btnSleepTime->setText(QApplication::translate("MainWindow", " \347\235\241\347\234\240\346\227\266\351\225\277(\347\247\222)", nullptr));
+        checkBox->setText(QApplication::translate("MainWindow", " \347\235\241\347\234\240\345\212\237\350\203\275", nullptr));
         cbPCMonitor->setText(QApplication::translate("MainWindow", "   \347\224\265\350\204\221\347\233\221\346\216\247", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab_4), QApplication::translate("MainWindow", "\350\256\276\347\275\256", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(widget), QApplication::translate("MainWindow", "\344\277\241\346\201\257", nullptr));

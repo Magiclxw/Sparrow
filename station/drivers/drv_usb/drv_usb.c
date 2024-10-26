@@ -107,18 +107,23 @@ void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id, hid_report_type_
 
 void tud_cdc_rx_cb(uint8_t itf)
 {
-    uint8_t readBuffer[100] = {0};
+    uint8_t readBuffer[64] = {0};
     //uint8_t rxData = 0;
 
     //readBuffer = tud_cdc_read_char();
 
-    tud_cdc_read(readBuffer, 100);
+    // if (tud_cdc_available() && tud_cdc_connected())
+    {
+        tud_cdc_read(readBuffer, 64);
+    }
+    
     //tud_cdc_read_flush();
     if (Usb_Queue_Handle != NULL)
     {
         xQueueSendFromISR(Usb_Queue_Handle,readBuffer,0);
     }
     
+    tud_cdc_read_flush();
     //usbDataHandler(readBuffer);
     // setLed(0,1,1);
     // vTaskDelay(pdMS_TO_TICKS(500));

@@ -12,6 +12,9 @@
 #include <Windows.h>
 #include <winioctl.h>
 #include <QSettings>
+#include <QFileDialog>
+#include <QStringList>
+
 
 QString fileFolder = "file";
 QString sysConfig = "config/systemConfig.ini";
@@ -169,3 +172,67 @@ QString sysGetCfg(QString key)
 
     return data;
 }
+
+//QFileInfoList getFileNames(const QString &path) {
+//    QDir dir(path);
+//    QFileInfoList entries = dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
+
+//    return entries;
+//}
+
+QFileInfo dirFileInfo(const QDir& directory, const QString& entry) {
+    QFile file(directory.filePath(entry));
+    return QFileInfo(file);
+}
+
+QStringList getFileNames() {
+    QDir dir(fileFolder);
+    QStringList entries = dir.entryList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+    QStringList fileNames;
+
+    for (const QString& entry : entries) {
+        QFileInfo fileInfo = dirFileInfo(dir, entry);
+        if (fileInfo.isFile()) {
+            fileNames << fileInfo.fileName();
+            qDebug() << "fileName :" << fileInfo.fileName();
+        }
+    }
+
+    return fileNames;
+}
+
+
+//QString sysGetFileName(uint16_t index)
+//{
+//    QString path;
+//    QString filePath;
+//    QJsonObject obj;
+//    filePath = hidewindow_list_file;
+//    QFile file(filePath);
+
+//    if (!file.open(QIODevice::ReadOnly)) {
+
+//    }
+//    else
+//    {
+//        QByteArray data = file.readAll();
+//        file.close();
+//        QJsonDocument doc = QJsonDocument::fromJson(data);
+//        if(!doc.isNull())
+//        {
+//            if(doc.isObject())
+//            {
+//                QJsonObject obj = doc.object();
+//                path = obj["item"+QString::number(index)].toString();
+//                qDebug() << "path:" << path;
+//            }
+
+//        }
+//        else
+//        {
+
+//        }
+
+//    }
+//    return path;
+//}

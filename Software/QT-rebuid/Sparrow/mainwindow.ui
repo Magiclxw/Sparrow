@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>250</width>
+    <width>258</width>
     <height>400</height>
    </rect>
   </property>
@@ -21,7 +21,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -50,6 +50,18 @@
        <attribute name="title">
         <string>文件接收</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QListWidget" name="lwRecFiles"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnOpenFloader">
+          <property name="text">
+           <string>  打开文件夹</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="tab_4">
        <attribute name="title">
@@ -92,10 +104,29 @@
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="cbPCMonitor">
-          <property name="text">
-           <string>   电脑监控</string>
+         <widget class="QWidget" name="widget_2" native="true">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>100</height>
+           </size>
           </property>
+          <layout class="QFormLayout" name="formLayout">
+           <item row="0" column="1">
+            <widget class="QCheckBox" name="checkBox">
+             <property name="text">
+              <string> 睡眠功能</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QCheckBox" name="cbPCMonitor">
+             <property name="text">
+              <string>   电脑监控</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>

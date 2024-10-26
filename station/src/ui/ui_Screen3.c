@@ -9,12 +9,15 @@ static lv_timer_t *timer ;
 
 static void screen3Timer_cb(lv_timer_t *timer)
 {
-    _ui_screen_change(&ui_Screen2, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_Screen2_screen_init);
+    // _ui_screen_change(&ui_Screen2, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_Screen2_screen_init);
+    lv_timer_del(timer);
+    lv_scr_load(ui_Screen2);
 }
 
 void initScreen3Timer()
 {
-    if(timer == NULL) {
+    // if(timer == NULL) 
+    {
         timer = lv_timer_create(screen3Timer_cb, 5000, NULL);
         lv_timer_set_repeat_count(timer, 1);
     }
@@ -49,11 +52,11 @@ void ui_Screen3_screen_init(void)
     lv_obj_clear_flag(ui_Screen3, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
     ui_Menu = lv_roller_create(ui_Screen3);
-    lv_roller_set_options(ui_Menu, "Settings\nSystem\nTheme", LV_ROLLER_MODE_INFINITE);
+    lv_roller_set_options(ui_Menu, "配置\n系统\n专注模式", LV_ROLLER_MODE_INFINITE);
     lv_obj_set_width(ui_Menu, lv_pct(100));
     lv_obj_set_height(ui_Menu, lv_pct(100));
     lv_obj_set_align(ui_Menu, LV_ALIGN_CENTER);
-    lv_obj_set_style_text_font(ui_Menu, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Menu, &lv_font_simsun_16_cjk, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_Menu, ui_event_Menu, LV_EVENT_ALL, NULL);
 

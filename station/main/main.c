@@ -26,6 +26,6 @@ void app_main(void)
   preStartup();
   //中启动
   midStartup();
-  //后启动
+  // //后启动
   postStartup();
 }

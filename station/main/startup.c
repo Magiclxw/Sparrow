@@ -31,8 +31,6 @@ void preStartup()
     initWifi();
 
     initBLE();
-    
-    // intiUsb();
 
     //xSemaphoreTake(preStartupSemaphore,portMAX_DELAY);
 }
@@ -61,7 +59,7 @@ void postStartup()
     //启动舵机线程
     createServoTask();
     //创建电源线程
-    //Battery_Task_Create();
+    createBatteryTask();
 
     //启动RTC线程
     //Rtc_Task_Create();

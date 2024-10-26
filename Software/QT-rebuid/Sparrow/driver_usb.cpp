@@ -17,6 +17,7 @@ static uint32_t totalFrame = 0;     //帧个数
 static uint16_t currentIndex = 0;   //当前数据帧
 static uint32_t recDataSize = 0;    //已接收数据大小
 static uint16_t exteaData = 0;      //不足一帧数据大小
+static uint8_t s_pcMonitor = 0;     //电脑监控开关
 uint8_t *s_filePointer;             //接收数据指针
 
 QString failSavePath = "config/test.bin";
@@ -197,6 +198,13 @@ static void recDataHandler(uint8_t data[])
 
                     s_filePointer = (uint8_t*)malloc((uint32_t)dataSize);
 
+                    //监控开关打开，开始传输前关闭开关
+                    if (s_pcMonitor == 1)
+                    {
+                        timer->stop();
+                    }
+
+
                     sendCdcData(SERIAL_CMD_FILE_START, &ack, 1);
 
                     break;
@@ -229,6 +237,11 @@ static void recDataHandler(uint8_t data[])
                     else
                     {
                         sendCdcData(SERIAL_CMD_FILE, ack, 3);
+
+                        if (s_pcMonitor == 1)
+                        {
+                            timer->start(1000);
+                        }
 
                         sysSaveDataToFile(fileName, s_filePointer, dataSize);
                         if (s_filePointer != NULL)
@@ -455,4 +468,5 @@ void Driver_Usb::usbPcMonitorCtrl(uint8_t ctrl)
     {
         timer->start(1000);
     }
+    s_pcMonitor = ctrl;
 }

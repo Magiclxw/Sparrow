@@ -13,11 +13,17 @@ static char date[12];
 static char hour[12];
 static char minute[12];
 
+static char downloadSpeedStr[20] = {0};
+static char uploadSpeedStr[20] = {0};
+
 static lv_obj_t * arcCpu;
 static lv_obj_t * arcMemory;
 static lv_obj_t * labelCpu;
 static lv_obj_t * labelMemory;
+static lv_obj_t * imgCpu;
+static lv_obj_t * imgMemory;
 static lv_timer_t *notificationTimer ;
+
 
 const lv_img_dsc_t *weatherImage[40] = 
 {
@@ -64,15 +70,25 @@ const lv_img_dsc_t *weatherImage[40] =
 };
 
 static lv_disp_rot_t rotation = LV_DISP_ROT_NONE;
-
+static char cpuUsageStr[12];
+static char memUsageStr[12];
 void screen2SetCpuValue(uint8_t v)
 {
     if (v <= 100 && v >= 0)
     {
-        char cpuUsageStr[12];
-        sprintf(cpuUsageStr, "%d", (int)(v));
-        lv_arc_set_value(arcCpu, v);
-        lv_label_set_text(labelCpu, cpuUsageStr);
+        sprintf(cpuUsageStr, "%d", v);
+        // if (arcCpu != NULL)
+        // {
+        //     lv_arc_set_value(arcCpu, v);
+        // }
+        lv_obj_set_style_img_recolor_opa(imgCpu, v, LV_PART_MAIN | LV_STATE_DEFAULT);
+        
+        if (labelCpu != NULL)
+        {
+            lv_label_set_text_static(labelCpu, cpuUsageStr);
+            // lv_label_set_text(labelCpu, cpuUsageStr);
+        }
+        
     }
 }
 
@@ -80,10 +96,17 @@ void screen2SetMemValue(uint8_t v)
 {
     if (v <= 100 && v >= 0)
     {
-        char memUsageStr[12];
-        sprintf(memUsageStr, "%d", (int)(v));
-        lv_arc_set_value(arcMemory, v);
-        lv_label_set_text(labelMemory, memUsageStr);
+        sprintf(memUsageStr, "%d", v);
+        // if (arcMemory!= NULL)
+        // {
+        //     lv_arc_set_value(arcMemory, v);
+        // }
+        lv_obj_set_style_img_recolor_opa(imgMemory, v, LV_PART_MAIN | LV_STATE_DEFAULT);
+        if (labelMemory != NULL)
+        {
+            lv_label_set_text_static(labelMemory, memUsageStr);
+        }
+        
     }
 }
 
@@ -183,112 +206,78 @@ void screen2SetMeter(uint8_t cpuValue, uint8_t memValue)
 
 void screen2SetNetSpeed(uint64_t downloadSpeed, uint64_t uploadSpeed)
 {
-    char downloadSpeedStr[20] = {0};
-    char uploadSpeedStr[20] = {0};
+    
     if (downloadSpeed > 1024)
     {
         sprintf(downloadSpeedStr, "%d", (int)(downloadSpeed /1024));
-        lv_label_set_text(ui_LabelDownloadSpeedText, downloadSpeedStr);
-        lv_label_set_text(ui_LabelDownloadSpeedTextUnit, "MB/s");
+        lv_label_set_text_static(ui_LabelDownloadSpeedText, downloadSpeedStr);
+        lv_label_set_text_static(ui_LabelDownloadSpeedTextUnit, "MB/s");
     }
     else
     {
         sprintf(downloadSpeedStr, "%d", (int)(downloadSpeed));
-        lv_label_set_text(ui_LabelDownloadSpeedText, downloadSpeedStr);
-        lv_label_set_text(ui_LabelDownloadSpeedTextUnit, "KB/s");
+        lv_label_set_text_static(ui_LabelDownloadSpeedText, downloadSpeedStr);
+        lv_label_set_text_static(ui_LabelDownloadSpeedTextUnit, "KB/s");
     }
 
     if (uploadSpeed > 1024)
     {
         sprintf(uploadSpeedStr, "%d", (int)(uploadSpeed/1024));
-        lv_label_set_text(ui_LabelUploadSpeedText, uploadSpeedStr);
-        lv_label_set_text(ui_LabelUploadSpeedTextUnit, "MB/s");
+        lv_label_set_text_static(ui_LabelUploadSpeedText, uploadSpeedStr);
+        lv_label_set_text_static(ui_LabelUploadSpeedTextUnit, "MB/s");
     }
     else
     {
         sprintf(uploadSpeedStr, "%d", (int)(uploadSpeed));
-        lv_label_set_text(ui_LabelUploadSpeedText, uploadSpeedStr);
-        lv_label_set_text(ui_LabelUploadSpeedTextUnit, "KB/s");
+        lv_label_set_text_static(ui_LabelUploadSpeedText, uploadSpeedStr);
+        lv_label_set_text_static(ui_LabelUploadSpeedTextUnit, "KB/s");
     }
 }
 
 void createMeter1(lv_obj_t *scr)
 {
-    static lv_style_t style;
-    static lv_obj_t *labelCpuText;
-    arcCpu = lv_arc_create(scr);
-    labelCpuText = lv_label_create(scr);
 
-    lv_style_init(&style);
-    //lv_style_set_arc_color(&style, lv_palette_main(LV_PALETTE_GREY));
-    //lv_obj_set_style_bg_color(arc, lv_palette_main(LV_PALETTE_RED), 0);
-    lv_obj_set_style_arc_color(arcCpu, lv_palette_main(LV_PALETTE_PURPLE), LV_PART_INDICATOR);
-    lv_arc_set_rotation(arcCpu, 90);
-    lv_arc_set_bg_angles(arcCpu, 0, 360);
-    lv_arc_set_range(arcCpu, 0, 100);
-    lv_arc_set_start_angle(arcCpu, 90);
-
-    lv_obj_remove_style(arcCpu, NULL, LV_PART_KNOB);   /*Be sure the knob is not displayed*/
-    lv_obj_add_style(arcCpu, &style, 0);
-    lv_obj_set_size(arcCpu, 90, 90);
-    // lv_obj_set_align(scr, LV_ALIGN_OUT_LEFT_MID);
-    lv_obj_center(arcCpu);
-    lv_obj_set_pos(arcCpu, -50, -10);
+    imgCpu = lv_img_create(scr);
+    lv_img_set_src(imgCpu, &ui_img_cpu_png);
+    lv_obj_set_width(imgCpu, LV_SIZE_CONTENT);   /// 100
+    lv_obj_set_height(imgCpu, LV_SIZE_CONTENT);    /// 100
+    lv_obj_set_x(imgCpu, -55);
+    lv_obj_set_y(imgCpu, -10);
+    lv_obj_set_align(imgCpu, LV_ALIGN_CENTER);
+    lv_obj_add_flag(imgCpu, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_clear_flag(imgCpu, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_img_recolor(imgCpu, lv_color_hex(0xFF0000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_img_recolor_opa(imgCpu, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     labelCpu = lv_label_create(scr);
     lv_obj_set_style_text_font(labelCpu, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_color(labelCpu, lv_color_hex3(0xfff), 0);
     lv_label_set_text(labelCpu, "0");
     lv_obj_center(labelCpu);
-    lv_obj_set_pos(labelCpu, -50, -10);
-
-    lv_arc_set_value(arcCpu, 10);
-
-    lv_label_set_text(labelCpuText, "CPU");
-    // lv_obj_set_align(labelCpuText,scr);
-    lv_obj_align_to(labelCpuText, scr, LV_ALIGN_CENTER, -100, -60);
-    // lv_obj_set_align(labelCpuText, LV_ALIGN_OUT_TOP_MID);
-    // lv_obj_set_pos(labelCpuText, -30, 0);
-    lv_obj_set_style_text_font(labelCpuText, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_color(labelCpuText, lv_color_hex3(0xfff), 0);
+    lv_obj_set_pos(labelCpu, -55, -10);
 }
 
 void createMeter2(lv_obj_t *scr)
 {
-    static lv_style_t style;
-    static lv_obj_t *labelMemoryText;
-
-    arcMemory = lv_arc_create(scr);
-    labelMemoryText = lv_label_create(scr);
-
-    lv_style_init(&style);
-    // lv_style_set_arc_color(&style, lv_palette_main(LV_PALETTE_GREY));
-    lv_obj_set_style_arc_color(arcMemory, lv_palette_main(LV_PALETTE_BLUE), LV_PART_INDICATOR);
-    lv_arc_set_rotation(arcMemory, 90);
-    lv_arc_set_bg_angles(arcMemory, 0, 360);
-    lv_arc_set_range(arcMemory, 0, 100);
-    lv_obj_remove_style(arcMemory, NULL, LV_PART_KNOB);   /*Be sure the knob is not displayed*/
-    lv_obj_add_style(arcMemory, &style, 0);
-    lv_obj_set_size(arcMemory, 90, 90);
-    //lv_obj_set_align(scr, LV_ALIGN_OUT_RIGHT_MID);
-    lv_obj_center(arcMemory);
-    lv_obj_set_pos(arcMemory, 50, -10);
+    imgMemory = lv_img_create(scr);
+    lv_img_set_src(imgMemory, &ui_img_memory_png);
+    lv_obj_set_width(imgMemory, LV_SIZE_CONTENT);   /// 100
+    lv_obj_set_height(imgMemory, LV_SIZE_CONTENT);    /// 100
+    lv_obj_set_x(imgMemory, 55);
+    lv_obj_set_y(imgMemory, 5);
+    lv_obj_set_align(imgMemory, LV_ALIGN_CENTER);
+    lv_obj_add_flag(imgMemory, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_clear_flag(imgMemory, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_img_recolor(imgMemory, lv_color_hex(0xFF0000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_img_recolor_opa(imgMemory, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     labelMemory = lv_label_create(scr);
     lv_obj_set_style_text_font(labelMemory, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_color(labelMemory, lv_color_hex3(0xfff), 0);
     lv_label_set_text(labelMemory, "0");
     lv_obj_center(labelMemory);
-    lv_obj_set_pos(labelMemory, 50, -10);
+    lv_obj_set_pos(labelMemory, 54, -6);
 
-    lv_arc_set_value(arcMemory, 10);
-
-    lv_label_set_text(labelMemoryText, "MEM");
-    lv_obj_align_to(labelMemoryText, scr, LV_ALIGN_CENTER, 80, -60);
-    // lv_obj_set_align(labelMemoryText, LV_ALIGN_OUT_TOP_MID);
-    // lv_obj_set_pos(labelMemoryText, 30, 0);
-    lv_obj_set_style_text_font(labelMemoryText, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_color(labelMemoryText, lv_color_hex3(0xfff), 0);
 }
 
 void createSpeedArrow(lv_obj_t *scr)
@@ -443,7 +432,7 @@ void ui_Screen2_screen_init(void)
     ui_LabelMonth = lv_label_create(ui_MainPage);
     lv_obj_set_width(ui_LabelMonth, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_LabelMonth, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_LabelMonth, 140);
+    lv_obj_set_x(ui_LabelMonth, 150);
     lv_obj_set_y(ui_LabelMonth, 0);
     lv_obj_set_align(ui_LabelMonth, LV_ALIGN_BOTTOM_LEFT);
     lv_label_set_text(ui_LabelMonth, "00");
@@ -504,7 +493,7 @@ void ui_Screen2_screen_init(void)
 
     // 通知标签
     ui_notification = lv_label_create(ui_MainPage);
-    lv_label_set_text(ui_notification, "通知:项目进度-90123");
+    lv_label_set_text(ui_notification, "欢迎进入Sparrow的");
     lv_obj_align(ui_notification, LV_ALIGN_TOP_RIGHT, 0, 0);
     lv_obj_set_width(ui_notification, 150);
     lv_obj_set_style_text_font(ui_notification, &lv_font_source_han_sans_normal_30, LV_STATE_DEFAULT);
