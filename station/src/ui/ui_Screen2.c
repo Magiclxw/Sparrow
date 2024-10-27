@@ -252,7 +252,7 @@ void createMeter1(lv_obj_t *scr)
     labelCpu = lv_label_create(scr);
     lv_obj_set_style_text_font(labelCpu, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_color(labelCpu, lv_color_hex3(0xfff), 0);
-    lv_label_set_text(labelCpu, "0");
+    lv_label_set_text(labelCpu, "CPU");
     lv_obj_center(labelCpu);
     lv_obj_set_pos(labelCpu, -55, -10);
 }
@@ -274,7 +274,7 @@ void createMeter2(lv_obj_t *scr)
     labelMemory = lv_label_create(scr);
     lv_obj_set_style_text_font(labelMemory, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_color(labelMemory, lv_color_hex3(0xfff), 0);
-    lv_label_set_text(labelMemory, "0");
+    lv_label_set_text(labelMemory, "MEM");
     lv_obj_center(labelMemory);
     lv_obj_set_pos(labelMemory, 54, -6);
 

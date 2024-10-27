@@ -70,6 +70,9 @@ extern lv_obj_t * ui____initial_actions0;
 
 extern lv_obj_t * ui_Settings;
 
+extern lv_obj_t * ui_tomatoClock;
+void ui_tomatoClock_screen_init(void);
+
 LV_IMG_DECLARE(ui_img_919562436);    // assets/128乘128_画板 1 副本 2.png
 LV_IMG_DECLARE(ui_img_cpu_png);
 LV_IMG_DECLARE(ui_img_memory_png);

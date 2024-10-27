@@ -9,6 +9,7 @@ idf_component_register( SRCS
                         "ui/ui_settingPage.c"
                         "ui/ui_helpers.c"
                         "ui/ui_startPage.c"
+                        "ui/ui_tomatoClockPage.c"
                         "imgs/ui_img_919562436.c"
                         "ui/lv_font_source_han_sans_normal_30.c"
                         "../drivers/drv_button/drv_button.c"

@@ -65,6 +65,8 @@ const lv_img_dsc_t * ui_imgset_1776456547[1] = {&ui_img_919562436};
 void ui_Settings_screen_init(void);
 lv_obj_t * ui_Settings;
 
+lv_obj_t * ui_tomatoClock;
+
 ///////////////////// TEST LVGL SETTINGS ////////////////////
 #if LV_COLOR_DEPTH != 16
     #error "LV_COLOR_DEPTH should be 16bit to match SquareLine Studio's settings"
@@ -136,13 +138,17 @@ void ui_event_Menu(lv_event_t * e)
         resetScreen3Timer();
         initScreen4Timer();
         uint8_t index = lv_roller_get_selected(ui_Menu);
-        if (index == 1)
+        if (index == 0)
         {
             _ui_screen_change(&ui_Screen4, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_Screen4_screen_init);
         }
-        else if (index == 2)
+        else if (index == 1)
         {
             _ui_screen_change(&ui_Settings, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_Settings_screen_init);
+        }
+        else if (index == 2)
+        {
+            _ui_screen_change(&ui_tomatoClock, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_tomatoClock_screen_init);
         }
     }
 }
