@@ -14,6 +14,7 @@
 #include "drv_http.h"
 #include "task_http.h"
 #include "task_usb.h"
+#include "task_mqtt.h"
 
 SemaphoreHandle_t preStartupSemaphore;
 
@@ -46,7 +47,7 @@ void midStartup()
 void postStartup()
 {
     //mqtt初始化，建立mqtt连接
-    initMqtt();
+    createMqttTask();
     
     // createUsbTask();
 

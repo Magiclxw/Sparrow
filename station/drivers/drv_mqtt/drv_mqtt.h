@@ -12,7 +12,7 @@
 #include "../../app_task/task_servo/task_servo.h"
 
 extern esp_mqtt_client_handle_t client;
-
+extern QueueHandle_t mqttQueueHandle;
 extern SemaphoreHandle_t preStartupSemaphore;
 
 #define MQTT_TOPIC_APP_RETAINED_SETTINGS            "/settings/app_config/retained"

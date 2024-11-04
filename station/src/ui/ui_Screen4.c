@@ -7,8 +7,6 @@
 
 static lv_timer_t *timer ;
 
-void resetScreen4Timer();
-
 static void screen4Timer_cb(lv_timer_t *timer)
 {
     resetScreen4Timer();

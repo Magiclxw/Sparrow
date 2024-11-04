@@ -7,12 +7,15 @@
 
 static const char *TAG = "MQTT station";
 
+QueueHandle_t mqttQueueHandle = NULL;
+
 esp_mqtt_client_handle_t client = NULL;
 
 static uint16_t s_powerOnTimes = 0;
 static char s_addr[256] = {0};
 static char s_username[256] = {0};
 static char s_password[256] = {0};
+static char s_mqttRecData[1024] = {0};
 
 static void log_error_if_nonzero(const char *message, int error_code)
 {
@@ -80,11 +83,14 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         break;
     case MQTT_EVENT_DATA:
         ESP_LOGI(TAG, "MQTT_EVENT_DATA");
-        printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
-        printf("DATA=%.*s\r\n", event->data_len, event->data);
-        printf("data len = %d\r\n", event->data_len);
-        char data[300] = {0};
-        memcpy(data, event->data, event->data_len);
+        // printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
+        // printf("DATA=%.*s\r\n", event->data_len, event->data);
+        // printf("data len = %d\r\n", event->data_len);
+        // memcpy(s_mqttRecData, event->data, event->data_len);
+        strcpy(s_mqttRecData, event->topic);
+        // strcat(s_mqttRecData, event->data);
+
+        xQueueSend(mqttQueueHandle, s_mqttRecData, 0);
         // data[event->data_len+1] = "\n";
         // if(strcmp("/config/angle",event->topic))
         // {
@@ -110,16 +116,16 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 
 
 
-        if(memcmp(MQTT_TOPIC_APP_RETAINED_SETTINGS,event->topic,event->topic_len) == 0)
-        {
-            printf("app retained settings = %s\n",event->data);
-            setAppRetainedSettings(event->data);
-        }
-        else if (memcmp(MQTT_TOPIC_DEVICE_NOTIFICATION, event->topic,event->topic_len) == 0)
-        {
-            printf("notification = %s\r\n",data);
-            ui_screen2SetNotification(data);
-        }
+        // if(memcmp(MQTT_TOPIC_APP_RETAINED_SETTINGS,event->topic,event->topic_len) == 0)
+        // {
+        //     printf("app retained settings = %s\n",event->data);
+        //     setAppRetainedSettings(event->data);
+        // }
+        // else if (memcmp(MQTT_TOPIC_DEVICE_NOTIFICATION, event->topic,event->topic_len) == 0)
+        // {
+        //     printf("notification = %s\r\n",data);
+        //     ui_screen2SetNotification(data);
+        // }
         
         break;
     case MQTT_EVENT_ERROR:
