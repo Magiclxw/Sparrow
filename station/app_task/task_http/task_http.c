@@ -7,6 +7,8 @@
 
 TaskHandle_t taskHttpHandle = NULL;
 
+const char* bilibiliFollowerTxt = "bilibili:";
+
 static void httpTask();
 
 int createHttpTask()
@@ -26,9 +28,12 @@ static void httpTask()
     char weatherText[20];
     char weatherCode[5];
     char weatherTemperature[5];
+    char strBilibiliFollower[30];
 
     int bilibiliFollowing = 0;
+    int tempBililiFollowing = 0;
     int bilibiliFollower = 0;
+
 
     // httpSetWeatherUrl("0");
     // httpSetBilibiliUrl("0");
@@ -64,8 +69,18 @@ static void httpTask()
             drvHttpGetWeatherTemperature(weatherTemperature);
             printf("weatherTemperature = %s\r\n", weatherTemperature);
             
-            ui_screen2SetWeatherIcon(atoi(weatherCode));
-            ui_screen2SetWeatherTemperature(weatherTemperature);
+            ui_Screen_Main_SetWeatherIcon(atoi(weatherCode));
+            ui_Screen_Main_SetWeatherTemperature(weatherTemperature);
+
+            if (tempBililiFollowing != bilibiliFollowing)
+            {
+                strcpy(strBilibiliFollower, bilibiliFollowerTxt);
+                itoa(bilibiliFollower, &strBilibiliFollower[9], 10);
+                ui_Screen_Main_SetBilibiliFollower(strBilibiliFollower);
+                tempBililiFollowing = bilibiliFollowing;
+            }
+            
+
             //释放json数据
             // drvHttpDeleteJsonData();
             ESP_LOGI("TAG", "[APP] Free memory: %" PRIu32 " bytes", esp_get_free_heap_size());

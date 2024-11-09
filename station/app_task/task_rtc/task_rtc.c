@@ -1,14 +1,15 @@
 #include "task_rtc.h"
 #include "../../sys_config.h"
+#include "drv_power.h"
 
 TaskHandle_t Rtc_Task__Handle = NULL;
 
-static void Rtc_Task();
+static void rtcTask();
 
-int Rtc_Task_Create()
+int createRtcTask()
 {
-    xTaskCreate((TaskFunction_t)Rtc_Task,
-                (const char*)"Rtc_Task",
+    xTaskCreate((TaskFunction_t)rtcTask,
+                (const char*)"rtcTask",
                 (uint32_t )RTC_TASK_STACK_SIZE,
                 (void *	)NULL,
                 (UBaseType_t)RTC_TASK_PRIORITY,
@@ -16,11 +17,12 @@ int Rtc_Task_Create()
     return OPERATE_SUCCESS;
 }
 
-static void Rtc_Task()
+static void rtcTask()
 {
 
     while(1)
     {
-
+        drvPowerGetNextWakeupTime();
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }

@@ -34,7 +34,7 @@ static void btn_cb(lv_event_t * e)
 void createDisplayTask()
 {
     xTaskCreate((TaskFunction_t)displayTask,
-                (const char*)"lcdTask",
+                (const char*)"displayTask",
                 (uint32_t )LCD_TASK_STACK_SIZE,
                 (void *	)NULL,
                 (UBaseType_t)LCD_TASK_PRIORITY,
@@ -51,8 +51,6 @@ static void displayTask()
     uint8_t cpu = 0;
     uint64_t daownLoadSpeed = 0;
     uint64_t uploadSpeed = 0;
-
-    drvPowerInitWakeupGpio();
 
     if (drvPowerGetWakeupLevel() != 1)
     {
@@ -169,8 +167,8 @@ static void displayTask()
             memcpy(&daownLoadSpeed, &recData[2], sizeof(daownLoadSpeed));
             memcpy(&uploadSpeed, &recData[10], sizeof(uploadSpeed));
 
-            screen2SetMeter(cpu, memery);
-            screen2SetNetSpeed(daownLoadSpeed, uploadSpeed);
+            ui_Screen_Main_SetMeter(cpu, memery);
+            ui_Screen_Main_SetNetSpeed(daownLoadSpeed, uploadSpeed);
         }
 
         

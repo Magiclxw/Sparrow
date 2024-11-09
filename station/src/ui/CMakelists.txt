@@ -8,9 +8,11 @@ idf_component_register(SRCS "ui_tomatoClockPage.c" "ui_settingPage.c" "ui_Screen
                             "ui_Screen4.c"
                             "ui_settingPage.c"
                             "lv_port_indev.c"
+                            "ui_backgroundPage.c"
                             "../../drivers/drv_button/drv_button.c"
                         INCLUDE_DIRS "."
                                      ".""../../managed_components"
                                      "../components"
                                      "../../drivers/drv_button"
-                        REQUIRES   esp_event driver lvgl__lvgl esp_lcd hal lwip)
+                                     "../../drivers/drv_nvs"
+                        REQUIRES   esp_event driver lvgl__lvgl esp_lcd hal lwip nvs_flash)

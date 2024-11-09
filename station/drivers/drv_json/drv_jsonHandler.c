@@ -1,5 +1,6 @@
 #include "drv_jsonHandler.h"
 #include "drv_nvs.h"
+#include "drv_servo.h"
 
 static AppRetainedSettingsStruct s_appRetainedSettings = {0};
 static AppDisretainedSettingsStruct s_appDisretainedSettings = {0};
@@ -7,6 +8,10 @@ static DeviceRetainedStateStruct s_deviceRetainedState = {0};
 static DeviceRetainedStatisticsStruct s_deviceRetainedStateStatistics = {0};
 static DeviceDisretainedStatisticsStruct s_deviceDisretainedStatistics = {0};
 
+void drvJsonHandlerInit()
+{
+
+}
 
 /**
  * @brief 解析app端发送的保留设置数据
@@ -81,22 +86,48 @@ esp_err_t setAppRetainedSettings(char *data)
         return ESP_FAIL;
     }
 
-    s_appRetainedSettings.wakeupInterval = jsonWakeupInterval->valueint;
-    s_appRetainedSettings.powerCtrl = jsonPowerCtrl->valueint;
-    strcpy(s_appRetainedSettings.password, jsonPCPassword->valuestring);
-    s_appRetainedSettings.passwordCtrl = jsonPCPasswordCtrl->valueint;
-    s_appRetainedSettings.passwordWait = jsonPCPasswordWait->valueint;
-    s_appRetainedSettings.ledCtrl = jsonLed->valueint;
-    s_appRetainedSettings.toolsToken = jsonToken->valueint;
-
-    //保存配置
-    nvsSaveValue(USER_NAMESPACE_0, NVS_READWRITE, JSON_KEY_TOOLS_TOKEN, s_appRetainedSettings.toolsToken);
+    if (s_appRetainedSettings.wakeupInterval != jsonWakeupInterval->valueint)
+    {
+        s_appRetainedSettings.wakeupInterval = jsonWakeupInterval->valueint;
+        nvsSaveWakeupInterval(s_appRetainedSettings.wakeupInterval);
+    }
+    if (s_appRetainedSettings.powerCtrl != jsonPowerCtrl->valueint)
+    {
+        s_appRetainedSettings.powerCtrl = jsonPowerCtrl->valueint;
+        nvsSavePowerCtrl(s_appRetainedSettings.powerCtrl);
+    }
+    if (strcmp(s_appRetainedSettings.password,jsonPCPassword->valuestring) != 0)
+    {
+        strcpy(s_appRetainedSettings.password, jsonPCPassword->valuestring);
+        nvsSavePcPassword(s_appRetainedSettings.password);
+    }
+    if (s_appRetainedSettings.passwordCtrl != jsonPCPasswordCtrl->valueint)
+    {
+        s_appRetainedSettings.passwordCtrl = jsonPCPasswordCtrl->valueint;
+        nvsSavePcPasswordCtrl(s_appRetainedSettings.passwordCtrl);
+    }
+    if (s_appRetainedSettings.passwordWait != jsonPCPasswordWait->valueint)
+    {
+        s_appRetainedSettings.passwordWait = jsonPCPasswordWait->valueint;
+        nvsSavePcPasswordWait(s_appRetainedSettings.passwordWait);
+    }
+    if (s_appRetainedSettings.ledCtrl != jsonLed->valueint)
+    {
+        s_appRetainedSettings.ledCtrl = jsonLed->valueint;
+        nvsSaveLedCtrl(s_appRetainedSettings.passwordWait);
+    }
+    if (s_appRetainedSettings.toolsToken != jsonToken->valueint)
+    {
+        s_appRetainedSettings.toolsToken = jsonToken->valueint;
+        nvsSaveToolsTokenCtrl(s_appRetainedSettings.toolsToken);
+    }
 
     return ESP_OK;
 }
 
 AppRetainedSettingsStruct getAppRetainedSettings()
 {
+    
     return s_appRetainedSettings;
 }
 
@@ -132,6 +163,24 @@ esp_err_t setAppDisretainedSettings(char *data)
     s_appDisretainedSettings.saveAngle = jsonSaveAngle->valueint;
 
     cJSON_Delete(jsonData);
+
+    drvServoSetAngle(s_appDisretainedSettings.turnAngle);
+
+    // 空闲时角度
+    if (s_appDisretainedSettings.saveAngle == 1)
+    {
+        nvsSaveIdleAngle(s_appDisretainedSettings.turnAngle);
+    }
+    // 正向时角度
+    else if (s_appDisretainedSettings.saveAngle == 2)
+    {
+        nvsSavePosAngle(s_appDisretainedSettings.turnAngle);
+    }
+    // 逆向时角度
+    else if (s_appDisretainedSettings.saveAngle == 3)
+    {
+        nvsSaveNegAngle(s_appDisretainedSettings.turnAngle);
+    }
 
     return ESP_OK;
 }

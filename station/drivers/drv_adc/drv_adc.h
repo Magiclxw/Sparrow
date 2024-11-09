@@ -11,15 +11,11 @@
 #include "driver/gpio.h"
 
 #define BATTERY_ADC_CHANNEL ADC_CHANNEL_3
-#define ADC_EN_PIN  GPIO_NUM_18
-#define CHARGE_PIN  GPIO_NUM_36
-#define STANDBY_PIN GPIO_NUM_37
+
 
 extern adc_oneshot_unit_handle_t adc1_handle;
 extern adc_cali_handle_t adc1_cali_chan3_handle;
 
-int Battery_Adc_Init(void);
-int GetChargeState(void);
-int GetStandbyState(void);
+int drvAdcInitAdc(void);
 
 #endif

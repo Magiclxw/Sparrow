@@ -24,20 +24,13 @@ extern "C" {
 #include "../components/ui_comp_hook.h"
 #include "ui_events.h"
 
-void arise_Animation(lv_obj_t * TargetObject, int delay);
+#define BACKGROUND_MAX_NUM  (6)
+#define SETTINGS_ITEM_NUM (10)
+
+extern const lv_img_dsc_t *backgroundImage[BACKGROUND_MAX_NUM];
+
 // SCREEN: ui_Screen1
-void ui_Screen1_screen_init(void);
 extern lv_obj_t * ui_Screen1;
-extern lv_obj_t * ui_ImageEntrance;
-// SCREEN: ui_Screen2
-void ui_Screen2_screen_init(void);
-void ui_event_Screen2(lv_event_t * e);
-void drawDiskInfoBar(uint8_t diskNum, uint8_t diskData[]);
-void screen2SetMeter(uint8_t cpuValue, uint8_t memValue);
-void screen2SetNetSpeed(uint64_t downloadSpeed, uint64_t uploadSpeed);
-void ui_screen2SetWeatherIcon(uint8_t index);
-void ui_screen2SetWeatherTemperature(char *temperature);
-void ui_screen2SetNotification(char *notification);
 extern lv_obj_t * ui_Screen2;
 extern lv_obj_t * ui_MainPage;
 extern lv_obj_t * ui_SecondPage;
@@ -49,27 +42,42 @@ extern lv_obj_t * ui_LabelUploadSpeedTextUnit;
 extern lv_obj_t * ui_weather_icon;
 extern lv_obj_t * ui_weather_temperature;
 extern lv_obj_t * ui_notification;
-// SCREEN: ui_Screen3
-void ui_Screen3_screen_init(void);
-extern lv_obj_t * ui_Screen3;
-void ui_event_Menu(lv_event_t * e);
-extern lv_obj_t * ui_Menu;// SCREEN: ui_Screen4
-void ui_Screen4_screen_init(void);
-void resetScreen4Timer();
+extern lv_obj_t * ui_backgroundPage;
 extern lv_obj_t * ui_Screen4;
-extern lv_obj_t * ui_Label1;
 extern lv_obj_t * ui____initial_actions0;
-
 extern lv_obj_t * ui_Settings;
-
 extern lv_obj_t * ui_tomatoClock;
-void ui_tomatoClock_screen_init(void);
+extern lv_obj_t * ui_Screen3;
 
-LV_IMG_DECLARE(ui_img_919562436);    // assets/128乘128_画板 1 副本 2.png
+void ui_Screen_Loading_init(void);
+void ui_Screen_Main_init(void);
+void ui_Screen_Menu_init(void);
+void ui_Screen_System_init(void);
+void ui_Screen_TomatoClock_init(void);
+void ui_Screen_Setting_init(void);
+void ui_Screen_Background_init();
+
+
+void ui_Screen_Main_DrawDiskInfoBar(uint8_t diskNum, uint8_t diskData[]);
+void ui_Screen_Main_SetNetSpeed(uint64_t downloadSpeed, uint64_t uploadSpeed);
+void ui_Screen_Main_SetWeatherIcon(uint8_t index);
+void ui_Screen_Main_SetWeatherTemperature(char *temperature);
+void ui_Screen_Main_SetNotification(char *notification);
+void ui_Screen_Main_SetBilibiliFollower(char *follower);
+void ui_Screen_Main_LoadBackground();
+void ui_Screen_Main_SetMeter(uint8_t cpuValue, uint8_t memValue);
+
+
+void ui_initMainTimer(void);
+void startMainTimer(void);
+void reloadMainTimer();
+void stopMainTimer();
+
+LV_IMG_DECLARE(icon_sparrow);
 LV_IMG_DECLARE(ui_img_cpu_png);
 LV_IMG_DECLARE(ui_img_memory_png);
 LV_IMG_DECLARE(ui_img_tomato_clock);
-LV_IMG_DECLARE(ui_img_background_png);    // assets/background.png
+LV_IMG_DECLARE(ui_img_background_png);
 LV_IMG_DECLARE(ui_img_background1_png);
 LV_IMG_DECLARE(ui_img_background2_png);
 LV_IMG_DECLARE(ui_img_background3_png);

@@ -1,11 +1,7 @@
 #include "ui.h"
 
-#define SETTINGS_ITEM_NUM (10)
+lv_obj_t * ui_Settings;
 
-enum {
-    LV_MENU_ITEM_BUILDER_VARIANT_1,
-    LV_MENU_ITEM_BUILDER_VARIANT_2
-};
 typedef uint8_t lv_menu_builder_variant_t;
 lv_obj_t * ui_settingMenu;
 lv_obj_t * ui_settingList;
@@ -72,7 +68,7 @@ static void change_event_cb(lv_event_t * e)
 }
 
 
-void ui_Settings_screen_init(void)
+void ui_Screen_Setting_init(void)
 {
     lv_style_init(&style);
     lv_style_set_border_width(&style, 0);

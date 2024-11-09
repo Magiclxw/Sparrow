@@ -11,7 +11,7 @@
 #include "systeminfo.h"
 #include "task_display.h"
 
-TaskHandle_t Usb_Task__Handle = NULL;
+TaskHandle_t usbTaskHandle = NULL;
 
 static uint8_t *s_usbDataBackground = NULL;
 static uint16_t s_imageSize = 0;
@@ -29,7 +29,7 @@ int createUsbTask()
                 (uint32_t )USB_TASK_STACK_SIZE,
                 (void *	)NULL,
                 (UBaseType_t)USB_TASK_PRIORITY,
-                &Usb_Task__Handle);
+                &usbTaskHandle);
     return OPERATE_SUCCESS;
 }
 
@@ -133,7 +133,7 @@ static void usbDataHandler(uint8_t data[])
             case USB_PROTOCOL_CMD_DISK_INFO:
             {
                 uint8_t diskNum = data[5];
-                drawDiskInfoBar(diskNum, &data[6]);
+                ui_Screen_Main_DrawDiskInfoBar(diskNum, &data[6]);
                 break;
             }
             case USB_PROTOCOL_CMD_SYSTEM_INFO:
@@ -156,8 +156,8 @@ static void usbDataHandler(uint8_t data[])
                 //     color = 0;
                 // }
                 
-                // screen2SetMeter(cpu, memery);
-                // screen2SetNetSpeed(daownLoadSpeed, uploadSpeed);
+                // ui_Screen_Main_SetMeter(cpu, memery);
+                // ui_Screen_Main_SetNetSpeed(daownLoadSpeed, uploadSpeed);
 
                 xQueueSend(lcdQueueHandle, &data[5], 0);
 

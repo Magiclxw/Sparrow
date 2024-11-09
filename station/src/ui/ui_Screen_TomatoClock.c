@@ -26,7 +26,7 @@ static void s_tomatoClockStartTimer(uint8_t state)
         s_clockCounter = 60*5; // 5分钟
     }
     lv_timer_set_repeat_count(tomatoClockTimer, -1);
-    resetScreen4Timer();
+    stopMainTimer();
 }
 
 static void anim_x_cb1(void * var, int32_t v)
@@ -124,6 +124,8 @@ void ui_event_tomatoClock(lv_event_t * e)
             lv_timer_pause(tomatoClockTimer);
             lv_scr_load(ui_Screen2);
         }
+        // 停止主定时器
+        stopMainTimer();
         return ;
     }
     if(event_code == LV_EVENT_CLICKED) 
@@ -142,7 +144,7 @@ void ui_event_tomatoClock(lv_event_t * e)
     }
 }
 
-void ui_tomatoClock_screen_init(void)
+void ui_Screen_TomatoClock_init(void)
 {
     s_clockState = 0;
     s_clockCounter = 60*25; // 25分钟

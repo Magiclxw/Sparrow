@@ -5,13 +5,15 @@
 
 #include "ui.h"
 
-void screenJumpTimer(lv_timer_t *timer)
+static lv_obj_t * ui_ImageEntrance;
+
+static void loadingJumpTimer(lv_timer_t *timer)
 {
     lv_disp_load_scr(ui_Screen2);
     lv_timer_del(timer);
 }
 
-void ui_Screen1_screen_init(void)
+void ui_Screen_Loading_init(void)
 {
     ui_Screen1 = lv_obj_create(NULL);
     lv_timer_t *timer ;
@@ -19,7 +21,7 @@ void ui_Screen1_screen_init(void)
     lv_obj_clear_flag(ui_Screen1, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
     ui_ImageEntrance = lv_img_create(ui_Screen1);
-    lv_img_set_src(ui_ImageEntrance, &ui_img_919562436);
+    lv_img_set_src(ui_ImageEntrance, &icon_sparrow);
     lv_obj_set_width(ui_ImageEntrance, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_ImageEntrance, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_align(ui_ImageEntrance, LV_ALIGN_CENTER);
@@ -28,8 +30,6 @@ void ui_Screen1_screen_init(void)
 
     lv_scr_load_anim(ui_Screen1, LV_SCR_LOAD_ANIM_OVER_RIGHT, 1000, 1000, true);
 
-    // arise_Animation(ui_Screen1, 100);
-     static uint32_t user_data = 10;
-     timer = lv_timer_create(screenJumpTimer, 3000, &user_data);
+     timer = lv_timer_create(loadingJumpTimer, 3000, NULL);
      lv_timer_set_repeat_count(timer, 1);
 }

@@ -6,23 +6,19 @@
 #include "ui.h"
 #include "ui_helpers.h"
 
+const lv_img_dsc_t *backgroundImage[BACKGROUND_MAX_NUM] = 
+{
+    &ui_img_background_png,
+    &ui_img_background1_png,
+    &ui_img_background2_png,
+    &ui_img_background3_png,
+    &ui_img_background4_png,
+    &ui_img_background5_png,
+};
+
 ///////////////////// VARIABLES ////////////////////
-void arise_Animation(lv_obj_t * TargetObject, int delay);
-
-
-// SCREEN: ui_Screen1
-void ui_Screen1_screen_init(void);
 lv_obj_t * ui_Screen1;
-lv_obj_t * ui_ImageEntrance;
 
-
-// SCREEN: ui_Screen2
-void ui_Screen2_screen_init(void);
-void drawDiskInfoBar(uint8_t diskNum, uint8_t diskData[]);
-void screen2SetMeter(uint8_t cpuValue, uint8_t memValue);
-void screen2SetNetSpeed(uint64_t downloadSpeed, uint64_t uploadSpeed);
-void ui_Screen2_change_display();
-void ui_event_Screen2(lv_event_t * e);
 lv_obj_t * ui_Screen2;
 lv_obj_t * ui_MainPage;
 lv_obj_t * ui_SecondPage;
@@ -34,29 +30,15 @@ lv_obj_t * ui_LabelUploadSpeedTextUnit;
 lv_obj_t * ui_weather_icon;
 lv_obj_t * ui_weather_temperature;
 lv_obj_t * ui_notification;
+lv_obj_t * ui_backgroundPage;
 
-// SCREEN: ui_Screen3
-void ui_Screen3_screen_init(void);
 lv_obj_t * ui_Screen3;
-void ui_event_Menu(lv_event_t * e);
-void reloadScreen3Timer();
-void initScreen3Timer();
-void resetScreen3Timer();
-lv_obj_t * ui_Menu;
-
-// SCREEN: ui_Screen4
-void ui_Screen4_screen_init(void);
-void initScreen4Timer();
-void resetScreen4Timer();
 lv_obj_t * ui_Screen4;
-lv_obj_t * ui_Label1;
 lv_obj_t * ui____initial_actions0;
-const lv_img_dsc_t * ui_imgset_1776456547[1] = {&ui_img_919562436};
-
-void ui_Settings_screen_init(void);
-lv_obj_t * ui_Settings;
 
 lv_obj_t * ui_tomatoClock;
+
+static lv_timer_t *s_mainTimer ;    // 跳转主界面定时器
 
 ///////////////////// TEST LVGL SETTINGS ////////////////////
 #if LV_COLOR_DEPTH != 16
@@ -67,83 +49,42 @@ lv_obj_t * ui_tomatoClock;
 #endif
 
 ///////////////////// ANIMATIONS ////////////////////
-void arise_Animation(lv_obj_t * TargetObject, int delay)
-{
-    ui_anim_user_data_t * PropertyAnimation_0_user_data = lv_mem_alloc(sizeof(ui_anim_user_data_t));
-    PropertyAnimation_0_user_data->target = TargetObject;
-    PropertyAnimation_0_user_data->val = -1;
-    lv_anim_t PropertyAnimation_0;
-    lv_anim_init(&PropertyAnimation_0);
-    lv_anim_set_time(&PropertyAnimation_0, 1000);
-    lv_anim_set_user_data(&PropertyAnimation_0, PropertyAnimation_0_user_data);
-    lv_anim_set_custom_exec_cb(&PropertyAnimation_0, _ui_anim_callback_set_x);
-    lv_anim_set_values(&PropertyAnimation_0, -128, 0);
-    lv_anim_set_path_cb(&PropertyAnimation_0, lv_anim_path_linear);
-    lv_anim_set_delay(&PropertyAnimation_0, delay + 0);
-    lv_anim_set_deleted_cb(&PropertyAnimation_0, _ui_anim_callback_free_user_data);
-    lv_anim_set_playback_time(&PropertyAnimation_0, 0);
-    lv_anim_set_playback_delay(&PropertyAnimation_0, 0);
-    lv_anim_set_repeat_count(&PropertyAnimation_0, 0);
-    lv_anim_set_repeat_delay(&PropertyAnimation_0, 0);
-    lv_anim_set_early_apply(&PropertyAnimation_0, false);
-    lv_anim_set_get_value_cb(&PropertyAnimation_0, &_ui_anim_callback_get_x);
-    lv_anim_start(&PropertyAnimation_0);
 
-}
 
 ///////////////////// FUNCTIONS ////////////////////
-void ui_event_Screen2(lv_event_t * e)
+static void s_mainTimer_cb();
+
+void ui_initMainTimer(void)
 {
-    lv_event_code_t event_code = lv_event_get_code(e);
-    lv_obj_t * target = lv_event_get_target(e);
-    if(event_code == LV_EVENT_LONG_PRESSED) {
-        initScreen3Timer();
-        _ui_screen_change(&ui_Screen3, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_Screen3_screen_init);
-    }
-    if(event_code == LV_EVENT_CLICKED) {
-        ui_Screen2_change_display();
-    }
-}
-void ui_event_Menu(lv_event_t * e)
-{
-    static uint8_t index = 0;
-    lv_event_code_t event_code = lv_event_get_code(e);
-    lv_obj_t * target = lv_event_get_target(e);
-    
-    if(event_code == LV_EVENT_SHORT_CLICKED) 
+    // if(s_mainTimer == NULL) 
     {
-        reloadScreen3Timer();
-
-        if (index < lv_roller_get_option_cnt(ui_Menu)-1)
-        {
-            index++;
-        }
-        else
-        {
-            index = 0;
-
-        }
-        lv_roller_set_selected(ui_Menu, index, LV_ANIM_ON);
-    }
-    if(event_code == LV_EVENT_LONG_PRESSED) {
-        resetScreen3Timer();
-        initScreen4Timer();
-        uint8_t index = lv_roller_get_selected(ui_Menu);
-        if (index == 0)
-        {
-            _ui_screen_change(&ui_Screen4, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_Screen4_screen_init);
-        }
-        else if (index == 1)
-        {
-            _ui_screen_change(&ui_Settings, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_Settings_screen_init);
-        }
-        else if (index == 2)
-        {
-            _ui_screen_change(&ui_tomatoClock, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_tomatoClock_screen_init);
-        }
+        s_mainTimer = lv_timer_create(s_mainTimer_cb, 5000, NULL);
+        lv_timer_set_repeat_count(s_mainTimer, -1);
+        lv_timer_pause(s_mainTimer);
     }
 }
 
+void startMainTimer(void)
+{
+    lv_timer_reset(s_mainTimer);
+    lv_timer_resume(s_mainTimer);
+}
+
+void reloadMainTimer()
+{
+    if(s_mainTimer != NULL) 
+    {
+        lv_timer_reset(s_mainTimer);
+    }
+}
+
+void stopMainTimer()
+{
+    if (s_mainTimer != NULL) 
+    {
+        lv_timer_pause(s_mainTimer);
+    }
+}
 
 ///////////////////// SCREENS ////////////////////
 
@@ -155,10 +96,16 @@ void ui_init(void)
     lv_theme_t * theme = lv_theme_default_init(dispp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED),
                                                false, LV_FONT_DEFAULT);
     lv_disp_set_theme(dispp, theme);
-    ui_Screen1_screen_init();
-    ui_Screen2_screen_init();
-    ui_Screen3_screen_init();
-    ui_Screen4_screen_init();
+    ui_Screen_Loading_init();
+    ui_Screen_Main_init();
     ui____initial_actions0 = lv_obj_create(NULL);
     lv_disp_load_scr(ui_Screen1);
+    ui_initMainTimer();
+}
+
+static void s_mainTimer_cb()
+{
+    // lv_timer_del(s_mainTimer);
+    stopMainTimer();
+    lv_scr_load(ui_Screen2);
 }

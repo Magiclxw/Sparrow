@@ -9,7 +9,6 @@
 #include "esp_log.h"
 #include "esp_system.h"
 #include "mqtt_client.h"
-#include "../../app_task/task_servo/task_servo.h"
 
 extern esp_mqtt_client_handle_t client;
 extern QueueHandle_t mqttQueueHandle;
@@ -24,6 +23,14 @@ extern SemaphoreHandle_t preStartupSemaphore;
 #define MQTT_TOPIC_DEVICE_RETAINED_STATISTICS       "/statistics/device_config/retained"
 #define MQTT_TOPIC_DEVICE_DISRETAINED_STATISTICS    "/statistics/device_config/disretained"
 #define MQTT_TOPIC_DEVICE_NOTIFICATION              "/notification"
+
+typedef struct mqttDataStruct
+{
+    uint16_t topicLength;
+    char topic[512];
+    uint16_t dataLength;
+    char data[1024];
+}MqttDataStruct;
 
 void initMqtt(void);
 esp_err_t mqttSetBrokerAddr(const char *addr);

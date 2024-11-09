@@ -63,7 +63,7 @@ typedef struct appRetainedSettingsStruct
 
 typedef struct appDisretainedSettingsStruct
 {
-    char turnAngle;     //舵机转动角度
+    int turnAngle;     //舵机转动角度
     uint8_t saveAngle;  //保存舵机角度
 }AppDisretainedSettingsStruct;
 

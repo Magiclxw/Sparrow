@@ -10,7 +10,7 @@ static void mqttTask(void *pvParameters);
 int createMqttTask()
 {
     xTaskCreate((TaskFunction_t)mqttTask,
-                (const char*)"httpTask",
+                (const char*)"mqttTask",
                 (uint32_t )MQTT_TASK_STACK_SIZE,
                 (void *	)NULL,
                 (UBaseType_t)MQTT_TASK_PRIORITY,
@@ -20,26 +20,59 @@ int createMqttTask()
 
 static void mqttTask(void *pvParameters)
 {
-    char mqttData[MQTT_REC_QUEUE_SIZE] = {0};
-    mqttQueueHandle = xQueueCreate(MQTT_REC_QUEUE_LENGTH, MQTT_REC_QUEUE_SIZE);
+    MqttDataStruct mqttData = {0};
+
+    mqttQueueHandle = xQueueCreate(MQTT_REC_QUEUE_LENGTH, sizeof(mqttData));
 
     initMqtt();
 
     while(1)
     {
         xQueueReceive(mqttQueueHandle, &mqttData, portMAX_DELAY);
-        printf("mqttData: %s, len:%d\n", mqttData, strlen(mqttData));
 
-        if (strcmp(MQTT_TOPIC_APP_RETAINED_SETTINGS, mqttData) == 0)
+        printf("mqttData: %s, len:%d\n", mqttData.data, mqttData.dataLength);
+
+        if (strcmp(MQTT_TOPIC_APP_RETAINED_SETTINGS, mqttData.topic) == 0)
         {
-            printf("app retained settings = %s\n",mqttData);
-            setAppRetainedSettings(mqttData);
+            printf("app retained settings = %s\n",mqttData.data);
+            setAppRetainedSettings(mqttData.data);
         }
-        else if (strcmp(MQTT_TOPIC_DEVICE_NOTIFICATION, mqttData) == 0)
+        else if (strcmp(MQTT_TOPIC_APP_DISRETAINED_SETTINGS,mqttData.topic) == 0)
         {
-            printf("notification = %s\r\n",mqttData);
-            ui_screen2SetNotification(mqttData);
+            printf("app disretained settings = %s\n",mqttData.data);
+            setAppDisretainedSettings(mqttData.data);
         }
+        else if (strcmp(MQTT_TOPIC_DEVICE_RETAINED_SETTINGS, mqttData.topic) == 0)
+        {
+            printf("device retained settings = %s\n",mqttData.data);
+        }
+        else if (strcmp(MQTT_TOPIC_DEVICE_DISRETAINED_SETTINGS, mqttData.topic) == 0)
+        {
+            printf("device disretained settings = %s\n",mqttData.data);
+        }
+        else if (strcmp(MQTT_TOPIC_DEVICE_RETAINED_STATE, mqttData.topic) == 0)
+        {
+            printf("device retained state = %s\n",mqttData.data);
+        }
+        else if (strcmp(MQTT_TOPIC_DEVICE_DISRETAINED_STATE, mqttData.topic) == 0)
+        {
+            printf("device disretained state = %s\n",mqttData.data);
+        }
+        else if (strcmp(MQTT_TOPIC_DEVICE_RETAINED_STATISTICS, mqttData.topic) == 0)
+        {
+            printf("device retained statistics = %s\n",mqttData.data);
+        }
+        else if (strcmp(MQTT_TOPIC_DEVICE_DISRETAINED_STATISTICS, mqttData.topic) == 0)
+        {
+            printf("device disretained statistics = %s\n",mqttData.data);
+        }
+        else if (strcmp(MQTT_TOPIC_DEVICE_NOTIFICATION, mqttData.topic) == 0)
+        {
+            printf("notification = %s\r\n",mqttData.data);
+            ui_Screen_Main_SetNotification(mqttData.data);
+        }
+
+        memset(&mqttData, 0 , sizeof(mqttData));
         // if(memcmp(MQTT_TOPIC_APP_RETAINED_SETTINGS,event->topic,event->topic_len) == 0)
         // {
         //     printf("app retained settings = %s\n",event->data);
@@ -48,7 +81,7 @@ static void mqttTask(void *pvParameters)
         // else if (memcmp(MQTT_TOPIC_DEVICE_NOTIFICATION, event->topic,event->topic_len) == 0)
         // {
         //     printf("notification = %s\r\n",data);
-        //     ui_screen2SetNotification(data);
+        //     ui_Screen_Main_SetNotification(data);
         // }
     }
 }

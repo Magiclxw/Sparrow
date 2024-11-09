@@ -10,6 +10,6 @@
 #define RTC_TASK_PRIORITY   (5)
 
 
-int Rtc_Task_Create();
+int createRtcTask();
 
 #endif

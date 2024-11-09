@@ -15,6 +15,8 @@
 #include "task_http.h"
 #include "task_usb.h"
 #include "task_mqtt.h"
+#include "drv_servo.h"
+#include "drv_power.h"
 
 SemaphoreHandle_t preStartupSemaphore;
 
@@ -27,11 +29,15 @@ void preStartup()
     //clearWifiData();
 
     sysGetSleepTime(&sleepTime);
+    // 初始化唤醒引脚
+    drvPowerInitWakeupGpio();
     
     //wifi初始化
     initWifi();
 
     initBLE();
+
+    initServo();
 
     //xSemaphoreTake(preStartupSemaphore,portMAX_DELAY);
 }
@@ -58,12 +64,12 @@ void postStartup()
     createBleTransTask();
 
     //启动舵机线程
-    createServoTask();
+    // createServoTask();
     //创建电源线程
     createBatteryTask();
 
     //启动RTC线程
-    //Rtc_Task_Create();
+    createRtcTask();
 
     vTaskDelay(pdMS_TO_TICKS(100));
     //记录开机次数

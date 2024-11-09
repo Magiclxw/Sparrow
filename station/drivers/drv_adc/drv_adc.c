@@ -6,14 +6,10 @@ adc_cali_handle_t adc1_cali_chan3_handle = NULL;
 
 const static char *TAG = "adc";
 
-static int Battery_IO_Init();
 static bool example_adc_calibration_init(adc_unit_t unit, adc_channel_t channel, adc_atten_t atten, adc_cali_handle_t *out_handle);
 
-int Battery_Adc_Init(void)
+int drvAdcInitAdc(void)
 {
-    Battery_IO_Init();  
-
-
     adc_oneshot_unit_init_cfg_t init_config1 = {
         .unit_id = ADC_UNIT_1,
     };
@@ -74,29 +70,3 @@ static void example_adc_calibration_deinit(adc_cali_handle_t handle)
 
 }
 
-static int Battery_IO_Init()
-{
-    // gpio_reset_pin(ADC_EN_PIN);
-    // gpio_reset_pin(CHARGE_PIN);
-    // gpio_reset_pin(STANDBY_PIN);
-    /* Set the GPIO as a push/pull output */
-    gpio_set_direction(ADC_EN_PIN, GPIO_MODE_OUTPUT);
-    gpio_set_direction(CHARGE_PIN,GPIO_MODE_INPUT);
-    gpio_set_direction(STANDBY_PIN,GPIO_MODE_INPUT);
-
-    gpio_set_level(ADC_EN_PIN, 1);
-    gpio_set_pull_mode(CHARGE_PIN,GPIO_PULLUP_ONLY);
-    gpio_set_pull_mode(STANDBY_PIN,GPIO_PULLUP_ONLY);
-
-    return 1;
-} 
-
-int GetChargeState(void)
-{
-    return gpio_get_level(CHARGE_PIN);
-}
-
-int GetStandbyState(void)
-{
-    return gpio_get_level(STANDBY_PIN);
-}

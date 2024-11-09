@@ -24,7 +24,7 @@ static esp_err_t dataCheck(uint8_t data[]);
 int createBleRecTask()
 {
     xTaskCreate((TaskFunction_t)bluetoothRecTask,
-                (const char*)"Bluetooth_Task",
+                (const char*)"bluetoothRecTask",
                 (uint32_t )BLUETOOTH_TASK_STACK_SIZE,
                 (void *	)NULL,
                 (UBaseType_t)BLUETOOTH_TASK_PRIORITY,
@@ -35,7 +35,7 @@ int createBleRecTask()
 int createBleTransTask()
 {
     xTaskCreate((TaskFunction_t)bluetoothTransTask,
-                (const char*)"Bluetooth Trans Task",
+                (const char*)"bluetoothTransTask",
                 (uint32_t )BLUETOOTH_TASK_STACK_SIZE,
                 (void *	)NULL,
                 (UBaseType_t)BLUETOOTH_TASK_PRIORITY,

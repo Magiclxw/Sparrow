@@ -6,12 +6,12 @@
 
 TaskHandle_t Led_Task__Handle = NULL;
 
-static void Led_Task();
+static void ledTask();
 
 int createLedTask()
 {
-    xTaskCreate((TaskFunction_t)Led_Task,
-                (const char*)"Led_Task",
+    xTaskCreate((TaskFunction_t)ledTask,
+                (const char*)"ledTask",
                 (uint32_t )LED_TASK_STACK_SIZE,
                 (void *	)NULL,
                 (UBaseType_t)LED_TASK_PRIORITY,
@@ -19,7 +19,7 @@ int createLedTask()
     return OPERATE_SUCCESS;
 }
 
-static void Led_Task()
+static void ledTask()
 {
     initLed();
 
