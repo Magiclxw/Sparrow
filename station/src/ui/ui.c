@@ -19,7 +19,7 @@ const lv_img_dsc_t *backgroundImage[BACKGROUND_MAX_NUM] =
 ///////////////////// VARIABLES ////////////////////
 lv_obj_t * ui_Screen1;
 
-lv_obj_t * ui_Screen2;
+
 lv_obj_t * ui_MainPage;
 lv_obj_t * ui_SecondPage;
 lv_obj_t * ui_ThirdPage;
@@ -33,7 +33,7 @@ lv_obj_t * ui_notification;
 lv_obj_t * ui_backgroundPage;
 
 lv_obj_t * ui_Screen3;
-lv_obj_t * ui_Screen4;
+lv_obj_t * ui_ScreenSystem;
 lv_obj_t * ui____initial_actions0;
 
 lv_obj_t * ui_tomatoClock;
@@ -107,5 +107,6 @@ static void s_mainTimer_cb()
 {
     // lv_timer_del(s_mainTimer);
     stopMainTimer();
-    lv_scr_load(ui_Screen2);
+    lv_disp_load_scr(ui_Screen_Main);
+    // _ui_screen_change(&ui_Screen_Main, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_Screen_Main_init);
 }

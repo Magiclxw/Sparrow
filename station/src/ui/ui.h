@@ -31,7 +31,7 @@ extern const lv_img_dsc_t *backgroundImage[BACKGROUND_MAX_NUM];
 
 // SCREEN: ui_Screen1
 extern lv_obj_t * ui_Screen1;
-extern lv_obj_t * ui_Screen2;
+extern lv_obj_t * ui_Screen_Main;
 extern lv_obj_t * ui_MainPage;
 extern lv_obj_t * ui_SecondPage;
 extern lv_obj_t * ui_ThirdPage;
@@ -43,7 +43,7 @@ extern lv_obj_t * ui_weather_icon;
 extern lv_obj_t * ui_weather_temperature;
 extern lv_obj_t * ui_notification;
 extern lv_obj_t * ui_backgroundPage;
-extern lv_obj_t * ui_Screen4;
+extern lv_obj_t * ui_ScreenSystem;
 extern lv_obj_t * ui____initial_actions0;
 extern lv_obj_t * ui_Settings;
 extern lv_obj_t * ui_tomatoClock;
@@ -66,7 +66,7 @@ void ui_Screen_Main_SetNotification(char *notification);
 void ui_Screen_Main_SetBilibiliFollower(char *follower);
 void ui_Screen_Main_LoadBackground();
 void ui_Screen_Main_SetMeter(uint8_t cpuValue, uint8_t memValue);
-
+void ui_Screen_Main_SetActivePage();
 
 void ui_initMainTimer(void);
 void startMainTimer(void);

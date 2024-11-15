@@ -122,7 +122,7 @@ void ui_event_tomatoClock(lv_event_t * e)
         {
             lv_timer_reset(tomatoClockTimer);
             lv_timer_pause(tomatoClockTimer);
-            lv_scr_load(ui_Screen2);
+            lv_scr_load(ui_Screen_Main);
         }
         // 停止主定时器
         stopMainTimer();

@@ -14,6 +14,5 @@
 
 void initButton();
 int buttonGetState(void);
-void powerSetState(uint8_t state);
 
 #endif

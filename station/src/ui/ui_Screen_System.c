@@ -5,39 +5,187 @@
 
 #include "ui.h"
 
-// static lv_timer_t *timer ;
+static lv_obj_t * s_firstPage;
+static lv_obj_t * s_secondPage;
 
-// static void screen4Timer_cb(lv_timer_t *timer)
-// {
-//     resetScreen4Timer();
-//     _ui_screen_change(&ui_Screen2, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_Screen_Main_init);
-// }
+static lv_obj_t * s_labelWifi;
+static lv_obj_t * s_labelWifiValue;
+static lv_obj_t * s_labelUsb;
+static lv_obj_t * s_labelUsbValue;
+static lv_obj_t * s_labelBle;
+static lv_obj_t * s_labelBleValue;
+static lv_obj_t * s_labelBattery;
+static lv_obj_t * s_labelBatteryValue;
+static lv_obj_t * s_labelBilibiliServer;
+static lv_obj_t * s_labelBilibiliServerValue;
+static lv_obj_t * s_labelWeatherServer;
+static lv_obj_t * s_labelWeatherServerValue;
+static lv_obj_t * s_labelMqttServer;
+static lv_obj_t * s_labelMqttServerValue;
 
-// void initScreen4Timer()
-// {
-//     timer = lv_timer_create(screen4Timer_cb, 10000, NULL);
-//     lv_timer_set_repeat_count(timer, 1);
-// }
+static void ui_screen_system_event_cb(lv_event_t * e);
+static void ui_screen_system_change_page();
 
-// void reloadScreen4Timer()
-// {
-//     lv_timer_reset(timer);
-// }
+static void ui_screen_system_event_cb(lv_event_t * e)
+{
+    lv_obj_t * obj = lv_event_get_target(e);
+    lv_event_code_t event_code = lv_event_get_code(e);
+    
+    static uint8_t index = 0;
 
-// void resetScreen4Timer()
-// {
-//     //lv_timer_del(timer);
-//     lv_timer_pause(timer);
-// }
+    if (event_code == LV_EVENT_CLICKED)
+    {
+        ui_screen_system_change_page();
+    }
+    else if (event_code == LV_EVENT_PRESSING)
+    {
+        // 开关按下时停止定时器
+        stopMainTimer();
+    }
+    else if (event_code == LV_EVENT_RELEASED)
+    {
+        // 开关释放时恢复定时器
+        startMainTimer();
+    }
+
+}
+
+static void ui_screen_system_change_page()
+{
+    static uint8_t displayIndex = 0;
+
+    if(displayIndex == 1)
+    {
+        lv_obj_clear_flag(s_firstPage, LV_OBJ_FLAG_HIDDEN);     /// Flags
+        lv_obj_add_flag(s_secondPage, LV_OBJ_FLAG_HIDDEN);     /// Flags
+        displayIndex = 0;
+    }
+    else if(displayIndex == 0)
+    {
+        lv_obj_clear_flag(s_secondPage, LV_OBJ_FLAG_HIDDEN);     /// Flags
+        lv_obj_add_flag(s_firstPage, LV_OBJ_FLAG_HIDDEN);     /// Flags
+        displayIndex = 1;
+    }
+}
 
 void ui_Screen_System_init(void)
 {
-    ui_Screen4 = lv_obj_create(NULL);
-    lv_obj_clear_flag(ui_Screen4, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    ui_ScreenSystem = lv_obj_create(NULL);
+    lv_obj_clear_flag(ui_ScreenSystem, LV_OBJ_FLAG_SCROLLABLE);
 
-    // ui_Label1 = lv_label_create(ui_Screen4);
-    // lv_obj_set_width(ui_Label1, LV_SIZE_CONTENT);   /// 1
-    // lv_obj_set_height(ui_Label1, LV_SIZE_CONTENT);    /// 1
-    // lv_label_set_text(ui_Label1, "Wifi:");
-    // lv_obj_set_style_text_font(ui_Label1, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    // 第一页
+    s_firstPage = lv_obj_create(ui_ScreenSystem);
+    lv_obj_remove_style_all(s_firstPage);
+    lv_obj_set_width(s_firstPage, 240);
+    lv_obj_set_height(s_firstPage, 135);
+    lv_obj_set_align(s_firstPage, LV_ALIGN_CENTER);
+    lv_obj_clear_flag(s_firstPage, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);
+
+    s_secondPage = lv_obj_create(ui_ScreenSystem);
+    lv_obj_remove_style_all(s_secondPage);
+    lv_obj_set_width(s_secondPage, 240);
+    lv_obj_set_height(s_secondPage, 135);
+    lv_obj_set_align(s_secondPage, LV_ALIGN_CENTER);
+    lv_obj_add_flag(s_secondPage, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_clear_flag(s_secondPage, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);
+
+
+    s_labelWifi = lv_label_create(s_firstPage);
+    lv_obj_set_width(s_labelWifi, LV_SIZE_CONTENT);
+    lv_obj_set_height(s_labelWifi, LV_SIZE_CONTENT);
+    lv_label_set_text(s_labelWifi, "Wifi:");
+    lv_obj_set_style_text_font(s_labelWifi, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    s_labelWifiValue = lv_label_create(s_firstPage);
+    lv_obj_set_width(s_labelWifiValue, LV_SIZE_CONTENT);
+    lv_obj_set_height(s_labelWifiValue, LV_SIZE_CONTENT);
+    lv_label_set_text(s_labelWifiValue, "N/A");
+    lv_obj_set_style_text_font(s_labelWifiValue, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_align_to(s_labelWifiValue, s_labelWifi, LV_ALIGN_OUT_RIGHT_MID, 0, 0);
+
+    s_labelUsb = lv_label_create(s_firstPage);
+    lv_obj_set_width(s_labelUsb, LV_SIZE_CONTENT);
+    lv_obj_set_height(s_labelUsb, LV_SIZE_CONTENT);
+    lv_label_set_text(s_labelUsb, "USB:");
+    lv_obj_set_style_text_font(s_labelUsb, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_align_to(s_labelUsb, s_labelWifi, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
+
+    s_labelUsbValue = lv_label_create(s_firstPage);
+    lv_obj_set_width(s_labelUsbValue, LV_SIZE_CONTENT);
+    lv_obj_set_height(s_labelUsbValue, LV_SIZE_CONTENT);
+    lv_label_set_text(s_labelUsbValue, "N/A");
+    lv_obj_set_style_text_font(s_labelUsbValue, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_align_to(s_labelUsbValue, s_labelUsb, LV_ALIGN_OUT_RIGHT_MID, 0, 0);
+
+    s_labelBle = lv_label_create(s_firstPage);
+    lv_obj_set_width(s_labelBle, LV_SIZE_CONTENT);
+    lv_obj_set_height(s_labelBle, LV_SIZE_CONTENT);
+    lv_label_set_text(s_labelBle, "BLE:");
+    lv_obj_set_style_text_font(s_labelBle, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_align_to(s_labelBle, s_labelUsb, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
+
+    s_labelBleValue = lv_label_create(s_firstPage);
+    lv_obj_set_width(s_labelBleValue, LV_SIZE_CONTENT);
+    lv_obj_set_height(s_labelBleValue, LV_SIZE_CONTENT);
+    lv_label_set_text(s_labelBleValue, "N/A");
+    lv_obj_set_style_text_font(s_labelBleValue, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_align_to(s_labelBleValue, s_labelBle, LV_ALIGN_OUT_RIGHT_MID, 0, 0);
+
+    s_labelBattery = lv_label_create(s_firstPage);
+    lv_obj_set_width(s_labelBattery, LV_SIZE_CONTENT);
+    lv_obj_set_height(s_labelBattery, LV_SIZE_CONTENT);
+    lv_label_set_text(s_labelBattery, "Battery:");
+    lv_obj_set_style_text_font(s_labelBattery, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_align_to(s_labelBattery, s_labelBle, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
+
+    s_labelBatteryValue = lv_label_create(s_firstPage);
+    lv_obj_set_width(s_labelBatteryValue, LV_SIZE_CONTENT);
+    lv_obj_set_height(s_labelBatteryValue, LV_SIZE_CONTENT);
+    lv_label_set_text(s_labelBatteryValue, "N/A");
+    lv_obj_set_style_text_font(s_labelBatteryValue, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_align_to(s_labelBatteryValue, s_labelBattery, LV_ALIGN_OUT_RIGHT_MID, 0, 0);
+
+    s_labelBilibiliServer = lv_label_create(s_firstPage);
+    lv_obj_set_width(s_labelBilibiliServer, LV_SIZE_CONTENT);
+    lv_obj_set_height(s_labelBilibiliServer, LV_SIZE_CONTENT);
+    lv_label_set_text(s_labelBilibiliServer, "Bilibili Server:");
+    lv_obj_set_style_text_font(s_labelBilibiliServer, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_align_to(s_labelBilibiliServer, s_labelBattery, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
+
+    s_labelBilibiliServerValue = lv_label_create(s_firstPage);
+    lv_obj_set_width(s_labelBilibiliServerValue, LV_SIZE_CONTENT);
+    lv_obj_set_height(s_labelBilibiliServerValue, LV_SIZE_CONTENT);
+    lv_label_set_text(s_labelBilibiliServerValue, "N/A");
+    lv_obj_set_style_text_font(s_labelBilibiliServerValue, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_align_to(s_labelBilibiliServerValue, s_labelBilibiliServer, LV_ALIGN_OUT_RIGHT_MID, 0, 0);
+
+    s_labelWeatherServer = lv_label_create(s_firstPage);
+    lv_obj_set_width(s_labelWeatherServer, LV_SIZE_CONTENT);
+    lv_obj_set_height(s_labelWeatherServer, LV_SIZE_CONTENT);
+    lv_label_set_text(s_labelWeatherServer, "Weather Server:");
+    lv_obj_set_style_text_font(s_labelWeatherServer, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_align_to(s_labelWeatherServer, s_labelBilibiliServer, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
+
+    s_labelWeatherServerValue = lv_label_create(s_firstPage);
+    lv_obj_set_width(s_labelWeatherServerValue, LV_SIZE_CONTENT);
+    lv_obj_set_height(s_labelWeatherServerValue, LV_SIZE_CONTENT);
+    lv_label_set_text(s_labelWeatherServerValue, "N/A");
+    lv_obj_set_style_text_font(s_labelWeatherServerValue, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_align_to(s_labelWeatherServerValue, s_labelWeatherServer, LV_ALIGN_OUT_RIGHT_MID, 0, 0);
+
+    s_labelMqttServer = lv_label_create(s_secondPage);
+    lv_obj_set_width(s_labelMqttServer, LV_SIZE_CONTENT);
+    lv_obj_set_height(s_labelMqttServer, LV_SIZE_CONTENT);
+    lv_label_set_text(s_labelMqttServer, "MQTT Server:");
+    lv_obj_set_style_text_font(s_labelMqttServer, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    s_labelMqttServerValue = lv_label_create(s_secondPage);
+    lv_obj_set_width(s_labelMqttServerValue, LV_SIZE_CONTENT);
+    lv_obj_set_height(s_labelMqttServerValue, LV_SIZE_CONTENT);
+    lv_label_set_text(s_labelMqttServerValue, "N/A");
+    lv_obj_set_style_text_font(s_labelMqttServerValue, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_align_to(s_labelMqttServerValue, s_labelMqttServer, LV_ALIGN_OUT_RIGHT_MID, 0, 0);
+
+
+    lv_obj_add_event_cb(ui_ScreenSystem, ui_screen_system_event_cb, LV_EVENT_ALL, NULL);
 }

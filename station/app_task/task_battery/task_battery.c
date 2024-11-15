@@ -32,7 +32,7 @@ static void batteryTask()
     char str_voltage[4];
     char strNextWakeupTime[100];
     drvAdcInitAdc();
-    drvPowerInitBatterySignal();
+
     while(1)
     {
         ESP_ERROR_CHECK(adc_oneshot_read(adc1_handle, BATTERY_ADC_CHANNEL, &adc_raw));

@@ -15,7 +15,7 @@ lv_obj_t * mbox1;
 
 static uint8_t s_currentIndex = 0;
 
-const char* s_settingItemsTxt = "一二三\n2\n3\n4\n5\n6\n7\n8\n9\n10";
+const char* s_settingItemsTxt = "温度提示\n天气提示\n留言功能\n主机信息\n5\n6\n7\n8\n9\n10";
 const char* s_settingItemsBuffer[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
 static bool s_settingSwitch[SETTINGS_ITEM_NUM] = {true,false,true,true,true,true,true,true,true,false};
 
@@ -28,6 +28,8 @@ static void change_event_cb(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
     
     static uint8_t index = 0;
+
+    reloadMainTimer();
 
     if(event_code == LV_EVENT_LONG_PRESSED) 
     {

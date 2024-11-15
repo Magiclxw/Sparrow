@@ -14,6 +14,7 @@
             android:id="@+id/turn_angle_text"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
             android:layout_weight="1"
             android:text="角度"
             android:textSize="25dp"
@@ -30,6 +31,7 @@
         <LinearLayout
             android:layout_width="150dp"
             android:layout_height="match_parent"
+            android:layout_marginRight="10dp"
             android:orientation="vertical">
             <Button
                 android:id="@+id/btn_center_angle"
@@ -47,16 +49,32 @@
                 android:text="确定"
                 android:textSize="25dp"
                 ></Button>
-            <Button
-                android:id="@+id/btn_save_angle"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:textSize="25dp"
-                android:text="保存"></Button>
         </LinearLayout>
     </LinearLayout>
 
+    <Button
+        android:id="@+id/btn_save_as_forward"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:textSize="25dp"
+        android:layout_gravity="center_horizontal"
+        android:text="保存为正向按下角度"></Button>
 
+    <Button
+        android:id="@+id/btn_save_as_idle"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:text="保存为空闲角度"
+        android:textSize="25dp"
+        android:layout_gravity="center_horizontal"
+        ></Button>
+
+    <Button
+        android:id="@+id/btn_save_as_backword"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:textSize="25dp"
+        android:layout_gravity="center_horizontal"
+        android:text="保存为反向按下角度"></Button>
 
 </LinearLayout>

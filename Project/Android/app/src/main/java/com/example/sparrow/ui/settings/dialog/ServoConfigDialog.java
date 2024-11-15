@@ -1,5 +1,8 @@
 package com.example.sparrow.ui.settings.dialog;
 
+import static com.example.sparrow.system.JsonHandler.generateAppDisretainedSettings;
+import static com.example.sparrow.system.JsonHandler.getSaveAngleFlag;
+import static com.example.sparrow.system.JsonHandler.getTurnAngle;
 import static com.example.sparrow.system.Mqtt.MQTT_TOPIC_APP_DISRETAINED_SETTINGS;
 import static com.example.sparrow.system.Mqtt.MQTT_TOPIC_APP_RETAINED_SETTINGS;
 import static com.example.sparrow.system.Mqtt.client;
@@ -12,16 +15,15 @@ import android.widget.Button;
 import android.widget.NumberPicker;
 
 import com.example.sparrow.R;
-
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 public class ServoConfigDialog extends AlertDialog {
 
     private NumberPicker np_angle;
-    private Button btn_center_angle,btn_set_angle,btn_save_angle;
+    private Button btn_center_angle,btn_set_angle,btn_save_as_idle,btn_save_as_forward,btn_save_as_backword;
 
-    protected ServoConfigDialog(Context context) {
+    public ServoConfigDialog(Context context) {
         super(context);
     }
 
@@ -41,7 +43,9 @@ public class ServoConfigDialog extends AlertDialog {
 
         btn_center_angle = (Button) findViewById(R.id.btn_center_angle);
         btn_set_angle = (Button) findViewById(R.id.btn_set_angle);
-        btn_save_angle = (Button) findViewById(R.id.btn_save_angle);
+        btn_save_as_idle = (Button) findViewById(R.id.btn_save_as_idle);
+        btn_save_as_forward = (Button) findViewById(R.id.btn_save_as_forward);
+        btn_save_as_backword = (Button) findViewById(R.id.btn_save_as_backword);
     }
 
     private void initEvent()
@@ -49,21 +53,40 @@ public class ServoConfigDialog extends AlertDialog {
         btn_center_angle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TurnAngle(0);
+                TurnAngle(90);
             }
         });
 
         btn_set_angle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TurnAngle(np_angle.getValue()-90); //-90~90
+                TurnAngle(np_angle.getValue());
             }
         });
 
-        btn_save_angle.setOnClickListener(new View.OnClickListener() {
+        btn_save_as_idle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SaveAngle();
+                // 保存为空闲时角度
+                SaveAngle(1);
+                dismiss();
+            }
+        });
+
+        btn_save_as_forward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // 保存为正向角度
+                SaveAngle(2);
+                dismiss();
+            }
+        });
+
+        btn_save_as_backword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // 保存为反向角度
+                SaveAngle(3);
                 dismiss();
             }
         });
@@ -72,29 +95,31 @@ public class ServoConfigDialog extends AlertDialog {
     //设置舵机旋转角度
     public static void TurnAngle(int angle)
     {
-        if(angle > 90 || angle < -90) return;
+//        if(angle > 90 || angle < -90) return;
 
         int qos = 1;
 
-        String turnAngle = String.valueOf(angle);
+//        String turnAngle = String.valueOf(angle-90);
 
-        MqttMessage message = new MqttMessage(turnAngle.getBytes());
+        String mqttData = generateAppDisretainedSettings(angle-90,getSaveAngleFlag());
+
+        MqttMessage message = new MqttMessage(mqttData.getBytes());
         message.setQos(qos);
         try {
-            client.publish(MQTT_TOPIC_APP_RETAINED_SETTINGS, message);
+            client.publish(MQTT_TOPIC_APP_DISRETAINED_SETTINGS, message);
             System.out.println("Message published");
         } catch (MqttException e) {
             e.printStackTrace();
         }
     }
     //保存舵机旋转角度
-    public static void SaveAngle()
+    public static void SaveAngle(int flag)
     {
         int qos = 1;
 
-        String saveFlag = "1";
+        String mqttData = generateAppDisretainedSettings(getTurnAngle(),flag);
 
-        MqttMessage message = new MqttMessage(saveFlag.getBytes());
+        MqttMessage message = new MqttMessage(mqttData.getBytes());
         message.setQos(qos);
         try {
             client.publish(MQTT_TOPIC_APP_DISRETAINED_SETTINGS, message);

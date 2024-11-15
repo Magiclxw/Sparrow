@@ -9,7 +9,7 @@ static lv_obj_t * ui_ImageEntrance;
 
 static void loadingJumpTimer(lv_timer_t *timer)
 {
-    lv_disp_load_scr(ui_Screen2);
+    lv_disp_load_scr(ui_Screen_Main);
     lv_timer_del(timer);
 }
 

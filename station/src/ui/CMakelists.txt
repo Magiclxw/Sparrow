@@ -1,4 +1,4 @@
-idf_component_register(SRCS "ui_tomatoClockPage.c" "ui_settingPage.c" "ui_Screen4.c" "ui_startPage.c"
+idf_component_register(SRCS "ui_Screen_Loading.c" "ui_Screen_Menu.c" "ui_Screen_System.c" "ui_Screen_Setting.c" "ui_Screen_Main.c" "ui_tomatoClockPage.c" "ui_settingPage.c" "ui_Screen4.c" "ui_startPage.c"
                             "deviceBinding.c"
                             "lv_font_source_han_sans_normal_30.c"
                             "ui.c"
@@ -15,4 +15,4 @@ idf_component_register(SRCS "ui_tomatoClockPage.c" "ui_settingPage.c" "ui_Screen
                                      "../components"
                                      "../../drivers/drv_button"
                                      "../../drivers/drv_nvs"
-                        REQUIRES   esp_event driver lvgl__lvgl esp_lcd hal lwip nvs_flash)
+                        REQUIRES   esp_event driver lvgl__lvgl esp_lcd hal lwip nvs_flash)ash)

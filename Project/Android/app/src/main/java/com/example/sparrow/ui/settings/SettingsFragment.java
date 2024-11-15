@@ -15,11 +15,13 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.sparrow.R;
 import com.example.sparrow.databinding.FragmentSettingsBinding;
 import com.example.sparrow.tools.MouseActivity;
+import com.example.sparrow.ui.settings.dialog.ServoConfigDialog;
 
 public class SettingsFragment extends Fragment {
 
     private FragmentSettingsBinding binding;
-    Button btn_set_password_delay;
+    Button btn_set_password_delay,btn_servo_cfg;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -38,6 +40,8 @@ public class SettingsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         btn_set_password_delay = (Button) getActivity().findViewById(R.id.btn_password_delay);
+        btn_servo_cfg = (Button) getActivity().findViewById(R.id.btn_servo_cfg);
+
         btn_set_password_delay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -46,6 +50,14 @@ public class SettingsFragment extends Fragment {
                 startActivity(intent);
             }
         });
+        btn_servo_cfg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final ServoConfigDialog dialog = new ServoConfigDialog(getActivity());
+                dialog.show();
+            }
+        });
+
     }
 
 

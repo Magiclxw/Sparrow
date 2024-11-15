@@ -8,7 +8,7 @@
 #include "esp_err.h"
 #include "esp_sleep.h"
 
-#define BATTERY_TASK_STACK_SIZE (8192)
+#define BATTERY_TASK_STACK_SIZE (4096)
 #define BATTERY_TASK_PRIORITY       (6)
 
 #define DEFAULT_RUNTIME (60*1000)   //默认运行时间(60s)

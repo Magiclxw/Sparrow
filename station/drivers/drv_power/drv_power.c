@@ -3,13 +3,34 @@
 #include "esp_sntp.h"
 #include "drv_nvs.h"
 
-void drvPowerInitWakeupGpio()
+static void drvPowerInitWakeupGpio();
+static void drvPowerInitSwitchGpio();
+static void drvPowerInitBatterySignal();
+
+void drvPowerInit()
+{
+    drvPowerInitWakeupGpio();
+    drvPowerInitSwitchGpio();
+    drvPowerInitBatterySignal();
+}
+
+static void drvPowerInitWakeupGpio()
 {
     gpio_reset_pin(WAKEUP_PIN);
     gpio_set_direction(WAKEUP_PIN, GPIO_MODE_INPUT);
     gpio_set_pull_mode(WAKEUP_PIN, GPIO_PULLDOWN_ONLY);
 }
-void drvPowerInitBatterySignal()
+
+void drvPowerInitSwitchGpio()
+{
+    gpio_reset_pin(SWTICH_PIN);
+    gpio_set_direction(SWTICH_PIN, GPIO_MODE_OUTPUT);
+    // gpio_set_pull_mode(SWTICH_PIN, GPIO_PULLDOWN_ONLY);
+
+    gpio_set_level(SWTICH_PIN, 0);
+}
+
+static void drvPowerInitBatterySignal()
 {
     // gpio_reset_pin(ADC_EN_PIN);
     // gpio_reset_pin(CHARGE_PIN);
@@ -56,4 +77,19 @@ uint64_t drvPowerGetNextWakeupTime()
     now += wakeupInterval;
 
     return now;
+}
+
+void drvPowerSetState(uint8_t state)
+{
+    gpio_set_level(SWTICH_PIN, state);
+}
+
+/**
+ * @brief 控制电脑开关机
+*/
+void drvPowerOnOff()
+{
+    drvPowerSetState(1);
+    vTaskDelay(pdMS_TO_TICKS(500));
+    drvPowerSetState(0);
 }

@@ -29,9 +29,9 @@ void preStartup()
     //clearWifiData();
 
     sysGetSleepTime(&sleepTime);
-    // 初始化唤醒引脚
-    drvPowerInitWakeupGpio();
-    
+    // 初始化电源引脚
+    drvPowerInit();
+
     //wifi初始化
     initWifi();
 

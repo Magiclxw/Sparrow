@@ -25,8 +25,9 @@
 #define JSON_KEY_NEXT_POWER_OFF_TIME        "next_power_off_time"
 #define JSON_KEY_LAST_WAK_UP_TIME           "last_wakeup_time"
 #define JSON_KEY_LAST_SLEEP_TIME            "last_sleep_time"
-#define JSON_KEY_NEXT_WAKE_UP_TIME          "next_wake_up_time"
+#define JSON_KEY_NEXT_WAKE_UP_TIME          "next_wakeup_time"
 #define JSON_KEY_NEXT_SLEEP_TIME            "next_sleep_time"
+#define JSON_KEY_DEVICE_STATE               "on_line_state"
 
 #define JSON_KEY_POWER_ON_COUNT             "power_on_count"
 #define JSON_KEY_POWER_OFF_COUNT            "power_off_count"
@@ -88,7 +89,7 @@ typedef struct deviceRetainedStateStruct
     uint32_t lastSleepTime;
     uint32_t nextWakeUpTime;
     uint32_t nextSleepTime;
-
+    uint32_t deviceState;
 }DeviceRetainedStateStruct;
 
 typedef struct deviceDisretainedStateStruct
@@ -114,10 +115,20 @@ AppRetainedSettingsStruct getAppRetainedSettings();
 esp_err_t setAppDisretainedSettings(char *data);
 AppDisretainedSettingsStruct getAppDisretainedSettings();
 esp_err_t setDeviceRetainedState(DeviceRetainedStateStruct state);
-esp_err_t getDeviceRetainedState(char *data);
+esp_err_t getDeviceRetainedState(char *stateData);
 esp_err_t setDeviceRetainedStatistics(DeviceRetainedStatisticsStruct statistics);
 esp_err_t getDeviceRetainedStatistics(char *data);
 esp_err_t setDeviceDisretainedStatistics(DeviceDisretainedStatisticsStruct statistics);
 esp_err_t getDeviceDisretainedStateStatistics(char *data);
+
+esp_err_t jsonSetPowerState(PowerStateEnum powerState);
+esp_err_t jsonSetLastPowerOnTime(uint32_t time);
+esp_err_t jsonSetLastPowerOffTime(uint32_t time);
+esp_err_t jsonSetNextPowerOnTime(uint32_t time);
+esp_err_t jsonSetNextPowerOffTime(uint32_t time);
+esp_err_t jsonSetLastWakeUpTime(uint32_t time);
+esp_err_t jsonSetLastSleepTime(uint32_t time);
+esp_err_t jsonSetNextSleepTime(uint32_t time);
+esp_err_t jsonSetDeviceState(uint32_t state);
 
 #endif

@@ -8,17 +8,13 @@
 
 #define BAR_INTERVAL (10)
 
-static char year[12];
-static char month[12];
-static char date[12];
-static char hour[12];
-static char minute[12];
-
-static lv_obj_t *bar[20] = {0};
-static lv_obj_t *label[20] = {0};
-
 static char downloadSpeedStr[20] = {0};
 static char uploadSpeedStr[20] = {0};
+static char cpuUsageStr[12];
+static char memUsageStr[12];
+static uint8_t s_displayIndex = 0;    // 显示页索引
+
+lv_obj_t * ui_Screen_Main;
 
 static lv_obj_t * s_labelDate;
 static lv_obj_t * s_labelTime;
@@ -29,6 +25,9 @@ static lv_obj_t * labelMemory;
 static lv_obj_t * imgCpu;
 static lv_obj_t * imgMemory;
 static lv_timer_t *notificationTimer ;
+static lv_obj_t *bar[20] = {0};
+static lv_obj_t *label[20] = {0};
+static lv_timer_t *s_timeTimer;
 
 const lv_img_dsc_t *weatherImage[40] = 
 {
@@ -74,9 +73,6 @@ const lv_img_dsc_t *weatherImage[40] =
     &ui_img_weather99_png
 };
 
-static char cpuUsageStr[12];
-static char memUsageStr[12];
-
 static void ui_event_Main(lv_event_t * e);
 static void timeUpdateTimer(lv_timer_t *timer);
 static void ui_Main_change_display();
@@ -106,7 +102,6 @@ static void ui_event_Main(lv_event_t * e)
 static void timeUpdateTimer(lv_timer_t *timer)
 {
     time_t now;
-    char buffer[80];
     struct tm timeinfo;
     time(&now);
     setenv("TZ", "CST-8", 1);
@@ -158,7 +153,7 @@ static void ui_Screen_Main_SetMemValue(uint8_t v)
 
 void ui_Screen_Main_NotificationTimer()
 {
-    lv_label_set_text(ui_notification, "");
+    // lv_label_set_text(ui_notification, NULL);
     // 实现刷新效果
     lv_obj_invalidate(ui_MainPage);
 }
@@ -354,36 +349,36 @@ void ui_Main_CreateNetSpeedTxt(lv_obj_t *scr)
 
 static void ui_Main_change_display()
 {
-    static uint8_t displayIndex = 0;
-
-    if(displayIndex == 0)
-    {
-        lv_obj_clear_flag(ui_MainPage, LV_OBJ_FLAG_HIDDEN);     /// Flags
-        lv_obj_add_flag(ui_SecondPage, LV_OBJ_FLAG_HIDDEN);     /// Flags
-        displayIndex = 1;
-    }
-    else if(displayIndex == 1)
+    // printf("key pressed\r\n");
+    if(s_displayIndex == 0)
     {
         lv_obj_clear_flag(ui_SecondPage, LV_OBJ_FLAG_HIDDEN);     /// Flags
         lv_obj_add_flag(ui_MainPage, LV_OBJ_FLAG_HIDDEN);     /// Flags
-        displayIndex = 0;
+        s_displayIndex = 1;
+    }
+    else if(s_displayIndex == 1)
+    {
+        lv_obj_clear_flag(ui_MainPage, LV_OBJ_FLAG_HIDDEN);     /// Flags
+        lv_obj_add_flag(ui_SecondPage, LV_OBJ_FLAG_HIDDEN);     /// Flags
+        s_displayIndex = 0;
     }
 }
 
 void ui_Screen_Main_init(void)
 {
-    ui_Screen2 = lv_obj_create(NULL);
-    lv_timer_t *timer ;
+    ui_Screen_Main = lv_obj_create(NULL);
+
+    s_displayIndex = 0;
     
     ui_Screen_Main_LoadBackground();
-    lv_obj_set_style_text_color(ui_Screen2, lv_color_hex(0xFFFFFF), 0);
+    lv_obj_set_style_text_color(ui_Screen_Main, lv_color_hex(0xFFFFFF), 0);
 
-    ui_MainPage = lv_obj_create(ui_Screen2);
+    ui_MainPage = lv_obj_create(ui_Screen_Main);
     lv_obj_remove_style_all(ui_MainPage);
     lv_obj_set_width(ui_MainPage, 240);
     lv_obj_set_height(ui_MainPage, 135);
     lv_obj_set_align(ui_MainPage, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_MainPage, LV_OBJ_FLAG_HIDDEN);     /// Flags
+    // lv_obj_add_flag(ui_MainPage, LV_OBJ_FLAG_HIDDEN);
     lv_obj_clear_flag(ui_MainPage, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
     s_labelTime = lv_label_create(ui_MainPage);
@@ -405,20 +400,20 @@ void ui_Screen_Main_init(void)
     lv_obj_set_style_text_font(s_labelDate, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
 
 
-    ui_SecondPage = lv_obj_create(ui_Screen2);
+    ui_SecondPage = lv_obj_create(ui_Screen_Main);
     lv_obj_remove_style_all(ui_SecondPage);
     lv_obj_set_width(ui_SecondPage, 240);
     lv_obj_set_height(ui_SecondPage, 135);
     lv_obj_set_align(ui_SecondPage, LV_ALIGN_CENTER);
     lv_obj_clear_flag(ui_SecondPage, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    // lv_obj_add_flag(ui_SecondPage, LV_OBJ_FLAG_HIDDEN);     /// Flags
+    lv_obj_add_flag(ui_SecondPage, LV_OBJ_FLAG_HIDDEN);     /// Flags
 
     ui_Main_CreateMeter1(ui_SecondPage);
     ui_Main_CreateMeter2(ui_SecondPage);
     ui_Main_NetArrow(ui_SecondPage);
     ui_Main_CreateNetSpeedTxt(ui_SecondPage);
 
-    ui_ThirdPage = lv_obj_create(ui_Screen2);
+    ui_ThirdPage = lv_obj_create(ui_Screen_Main);
     lv_obj_remove_style_all(ui_ThirdPage);
     lv_obj_set_width(ui_ThirdPage, 240);
     lv_obj_set_height(ui_ThirdPage, 135);
@@ -444,10 +439,10 @@ void ui_Screen_Main_init(void)
     lv_label_set_long_mode(ui_notification, LV_LABEL_LONG_SCROLL);
 
 
-    lv_obj_add_event_cb(ui_Screen2, ui_event_Main, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_Screen_Main, ui_event_Main, LV_EVENT_ALL, NULL);
 
-    timer = lv_timer_create(timeUpdateTimer, 1000, NULL);
-    lv_timer_set_repeat_count(timer, -1);
+    s_timeTimer = lv_timer_create(timeUpdateTimer, 1000, NULL);
+    lv_timer_set_repeat_count(s_timeTimer, -1);
 
     notificationTimer = lv_timer_create(ui_Screen_Main_NotificationTimer, 10000, NULL);
     lv_timer_set_repeat_count(notificationTimer, 1);
@@ -457,42 +452,44 @@ void ui_Screen_Main_SetWeatherIcon(uint8_t index)
 {
     // lv_mem_free(ui_weather_icon);
     // printf("img weatherCode = %d\r\n", index);
-    // ui_weather_icon = lv_img_create(ui_Screen2);
+    // ui_weather_icon = lv_img_create(ui_Screen_Main);
     lv_img_set_src(ui_weather_icon, weatherImage[index]);
 }
 
 void ui_Screen_Main_SetWeatherTemperature(char *temperature)
 {
-    char cmbTemperature[10];
+    static char cmbTemperature[10];
     strcpy(cmbTemperature, temperature);
     strcat(cmbTemperature,"°C");
-    lv_label_set_text(ui_weather_temperature, cmbTemperature);
+    lv_label_set_text_static(ui_weather_temperature, cmbTemperature);
 }
 
 void ui_Screen_Main_SetNotification(char *notification)
 {
-    lv_label_set_text(ui_notification, notification);
-    // 实现刷新效果
-    lv_obj_invalidate(ui_MainPage);
-    lv_timer_set_repeat_count(notificationTimer, 1);
+    lv_label_set_text_static(ui_notification, notification);
+    // lv_timer_reset(notificationTimer);
+    // // 实现刷新效果
+    // lv_obj_invalidate(ui_MainPage);
+    // lv_timer_set_repeat_count(notificationTimer, 1);
 }
 
 void ui_Screen_Main_SetBilibiliFollower(char *follower)
 {
-    lv_obj_set_style_text_color(ui_notification, lv_color_hex(0xff00ff), LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_notification, lv_color_hex(0xFFB5C5), LV_STATE_DEFAULT);
     lv_label_set_text_static(ui_notification, follower);
-    // 实现刷新效果
-    lv_obj_invalidate(ui_MainPage);
-    lv_timer_set_repeat_count(notificationTimer, 2);
+    // lv_timer_reset(notificationTimer);
+    // // 实现刷新效果
+    // lv_obj_invalidate(ui_MainPage);
+    // lv_timer_set_repeat_count(notificationTimer, 2);
 }
 
 void ui_Screen_Main_LoadBackground()
 {
     uint32_t bgIndex = 0;
 
-    lv_obj_clear_flag(ui_Screen2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_clear_flag(ui_Screen_Main, LV_OBJ_FLAG_SCROLLABLE);
     nvsLoadBackgroundIndex(&bgIndex);
-    lv_obj_set_style_bg_img_src(ui_Screen2, backgroundImage[bgIndex], LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_img_src(ui_Screen_Main, backgroundImage[bgIndex], LV_PART_MAIN | LV_STATE_DEFAULT);
 }
 
 
@@ -500,4 +497,24 @@ void ui_Screen_Main_SetMeter(uint8_t cpuValue, uint8_t memValue)
 {
     ui_Screen_Main_SetCupValue(cpuValue);
     ui_Screen_Main_SetMemValue(memValue);
+}
+
+void ui_Screen_Main_SetActivePage()
+{
+    switch (s_displayIndex)
+    {
+        case 1:
+        {
+            lv_obj_clear_flag(ui_SecondPage, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(ui_MainPage, LV_OBJ_FLAG_HIDDEN);
+            break;
+        }
+        case 0:
+        {
+            lv_obj_clear_flag(ui_SecondPage, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(ui_MainPage, LV_OBJ_FLAG_HIDDEN);
+            break;
+        }
+        
+    }
 }

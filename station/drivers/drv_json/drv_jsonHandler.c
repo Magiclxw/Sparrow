@@ -201,7 +201,61 @@ esp_err_t setDeviceRetainedState(DeviceRetainedStateStruct state)
     s_deviceRetainedState.lastSleepTime = state.lastSleepTime;
     s_deviceRetainedState.nextWakeUpTime = state.nextWakeUpTime;
     s_deviceRetainedState.nextSleepTime = state.nextSleepTime;
-    
+    s_deviceRetainedState.deviceState = state.deviceState;
+    return ESP_OK;
+}
+
+esp_err_t jsonSetPowerState(PowerStateEnum powerState)
+{
+    s_deviceRetainedState.powerState = powerState;
+    return ESP_OK;
+}
+
+esp_err_t jsonSetLastPowerOnTime(uint32_t time)
+{
+    s_deviceRetainedState.lastPowerOnTime = time;
+    return ESP_OK;
+}
+
+esp_err_t jsonSetLastPowerOffTime(uint32_t time)
+{
+    s_deviceRetainedState.lastPowerOffTime = time;
+    return ESP_OK;
+}
+
+esp_err_t jsonSetNextPowerOnTime(uint32_t time)
+{
+    s_deviceRetainedState.nextPowerOnTime = time;
+    return ESP_OK;
+}
+
+esp_err_t jsonSetNextPowerOffTime(uint32_t time)
+{
+    s_deviceRetainedState.nextPowerOffTime = time;
+    return ESP_OK;
+}
+
+esp_err_t jsonSetLastWakeUpTime(uint32_t time)
+{
+    s_deviceRetainedState.lastWakeUpTime = time;
+    return ESP_OK;
+}
+
+esp_err_t jsonSetLastSleepTime(uint32_t time)
+{
+    s_deviceRetainedState.lastSleepTime = time;
+    return ESP_OK;
+}
+
+esp_err_t jsonSetNextSleepTime(uint32_t time)
+{
+    s_deviceRetainedState.nextSleepTime = time;
+    return ESP_OK;
+}
+
+esp_err_t jsonSetDeviceState(uint32_t state)
+{
+    s_deviceRetainedState.deviceState = state;
     return ESP_OK;
 }
 
@@ -209,6 +263,8 @@ esp_err_t getDeviceRetainedState(char *stateData)
 {
     cJSON *jsonData = NULL;
     char *data;
+
+    data = pvPortMalloc(1024);
 
     jsonData = cJSON_CreateObject();
 
@@ -221,10 +277,13 @@ esp_err_t getDeviceRetainedState(char *stateData)
     cJSON_AddNumberToObject(jsonData, JSON_KEY_LAST_SLEEP_TIME, s_deviceRetainedState.lastSleepTime);
     cJSON_AddNumberToObject(jsonData, JSON_KEY_NEXT_WAKE_UP_TIME, s_deviceRetainedState.nextWakeUpTime);
     cJSON_AddNumberToObject(jsonData, JSON_KEY_NEXT_SLEEP_TIME, s_deviceRetainedState.nextSleepTime);
+    cJSON_AddNumberToObject(jsonData, JSON_KEY_DEVICE_STATE, s_deviceRetainedState.deviceState);
 
     data = cJSON_Print(jsonData);
 
     strcpy(stateData,data);
+
+    vPortFree(data);
 
     return ESP_OK;
 }

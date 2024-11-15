@@ -31,7 +31,7 @@ static void ui_event_background(lv_event_t * e)
     {
         nvsSaveBackgroundIndex(bgIndex);
         ui_Screen_Main_LoadBackground();
-        lv_scr_load(ui_Screen2);
+        lv_scr_load(ui_Screen_Main);
     }
 }
 

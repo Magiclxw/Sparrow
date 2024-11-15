@@ -26,7 +26,7 @@ void ui_Screen_Menu_init(void)
 
     lv_obj_add_event_cb(ui_Menu, ui_Screen_Menu_event_Menu, LV_EVENT_ALL, NULL);
 
-    lv_roller_set_selected(ui_Menu, 0, LV_ANIM_ON);
+    lv_roller_set_selected(ui_Menu, 0, LV_ANIM_OFF);
 }
 
 static void ui_Screen_Menu_event_Menu(lv_event_t * e)
@@ -58,12 +58,13 @@ static void ui_Screen_Menu_event_Menu(lv_event_t * e)
         uint8_t index = lv_roller_get_selected(ui_Menu);
         if (index == 0)
         {
-            _ui_screen_change(&ui_Screen4, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_Screen_System_init);
-            // lv_scr_load(ui_Screen4);
+           _ui_screen_change(&ui_Settings, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_Screen_Setting_init);
+            // lv_scr_load(ui_ScreenSystem);
         }
         else if (index == 1)
         {
-            _ui_screen_change(&ui_Settings, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_Screen_Setting_init);
+            _ui_screen_change(&ui_ScreenSystem, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_Screen_System_init);
+            
             // lv_scr_load(ui_Settings);
         }
         else if (index == 2)

@@ -1,8 +1,20 @@
 package com.example.sparrow.system;
 
+
+import static com.example.sparrow.system.JsonHandler.generateAppRetainedSettings;
+import static com.example.sparrow.system.JsonHandler.generateNotification;
+import static com.example.sparrow.system.JsonHandler.getLedCtrl;
+import static com.example.sparrow.system.JsonHandler.getPcPassword;
+import static com.example.sparrow.system.JsonHandler.getPcPasswordCtrl;
+import static com.example.sparrow.system.JsonHandler.getPcPasswordWait;
+import static com.example.sparrow.system.JsonHandler.getPowerOnOFF;
+import static com.example.sparrow.system.JsonHandler.getToken;
+import static com.example.sparrow.system.JsonHandler.getWakeupInterval;
+
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 public class Mqtt {
@@ -17,6 +29,7 @@ public class Mqtt {
     public static String MQTT_TOPIC_DEVICE_DISRETAINED_STATE = "/state/device_config/disretained";
     public static String MQTT_TOPIC_DEVICE_RETAINED_STATISTICS = "/statistics/device_config/retained";
     public static String MQTT_TOPIC_DEVICE_DISRETAINED_STATISTICS = "/statistics/device_config/disretained";
+    public static String MQTT_TOPIC_APP_NOTIFICATION = "/notification";
 
     public static void connectServer(String broker, String userName, String password)
     {
@@ -101,6 +114,36 @@ public class Mqtt {
             System.out.println("cause " + me.getCause());
             System.out.println("excep " + me);
             me.printStackTrace();
+        }
+    }
+
+    public static void mqttSendAppRetainedSettings()
+    {
+        String jsonData = generateAppRetainedSettings(getWakeupInterval(), getPowerOnOFF(), getPcPassword(), getPcPasswordCtrl(), getPcPasswordWait(), getLedCtrl(), getToken());
+
+        MqttMessage message = new MqttMessage(jsonData.getBytes());
+        message.setQos(0);
+        message.setRetained(true);
+        try {
+            client.publish(MQTT_TOPIC_APP_RETAINED_SETTINGS, message);
+            System.out.println("Message published");
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void mqttSendNotification(String nonification)
+    {
+        String jsonData = generateNotification(nonification);
+
+        MqttMessage message = new MqttMessage(jsonData.getBytes());
+        message.setQos(0);
+        message.setRetained(false);
+        try {
+            client.publish(MQTT_TOPIC_APP_NOTIFICATION, message);
+            System.out.println("Message published");
+        } catch (MqttException e) {
+            e.printStackTrace();
         }
     }
 }

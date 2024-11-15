@@ -5,28 +5,30 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "nvs_flash.h"
-
+/**
+ * @attention nvs 键长最大为15字符
+*/
 #define USER_NAMESPACE_0 ("storage")
-#define SERVER_ADDRESS  ("server_address")
-#define SERVER_USERNAME ("server_username")
-#define SERVER_PASSWORD ("server_password")
-#define NVS_KEY_BACKGROUND ("nvs_key_background")
+#define SERVER_ADDRESS  ("mqttAddr")
+#define SERVER_USERNAME ("mqttUsername")
+#define SERVER_PASSWORD ("mqttPassword")
+#define NVS_KEY_BACKGROUND ("background")
 #define NVS_WEATHER ("weather")
 #define NVS_BILIBILI ("bilibili")
 #define NVS_SLEEP_TIME ("sleepTime")
 
-#define NVS_WAKEUP_INTERVAL ("wakeup_interval")
-#define NVS_POWER_CTRL      ("power_ctrl")
-#define NVS_PC_PASSWORD     ("pc_password")
-#define NVS_PC_PASSWORD_CTRL    ("pc_password_ctrl")
-#define NVS_PC_PASSWORD_WAIT    ("pc_password_wait")
-#define NVS_LED_CTRL            ("led_ctrl")
-#define TOOLS_TOKEN_CTRL        ("tools_token_ctrl")
-#define NVS_SERVO_IDLE_ANGLE    ("servo_idle_angle")
-#define NVS_SERVO_POS_ANGLE     ("servo_pos_angle")
-#define NVS_SERVO_NEG_ANGLE     ("servo_neg_angle")
+#define NVS_WAKEUP_INTERVAL ("wakeupInterval")
+#define NVS_POWER_CTRL      ("powerCtrl")
+#define NVS_PC_PASSWORD     ("pcPassword")
+#define NVS_PC_PASSWORD_CTRL    ("pcPasswordCtrl")
+#define NVS_PC_PASSWORD_WAIT    ("pcPasswordWait")
+#define NVS_LED_CTRL            ("ledCtrl")
+#define TOOLS_TOKEN_CTRL        ("tokenCtrl")
+#define NVS_SERVO_IDLE_ANGLE    ("idleAngle")
+#define NVS_SERVO_POS_ANGLE     ("posAngle")
+#define NVS_SERVO_NEG_ANGLE     ("negAngle")
 
-#define NVS_KEY_BACKGROUND      ("background")
+#define NVS_KEY_BACKGROUND_INDEX     ("bgIndex")   // 背景索引
 
 esp_err_t initNvs(void);
 esp_err_t nvsOpen(const char* namespace_name, nvs_open_mode_t open_mode);

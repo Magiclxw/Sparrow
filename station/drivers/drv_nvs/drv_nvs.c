@@ -299,7 +299,7 @@ esp_err_t nvsSaveNegAngle(uint32_t angle)
 
 esp_err_t nvsSaveBackgroundIndex(uint32_t index)
 {
-    esp_err_t ret = nvsSaveU32(USER_NAMESPACE_0, NVS_READWRITE, NVS_KEY_BACKGROUND, index);
+    esp_err_t ret = nvsSaveU32(USER_NAMESPACE_0, NVS_READWRITE, NVS_KEY_BACKGROUND_INDEX, index);
     return ret;
 }
 
@@ -307,7 +307,7 @@ esp_err_t nvsLoadBackgroundIndex(uint32_t *out_value)
 {
     esp_err_t ret = ESP_OK;
 
-    ret = nvsLoadU32(USER_NAMESPACE_0, NVS_READWRITE, NVS_KEY_BACKGROUND, out_value);
+    ret = nvsLoadU32(USER_NAMESPACE_0, NVS_READWRITE, NVS_KEY_BACKGROUND_INDEX, out_value);
 
     return ret;
 }

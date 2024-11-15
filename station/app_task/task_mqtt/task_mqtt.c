@@ -25,6 +25,13 @@ static void mqttTask(void *pvParameters)
     mqttQueueHandle = xQueueCreate(MQTT_REC_QUEUE_LENGTH, sizeof(mqttData));
 
     initMqtt();
+    // 等待连接完成
+    xSemaphoreTake(preStartupSemaphore,portMAX_DELAY);
+
+    // 设置设备状态
+    jsonSetDeviceState(1);
+    // 发送设备状态
+    drvMqttSendRetainedState();
 
     while(1)
     {
@@ -69,7 +76,7 @@ static void mqttTask(void *pvParameters)
         else if (strcmp(MQTT_TOPIC_DEVICE_NOTIFICATION, mqttData.topic) == 0)
         {
             printf("notification = %s\r\n",mqttData.data);
-            ui_Screen_Main_SetNotification(mqttData.data);
+            ui_Screen_Main_SetNotification("mqttData.data");
         }
 
         memset(&mqttData, 0 , sizeof(mqttData));

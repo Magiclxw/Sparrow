@@ -1,8 +1,17 @@
 package com.example.sparrow;
 
 import static com.example.sparrow.system.JsonHandler.analysisAppRetainedSettings;
+import static com.example.sparrow.system.JsonHandler.analysisDevRetainedState;
+import static com.example.sparrow.system.JsonHandler.getDeviceState;
+import static com.example.sparrow.system.JsonHandler.getNextWakeupTime;
+import static com.example.sparrow.system.JsonHandler.getPcPassword;
 import static com.example.sparrow.system.JsonHandler.getPowerOnOFF;
 import static com.example.sparrow.system.JsonHandler.getWakeupInterval;
+import static com.example.sparrow.system.JsonHandler.setPcPassword;
+import static com.example.sparrow.system.JsonHandler.setPcPasswordCtrl;
+import static com.example.sparrow.system.JsonHandler.setWakeupInterval;
+import static com.example.sparrow.system.Mqtt.mqttSendAppRetainedSettings;
+import static com.example.sparrow.system.Mqtt.mqttSendNotification;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -15,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,7 +33,12 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.NumberPicker;
+import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sparrow.ble.BLEDevice;
@@ -50,7 +65,9 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.sparrow.databinding.ActivityMainBinding;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -109,7 +126,11 @@ public class MainActivity extends AppCompatActivity {
 
     static NumberPicker np_wakeup_hour;
     static NumberPicker np_wakeup_minute;
-
+    static TextView tv_next_power_on_time;
+    static TextView tv_device_state;
+    static EditText et_pc_password, et_text;
+    static Button btn_save_wakeup_interval, btn_save_pc_password, btn_upload_notification, btn_upload_file;
+    static CheckBox cb_pc_password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,10 +177,65 @@ public class MainActivity extends AppCompatActivity {
         np_wakeup_hour = (NumberPicker) findViewById(R.id.np_wakeup_hour);
         np_wakeup_minute = (NumberPicker) findViewById(R.id.np_wakeup_minute);
 
+        tv_next_power_on_time = (TextView) findViewById(R.id.next_power_on_time);
+        tv_device_state = (TextView) findViewById(R.id.tv_device_state);
+        et_pc_password = (EditText) findViewById(R.id.et_pc_password);
+        et_text = (EditText) findViewById(R.id.et_text);
+
+        btn_save_wakeup_interval = (Button) findViewById(R.id.btn_save_wakeup_interval);
+        btn_save_pc_password = (Button) findViewById(R.id.btn_save_pc_password);
+        btn_upload_notification = (Button) findViewById(R.id.btn_upload_notification);
+
+        cb_pc_password = (CheckBox) findViewById(R.id.cb_pc_password);
+
         np_wakeup_hour.setMinValue(0);
         np_wakeup_hour.setMaxValue(240);
         np_wakeup_minute.setMinValue(0);
-        np_wakeup_minute.setMaxValue(60);
+        np_wakeup_minute.setMaxValue(59);
+
+        btn_save_wakeup_interval.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String wake_up_interval = String.valueOf(np_wakeup_hour.getValue()*60 + np_wakeup_minute.getValue());
+
+                setWakeupInterval(Integer.parseInt(wake_up_interval));
+
+                mqttSendAppRetainedSettings();
+            }
+        });
+
+        btn_save_pc_password.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String password = String.valueOf(et_pc_password.getText());
+                setPcPassword(password);
+                mqttSendAppRetainedSettings();
+            }
+        });
+
+        btn_upload_notification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String text = String.valueOf(et_text.getText());
+
+                mqttSendNotification(text);
+            }
+        });
+
+        cb_pc_password.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (cb_pc_password.isChecked())
+                {
+                    setPcPasswordCtrl(1);
+                }
+                else
+                {
+                    setPcPasswordCtrl(0);
+                }
+                mqttSendAppRetainedSettings();
+            }
+        });
 
 
         new Thread(new UpdateState()).start();
@@ -242,6 +318,9 @@ public class MainActivity extends AppCompatActivity {
 //                        rb_power_off.setChecked(true);
                     }
                 }
+
+                et_pc_password.setText(getPcPassword());
+
             }
             if(appDisretainedSettings != null)
             {
@@ -257,7 +336,28 @@ public class MainActivity extends AppCompatActivity {
             }
             if(deviceRetainedState != null)
             {
+                deviceRetainedState= deviceRetainedState.replaceAll("\\s*|\r|\n|\t","");
 
+                System.out.println(deviceRetainedState);
+
+                analysisDevRetainedState(deviceRetainedState);
+
+                SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                long originTime = getNextWakeupTime();
+                String wakeupTime = sdf.format(new Date(originTime * 1000L));
+                System.out.println("wakeup time : " + wakeupTime + "origin" + originTime);
+                tv_next_power_on_time.setText(wakeupTime);
+                int deviceState = getDeviceState();
+                if (deviceState == 0)
+                {
+                    tv_device_state.setTextColor(Color.parseColor("#ff0000"));
+                    tv_device_state.setText("设备离线");
+                }
+                else
+                {
+                    tv_device_state.setTextColor(Color.parseColor("#00ff00"));
+                    tv_device_state.setText("设备在线");
+                }
             }
         }
     };

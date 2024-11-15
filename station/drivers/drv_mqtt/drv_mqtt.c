@@ -5,6 +5,7 @@
 #include "string.h"
 #include "ui.h"
 
+
 static const char *TAG = "MQTT station";
 
 QueueHandle_t mqttQueueHandle = NULL;
@@ -53,6 +54,9 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         msg_id = esp_mqtt_client_subscribe(client, MQTT_TOPIC_DEVICE_NOTIFICATION, 0);
         ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
 
+        // msg_id = esp_mqtt_client_subscribe(client, MQTT_TOPIC_DEVICE_DISRETAINED_STATE, 0);
+        // ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+
         // int times = 0;
         // sysInfoGetPowerOnTimes(&times);
         // char powerOnTimes[5] = {0};
@@ -72,7 +76,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 
     case MQTT_EVENT_SUBSCRIBED:
         ESP_LOGI(TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
-        msg_id = esp_mqtt_client_publish(client, "/topic/qos0", "data", 0, 0, 0);
+        msg_id = esp_mqtt_client_publish(client, MQTT_TOPIC_DEVICE_DISRETAINED_STATE, "1", 0, 0, 0);
         ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
         break;
     case MQTT_EVENT_UNSUBSCRIBED:
@@ -90,6 +94,8 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         memcpy(&s_mqttRecData.data, event->data, event->data_len);
 
         xQueueSend(mqttQueueHandle, &s_mqttRecData, 0);
+
+        memset(&s_mqttRecData, 0 , sizeof(s_mqttRecData));
         
         break;
     case MQTT_EVENT_ERROR:
@@ -175,7 +181,6 @@ size_t mqttGetBrokerPassword()
 }
 
 
-
 void initMqtt(void)
 {
     static char *addr = NULL;
@@ -214,7 +219,17 @@ void initMqtt(void)
         // .authentication = {
         //     .password = "asd13579",
                 },
-            }
+            },
+        // 配置遗嘱消息
+        .session.last_will = 
+        {
+            .topic = MQTT_TOPIC_DEVICE_DISRETAINED_STATE,
+            .msg = "0",
+            .qos = 0,
+            .retain = 1,
+            .msg_len = strlen(MQTT_TOPIC_DEVICE_DISRETAINED_STATE),
+        }
+
         };
 
         // vPortFree(addr);
@@ -229,3 +244,13 @@ void initMqtt(void)
     }
 }
 
+int drvMqttSendRetainedState()
+{
+    char retainedbuffer[1024];
+
+    getDeviceRetainedState(retainedbuffer);
+
+    printf("retained data = %s\n",retainedbuffer);
+
+    return esp_mqtt_client_publish(client, MQTT_TOPIC_DEVICE_RETAINED_STATE, retainedbuffer, 0, 0, 1);
+}

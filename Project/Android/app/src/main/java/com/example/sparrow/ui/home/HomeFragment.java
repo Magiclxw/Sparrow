@@ -40,6 +40,8 @@ public class HomeFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         btn_upload_file = (Button) getActivity().findViewById(R.id.btn_upload_file);
+
+
         btn_upload_file.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
