@@ -9,6 +9,7 @@ import static com.example.sparrow.system.JsonHandler.getPowerOnOFF;
 import static com.example.sparrow.system.JsonHandler.getWakeupInterval;
 import static com.example.sparrow.system.JsonHandler.setPcPassword;
 import static com.example.sparrow.system.JsonHandler.setPcPasswordCtrl;
+import static com.example.sparrow.system.JsonHandler.setPowerOnOff;
 import static com.example.sparrow.system.JsonHandler.setWakeupInterval;
 import static com.example.sparrow.system.Mqtt.mqttSendAppRetainedSettings;
 import static com.example.sparrow.system.Mqtt.mqttSendNotification;
@@ -31,6 +32,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 import android.widget.Button;
@@ -65,22 +67,18 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.sparrow.databinding.ActivityMainBinding;
 
+import org.eclipse.paho.client.mqttv3.MqttClient;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
-    private AppBarConfiguration mAppBarConfiguration;
-    private ActivityMainBinding binding;
-
     private static final String TAG = "BLEMain";
     private final String DeviceName = "Sparrow";
     private int quitFlag = 0; //退出确认标志
-    public static String mqttServer;//ssl://j1aa1aff.ala.cn-hangzhou.emqxsl.cn:8883";
-    public static String userName = "test";
-    public static String password = "asd13579";   //用户密码
+
     public static String SERVICE_UUID = "000000ff-0000-1000-8000-00805f9b34fb";//"49535343-fe7d-4ae5-8fa9-9fafd205e455";  //蓝牙通讯服务
     public static String READ_UUID = "0000ff01-0000-1000-8000-00805f9b34fb";//"49535343-1e4d-4bd9-ba61-23c647249616";  //读特征
     public static String WRITE_UUID = "0000ff01-0000-1000-8000-00805f9b34fb";//"49535343-8841-43f4-a8d4-ecbe34729bb3";  //写特征
@@ -98,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
     };
     // 声明一个集合，在后面的代码中用来存储用户拒绝授权的权限
     private List<String> deniedPermissionList = new ArrayList<>();
-
 
     //蓝牙
     private static final int CONNECT_SUCCESS = 0x01;
@@ -123,41 +120,45 @@ public class MainActivity extends AppCompatActivity {
 
     public static Context mContext;
 
+    public static Mqtt mqttHandle = null;
 
     static NumberPicker np_wakeup_hour;
     static NumberPicker np_wakeup_minute;
     static TextView tv_next_power_on_time;
     static TextView tv_device_state;
     static EditText et_pc_password, et_text;
-    static Button btn_save_wakeup_interval, btn_save_pc_password, btn_upload_notification, btn_upload_file;
+    static Button btn_power_on, btn_power_off ,btn_save_wakeup_interval, btn_save_pc_password, btn_upload_notification, btn_upload_file;
     static CheckBox cb_pc_password;
 
     @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        if (item.getItemId() == R.id.action_tools)
+        {
+            Intent intent = new Intent();
+            intent.setClass(MainActivity.this, ToolsActivity.class);
+            startActivity(intent);
+        }
+        else if (item.getItemId() == R.id.action_settings)
+        {
+            Intent intent = new Intent();
+            intent.setClass(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressLint("ResourceType")
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        mqttServer = SystemConfig.getMqttAddr(MainActivity.this);
-        userName = SystemConfig.getMqttUserName(MainActivity.this);
-        password = SystemConfig.getMqttPassword(MainActivity.this);
         SERVICE_UUID = SystemConfig.getBleServiceUUID(MainActivity.this);
         READ_UUID = SystemConfig.getBleReadUUID(MainActivity.this);
         WRITE_UUID = SystemConfig.getBleWriteUUID(MainActivity.this);
 
-        if (mqttServer == null || mqttServer.equals("ssl://")) {
-            mqttServer = "ssl://j1aa1aff.ala.cn-hangzhou.emqxsl.cn:8883";
-            SystemConfig.setMqttAddr(this, mqttServer);
-        }
-        if (userName == null) {
-            userName = "test";
-            SystemConfig.setMqttUserName(this, userName);
-        }
-        if (password == null) {
-            password = "asd13579";
-            SystemConfig.setMqttPassword(this, password);
-        }
         if (SERVICE_UUID == null) {
             SERVICE_UUID = "000000ff-0000-1000-8000-00805f9b34fb";
             SystemConfig.setBleServiceUUID(this, SERVICE_UUID);
@@ -173,7 +174,6 @@ public class MainActivity extends AppCompatActivity {
 
         mContext = getApplicationContext();
 
-
         np_wakeup_hour = (NumberPicker) findViewById(R.id.np_wakeup_hour);
         np_wakeup_minute = (NumberPicker) findViewById(R.id.np_wakeup_minute);
 
@@ -182,6 +182,8 @@ public class MainActivity extends AppCompatActivity {
         et_pc_password = (EditText) findViewById(R.id.et_pc_password);
         et_text = (EditText) findViewById(R.id.et_text);
 
+        btn_power_on = (Button) findViewById(R.id.btn_power_on);
+        btn_power_off = (Button) findViewById(R.id.btn_power_off);
         btn_save_wakeup_interval = (Button) findViewById(R.id.btn_save_wakeup_interval);
         btn_save_pc_password = (Button) findViewById(R.id.btn_save_pc_password);
         btn_upload_notification = (Button) findViewById(R.id.btn_upload_notification);
@@ -192,6 +194,22 @@ public class MainActivity extends AppCompatActivity {
         np_wakeup_hour.setMaxValue(240);
         np_wakeup_minute.setMinValue(0);
         np_wakeup_minute.setMaxValue(59);
+
+        btn_power_on.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setPowerOnOff(1);
+                mqttSendAppRetainedSettings();
+            }
+        });
+
+        btn_power_off.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setPowerOnOff(2);
+                mqttSendAppRetainedSettings();
+            }
+        });
 
         btn_save_wakeup_interval.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -240,44 +258,14 @@ public class MainActivity extends AppCompatActivity {
 
         new Thread(new UpdateState()).start();
 
-        //初始化数据
+        // 初始化数据
         initData();
-        //注册广播
+        // 注册广播
         initBLEBroadcastReceiver();
         initPermissions();
         searchBtDevice();
-
-        Mqtt.connectServer(mqttServer, userName, password);
-//        new Thread(new UpdateState()).start();
-
-/*********************************************************************************************/
-        setSupportActionBar(binding.appBarMain.toolbar);
-
-        DrawerLayout drawer = binding.drawerLayout;
-        NavigationView navigationView = binding.navView;
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
-                .setOpenableLayout(drawer)
-                .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
-                || super.onSupportNavigateUp();
+        // 连接服务器
+        mqttHandle.connectServer(MainActivity.this);
     }
 
     //mqtt通信
@@ -301,24 +289,6 @@ public class MainActivity extends AppCompatActivity {
 
                 np_wakeup_hour.setValue(getWakeupInterval() / 60);
                 np_wakeup_minute.setValue(getWakeupInterval() % 60);
-                switch (getPowerOnOFF())
-                {
-                    case 0:
-                    {
-//                        rb_no_ctrl.setChecked(true);
-                        break;
-                    }
-                    case 1:
-                    {
-//                        rb_power_on.setChecked(true);
-                        break;
-                    }
-                    case 2:
-                    {
-//                        rb_power_off.setChecked(true);
-                    }
-                }
-
                 et_pc_password.setText(getPcPassword());
 
             }
@@ -336,6 +306,7 @@ public class MainActivity extends AppCompatActivity {
             }
             if(deviceRetainedState != null)
             {
+                // 去除额外符号
                 deviceRetainedState= deviceRetainedState.replaceAll("\\s*|\r|\n|\t","");
 
                 System.out.println(deviceRetainedState);
@@ -683,4 +654,15 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+    // 添加菜单
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main,menu);
+        return true;
+    }
+    public static void mainConnectServer()
+    {
+        mqttHandle.connectServer(mContext);
+    }
+
 }

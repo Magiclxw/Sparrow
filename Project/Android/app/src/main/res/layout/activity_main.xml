@@ -1,26 +1,243 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout"
+    android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:openDrawer="start">
+    tools:openDrawer="start"
+    android:orientation="vertical">
 
-    <include
-        android:id="@+id/app_bar_main"
-        layout="@layout/app_bar_main"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical"
+        >
 
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:fitsSystemWindows="true"
-        app:headerLayout="@layout/nav_header_main"
-        app:menu="@menu/activity_main_drawer" />
-</androidx.drawerlayout.widget.DrawerLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+            <TextView
+                android:id="@+id/tv_device_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="设备状态"
+                android:textSize="20sp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                ></TextView>
+
+            <Button
+                android:id="@+id/btn_power_on"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text = "开机"
+                android:textSize="20sp"
+                android:layout_toLeftOf="@+id/btn_power_off"
+                android:layout_marginRight="10dp"
+                />
+            <Button
+                android:id="@+id/btn_power_off"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text = "关机"
+                android:textSize="20sp"
+                android:layout_alignParentRight="true"
+                />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="开机时间"
+                android:textSize="20sp"
+                />
+
+            <TextView
+                android:id="@+id/next_power_on_time"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text=""
+                android:textSize="20sp"
+                android:layout_marginLeft="30dp"
+                android:layout_weight="1"
+                />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/black"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="唤醒间隔"
+                android:textSize="20sp"
+                android:layout_marginTop="10dp"
+                ></TextView>
+
+            <Button
+                android:id="@+id/btn_save_wakeup_interval"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="保存"
+                android:textSize="20sp"
+                android:layout_alignParentRight="true"
+                ></Button>
+        </RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+            <NumberPicker
+                android:id="@+id/np_wakeup_hour"
+                android:layout_width="0dp"
+                android:layout_height="150dp"
+                android:layout_weight="1"
+                ></NumberPicker>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="小时"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:layout_weight="1"
+                ></TextView>
+
+            <NumberPicker
+                android:id="@+id/np_wakeup_minute"
+                android:layout_width="0dp"
+                android:layout_height="150dp"
+                android:layout_weight="1"
+                ></NumberPicker>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="分钟"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:layout_weight="1"
+                ></TextView>
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/black"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        >
+        <CheckBox
+            android:id="@+id/cb_pc_password"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="开机密码"
+            android:layout_weight="1"
+            android:textSize="20sp"
+            ></CheckBox>
+
+        <EditText
+            android:id="@+id/et_pc_password"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:password="true"
+            ></EditText>
+        <Button
+            android:id="@+id/btn_save_pc_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="保存"
+            android:textSize="20sp"
+            ></Button>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            >
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="文本"
+                android:textSize="20sp"
+                android:layout_weight="1"/>
+            <Button
+                android:id="@+id/btn_upload_notification"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="上传"
+                android:textSize="20sp"/>
+        </LinearLayout>
+
+
+        <EditText
+            android:id="@+id/et_text"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            />
+
+        <Button
+            android:id="@+id/btn_upload_file"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="文件上传"
+            android:textSize="20sp"/>
+    </LinearLayout>
+
+</LinearLayout>

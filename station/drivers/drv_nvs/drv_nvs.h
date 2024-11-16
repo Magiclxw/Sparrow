@@ -53,8 +53,11 @@ esp_err_t nvsSavePcPasswordWait(uint32_t waitTime);
 esp_err_t nvsSaveLedCtrl(uint32_t ctrl);
 esp_err_t nvsSaveToolsTokenCtrl(uint32_t ctrl);
 esp_err_t nvsSaveIdleAngle(uint32_t angle);
+esp_err_t nvsLoadIdleAngle(uint32_t * angle);
 esp_err_t nvsSavePosAngle(uint32_t angle);
+esp_err_t nvsLoadPosAngle(uint32_t * angle);
 esp_err_t nvsSaveNegAngle(uint32_t angle);
+esp_err_t nvsLoadNegAngle(uint32_t * angle);
 esp_err_t nvsSaveBackgroundIndex(uint32_t index);
 esp_err_t nvsLoadBackgroundIndex(uint32_t *out_value);
 

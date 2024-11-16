@@ -153,7 +153,9 @@ static void ui_Screen_Main_SetMemValue(uint8_t v)
 
 void ui_Screen_Main_NotificationTimer()
 {
-    // lv_label_set_text(ui_notification, NULL);
+    lv_label_set_text(ui_notification, "");
+    lv_timer_pause(notificationTimer);
+    printf("Notification tiemr\r\n");
     // 实现刷新效果
     lv_obj_invalidate(ui_MainPage);
 }
@@ -445,7 +447,7 @@ void ui_Screen_Main_init(void)
     lv_timer_set_repeat_count(s_timeTimer, -1);
 
     notificationTimer = lv_timer_create(ui_Screen_Main_NotificationTimer, 10000, NULL);
-    lv_timer_set_repeat_count(notificationTimer, 1);
+    lv_timer_set_repeat_count(notificationTimer, -1);
 }
 
 void ui_Screen_Main_SetWeatherIcon(uint8_t index)
@@ -466,8 +468,11 @@ void ui_Screen_Main_SetWeatherTemperature(char *temperature)
 
 void ui_Screen_Main_SetNotification(char *notification)
 {
+    lv_label_set_text_static(ui_notification, NULL);
+    lv_obj_set_style_text_color(ui_notification, lv_color_hex(0xFFFFFF), LV_STATE_DEFAULT);
     lv_label_set_text_static(ui_notification, notification);
-    // lv_timer_reset(notificationTimer);
+    lv_timer_reset(notificationTimer);
+    lv_timer_resume(notificationTimer);
     // // 实现刷新效果
     // lv_obj_invalidate(ui_MainPage);
     // lv_timer_set_repeat_count(notificationTimer, 1);
@@ -475,9 +480,11 @@ void ui_Screen_Main_SetNotification(char *notification)
 
 void ui_Screen_Main_SetBilibiliFollower(char *follower)
 {
+    lv_label_set_text_static(ui_notification, NULL);
     lv_obj_set_style_text_color(ui_notification, lv_color_hex(0xFFB5C5), LV_STATE_DEFAULT);
     lv_label_set_text_static(ui_notification, follower);
-    // lv_timer_reset(notificationTimer);
+    lv_timer_reset(notificationTimer);
+    lv_timer_resume(notificationTimer);
     // // 实现刷新效果
     // lv_obj_invalidate(ui_MainPage);
     // lv_timer_set_repeat_count(notificationTimer, 2);

@@ -35,6 +35,8 @@
 
 #define JSON_KEY_VOLTAGE                    "voltage"
 
+#define JSON_KEY_NOTIFICATION               "notification"
+
 typedef enum powerCtrlEnum
 {
     POWER_NO_CTRL,
@@ -115,11 +117,13 @@ AppRetainedSettingsStruct getAppRetainedSettings();
 esp_err_t setAppDisretainedSettings(char *data);
 AppDisretainedSettingsStruct getAppDisretainedSettings();
 esp_err_t setDeviceRetainedState(DeviceRetainedStateStruct state);
+esp_err_t setAppNotification(char *data);
 esp_err_t getDeviceRetainedState(char *stateData);
 esp_err_t setDeviceRetainedStatistics(DeviceRetainedStatisticsStruct statistics);
 esp_err_t getDeviceRetainedStatistics(char *data);
 esp_err_t setDeviceDisretainedStatistics(DeviceDisretainedStatisticsStruct statistics);
 esp_err_t getDeviceDisretainedStateStatistics(char *data);
+esp_err_t jsonGenerateAppRetainedSettings(char *stateData);
 
 esp_err_t jsonSetPowerState(PowerStateEnum powerState);
 esp_err_t jsonSetLastPowerOnTime(uint32_t time);
@@ -130,5 +134,6 @@ esp_err_t jsonSetLastWakeUpTime(uint32_t time);
 esp_err_t jsonSetLastSleepTime(uint32_t time);
 esp_err_t jsonSetNextSleepTime(uint32_t time);
 esp_err_t jsonSetDeviceState(uint32_t state);
+char *getAppNotification();
 
 #endif

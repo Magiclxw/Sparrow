@@ -17,29 +17,7 @@ public class OnMessageCallback implements MqttCallback {
     public void connectionLost(Throwable cause) {
         // 连接丢失后，一般在这里面进行重连
         System.out.println("连接断开，可以做重连");
-        String broker = MainActivity.mqttServer;
-        String clientId = "Controller";
-        MemoryPersistence persistence = new MemoryPersistence();
-
-        try {
-            client = new MqttClient(broker, clientId, persistence);
-            MqttConnectOptions connOpts = new MqttConnectOptions();
-            connOpts.setUserName(MainActivity.userName);
-            connOpts.setPassword(MainActivity.password.toCharArray());
-            connOpts.setCleanSession(true);
-            // 设置回调
-            client.setCallback(new OnMessageCallback());
-            // 建立连接
-            System.out.println("Connecting to broker: " + broker);
-            try {
-                client.connect(connOpts);
-                System.out.println("重连成功");
-            } catch (MqttException e) {
-                e.printStackTrace();
-            }
-        } catch (MqttException me) {
-            me.printStackTrace();
-        }
+        MainActivity.mainConnectServer();
     }
 
     public void messageArrived(String topic, MqttMessage message) throws Exception {

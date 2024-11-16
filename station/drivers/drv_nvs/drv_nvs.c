@@ -285,15 +285,33 @@ esp_err_t nvsSaveIdleAngle(uint32_t angle)
     return ret;
 }
 
+esp_err_t nvsLoadIdleAngle(uint32_t * angle)
+{
+    esp_err_t ret = nvsLoadU32(USER_NAMESPACE_0, NVS_READWRITE, NVS_SERVO_IDLE_ANGLE, angle);
+    return ret;
+}
+
 esp_err_t nvsSavePosAngle(uint32_t angle)
 {
     esp_err_t ret = nvsSaveU32(USER_NAMESPACE_0, NVS_READWRITE, NVS_SERVO_POS_ANGLE, angle);
     return ret;
 }
 
+esp_err_t nvsLoadPosAngle(uint32_t * angle)
+ {
+    esp_err_t ret = nvsLoadU32(USER_NAMESPACE_0, NVS_READWRITE, NVS_SERVO_POS_ANGLE, angle);
+    return ret;
+}
+
 esp_err_t nvsSaveNegAngle(uint32_t angle)
 {
     esp_err_t ret = nvsSaveU32(USER_NAMESPACE_0, NVS_READWRITE, NVS_SERVO_NEG_ANGLE, angle);
+    return ret;
+}
+
+esp_err_t nvsLoadNegAngle(uint32_t * angle)
+ {
+    esp_err_t ret = nvsLoadU32(USER_NAMESPACE_0, NVS_READWRITE, NVS_SERVO_NEG_ANGLE, angle);
     return ret;
 }
 

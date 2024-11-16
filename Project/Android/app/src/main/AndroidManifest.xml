@@ -30,10 +30,9 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Sparrow.NoActionBar" >
+            android:theme="@style/Theme.Sparrow" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -51,6 +50,10 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+        <activity android:name=".ToolsActivity"/>
+        <activity android:name=".SettingsActivity"/>
+        <activity android:name=".settings.ServerCfgActivity"/>
+        <activity android:name=".settings.SmartCfgActivity"/>
     </application>
 
 </manifest>

@@ -13,10 +13,13 @@ QueueHandle_t mqttQueueHandle = NULL;
 esp_mqtt_client_handle_t client = NULL;
 
 static uint16_t s_powerOnTimes = 0;
-static char s_addr[256] = {0};
-static char s_username[256] = {0};
-static char s_password[256] = {0};
+
 static MqttDataStruct s_mqttRecData = {0};
+
+static size_t mqttGetBrokerAddr(char * addr);
+static size_t mqttGetBrokerUsername(char * username);
+static size_t mqttGetBrokerPassword(char * password);
+
 
 static void log_error_if_nonzero(const char *message, int error_code)
 {
@@ -132,11 +135,11 @@ esp_err_t mqttSetBrokerPassword(const char *password)
     return ret;
 }
 
-size_t mqttGetBrokerAddr()
+static size_t mqttGetBrokerAddr(char * addr)
 {
     size_t length = 0;
 
-    esp_err_t ret = nvsLoadValue(USER_NAMESPACE_0, NVS_READWRITE, SERVER_ADDRESS, s_addr, &length);
+    esp_err_t ret = nvsLoadValue(USER_NAMESPACE_0, NVS_READWRITE, SERVER_ADDRESS, addr, &length);
 
     if (ret == ESP_OK)
     {
@@ -148,11 +151,11 @@ size_t mqttGetBrokerAddr()
     }
 }
 
-size_t mqttGetBrokerUsername()
+static size_t mqttGetBrokerUsername(char * username)
 {
     size_t length = 0;
 
-    esp_err_t ret = nvsLoadValue(USER_NAMESPACE_0, NVS_READWRITE, SERVER_USERNAME, s_username, &length);
+    esp_err_t ret = nvsLoadValue(USER_NAMESPACE_0, NVS_READWRITE, SERVER_USERNAME, username, &length);
     
     if (ret == ESP_OK)
     {
@@ -164,11 +167,11 @@ size_t mqttGetBrokerUsername()
     }
 }
 
-size_t mqttGetBrokerPassword()
+static size_t mqttGetBrokerPassword(char * password)
 {
     size_t length = 0;
 
-    esp_err_t ret = nvsLoadValue(USER_NAMESPACE_0, NVS_READWRITE, SERVER_PASSWORD, s_password, &length);
+    esp_err_t ret = nvsLoadValue(USER_NAMESPACE_0, NVS_READWRITE, SERVER_PASSWORD, password, &length);
     
     if (ret == ESP_OK)
     {
@@ -183,36 +186,31 @@ size_t mqttGetBrokerPassword()
 
 void initMqtt(void)
 {
-    static char *addr = NULL;
-    static char *username = NULL;
-    static char *password = NULL;
+    char s_addr[256] = {0};
+    char s_username[256] = {0};
+    char s_password[256] = {0};
 
     uint8_t addrLen = 0;
     uint8_t usernameLen = 0;
     uint8_t passwordLen = 0;
 
-    addrLen = mqttGetBrokerAddr();
-    usernameLen = mqttGetBrokerUsername();
-    passwordLen = mqttGetBrokerPassword();
+    addrLen = mqttGetBrokerAddr(s_addr);
+    usernameLen = mqttGetBrokerUsername(s_username);
+    passwordLen = mqttGetBrokerPassword(s_password);
+
+    printf("addrLen: %d, usernameLen: %d, passwordLen: %d\r\n", addrLen, usernameLen, passwordLen);
+    printf("addr: %s, username: %s, password: %s\r\n", s_addr, s_username, s_password);
 
     if (addrLen != 0 && usernameLen != 0 && passwordLen != 0)
     {
-        addr = pvPortMalloc(addrLen);
-        username = pvPortMalloc(usernameLen);
-        password = pvPortMalloc(passwordLen);
-
-        memcpy(addr, s_addr, addrLen);
-        memcpy(username, s_username, usernameLen);
-        memcpy(password, s_password, passwordLen);
-
-        printf("addr: %s, username: %s, password: %s\r\n", addr, username, password);
+        // printf("addr: %s, username: %s, password: %s\r\n", s_addr, s_username, s_password);
 
         const esp_mqtt_client_config_t mqtt_cfg = {
-        .broker.address.uri = addr,
+        .broker.address.uri = s_addr,
         .credentials = {
-            .username = username,
+            .username = s_username,
         .authentication = {
-            .password = password,
+            .password = s_password,
         // .broker.address.uri = "mqtts://j1aa1aff.ala.cn-hangzhou.emqxsl.cn:8883",
         // .credentials = {
         //     .username = "test1",
@@ -232,10 +230,6 @@ void initMqtt(void)
 
         };
 
-        // vPortFree(addr);
-        // vPortFree(username);
-        // vPortFree(password);
-
         ESP_LOGI(TAG, "[APP] Free memory: %" PRIu32 " bytes", esp_get_free_heap_size());
         client = esp_mqtt_client_init(&mqtt_cfg);
         /* The last argument may be used to pass data to the event handler, in this example mqtt_event_handler */
@@ -253,4 +247,11 @@ int drvMqttSendRetainedState()
     printf("retained data = %s\n",retainedbuffer);
 
     return esp_mqtt_client_publish(client, MQTT_TOPIC_DEVICE_RETAINED_STATE, retainedbuffer, 0, 0, 1);
+}
+
+int drvMqttSendAppRetainedSettings()
+{
+    char retainedbuffer[1024];
+    jsonGenerateAppRetainedSettings(retainedbuffer);
+    return esp_mqtt_client_publish(client, MQTT_TOPIC_APP_RETAINED_SETTINGS, retainedbuffer, 0, 0, 1);
 }

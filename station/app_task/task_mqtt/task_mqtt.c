@@ -76,10 +76,14 @@ static void mqttTask(void *pvParameters)
         else if (strcmp(MQTT_TOPIC_DEVICE_NOTIFICATION, mqttData.topic) == 0)
         {
             printf("notification = %s\r\n",mqttData.data);
-            ui_Screen_Main_SetNotification("mqttData.data");
+            setAppNotification(mqttData.data);  
+            
+            ui_Screen_Main_SetNotification(getAppNotification());
         }
 
         memset(&mqttData, 0 , sizeof(mqttData));
+
+        vTaskDelay(pdMS_TO_TICKS(100));
         // if(memcmp(MQTT_TOPIC_APP_RETAINED_SETTINGS,event->topic,event->topic_len) == 0)
         // {
         //     printf("app retained settings = %s\n",event->data);

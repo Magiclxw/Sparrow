@@ -1,12 +1,15 @@
 #include "drv_jsonHandler.h"
 #include "drv_nvs.h"
 #include "drv_servo.h"
+#include "drv_power.h"
+#include "drv_mqtt.h"
 
 static AppRetainedSettingsStruct s_appRetainedSettings = {0};
 static AppDisretainedSettingsStruct s_appDisretainedSettings = {0};
 static DeviceRetainedStateStruct s_deviceRetainedState = {0};
 static DeviceRetainedStatisticsStruct s_deviceRetainedStateStatistics = {0};
 static DeviceDisretainedStatisticsStruct s_deviceDisretainedStatistics = {0};
+static char s_notification[256];
 
 void drvJsonHandlerInit()
 {
@@ -29,6 +32,10 @@ esp_err_t setAppRetainedSettings(char *data)
     cJSON *jsonPCPasswordWait = NULL;
     cJSON *jsonLed = NULL;
     cJSON *jsonToken = NULL;
+
+    static uint32_t idleAngle = 0;
+    static uint32_t posAngle = 0;
+    static uint32_t negAngle = 0;
 
     jsonData = cJSON_Parse(data);
 
@@ -91,11 +98,7 @@ esp_err_t setAppRetainedSettings(char *data)
         s_appRetainedSettings.wakeupInterval = jsonWakeupInterval->valueint;
         nvsSaveWakeupInterval(s_appRetainedSettings.wakeupInterval);
     }
-    if (s_appRetainedSettings.powerCtrl != jsonPowerCtrl->valueint)
-    {
-        s_appRetainedSettings.powerCtrl = jsonPowerCtrl->valueint;
-        nvsSavePowerCtrl(s_appRetainedSettings.powerCtrl);
-    }
+    
     if (strcmp(s_appRetainedSettings.password,jsonPCPassword->valuestring) != 0)
     {
         strcpy(s_appRetainedSettings.password, jsonPCPassword->valuestring);
@@ -121,7 +124,36 @@ esp_err_t setAppRetainedSettings(char *data)
         s_appRetainedSettings.toolsToken = jsonToken->valueint;
         nvsSaveToolsTokenCtrl(s_appRetainedSettings.toolsToken);
     }
+    // 最后解析开关机数据，防止清空开关信号时清空其他数据
+    if (s_appRetainedSettings.powerCtrl != jsonPowerCtrl->valueint)
+    {
+        s_appRetainedSettings.powerCtrl = jsonPowerCtrl->valueint;
+        nvsSavePowerCtrl(s_appRetainedSettings.powerCtrl);
+        // 不需开关机
+        if (s_appRetainedSettings.powerCtrl == POWER_NO_CTRL) return ESP_OK;
 
+        // 控制电脑开关机
+        drvPowerOnOff();
+        // 舵机开机
+        if (s_appRetainedSettings.powerCtrl == POWER_ON)
+        {
+            nvsLoadPosAngle(&posAngle);
+            drvServoSetAngle(posAngle);
+        }
+        // 舵机关机
+        else if (s_appRetainedSettings.powerCtrl == POWER_OFF)
+        {
+            nvsLoadNegAngle(&negAngle);
+            drvServoSetAngle(negAngle);
+        }
+        vTaskDelay(pdMS_TO_TICKS(500));
+        // 恢复空闲角度
+        nvsLoadIdleAngle(&idleAngle);
+        drvServoSetAngle(idleAngle);
+        // 清空开关信号
+        s_appRetainedSettings.powerCtrl = POWER_NO_CTRL;
+        drvMqttSendAppRetainedSettings();
+    }
     return ESP_OK;
 }
 
@@ -159,7 +191,7 @@ esp_err_t setAppDisretainedSettings(char *data)
         return ESP_FAIL;
     }
 
-    s_appDisretainedSettings.turnAngle = jsonTurnAngle->valueint;
+    s_appDisretainedSettings.turnAngle = jsonTurnAngle->valueint - 90;
     s_appDisretainedSettings.saveAngle = jsonSaveAngle->valueint;
 
     cJSON_Delete(jsonData);
@@ -203,6 +235,37 @@ esp_err_t setDeviceRetainedState(DeviceRetainedStateStruct state)
     s_deviceRetainedState.nextSleepTime = state.nextSleepTime;
     s_deviceRetainedState.deviceState = state.deviceState;
     return ESP_OK;
+}
+
+esp_err_t setAppNotification(char *data)
+{
+    cJSON *jsonData = NULL;
+    cJSON *jsonNotification = NULL;
+
+    jsonData = cJSON_Parse(data);
+
+    if(jsonData == NULL)
+    {
+        return ESP_FAIL;
+    }
+
+    jsonNotification = cJSON_GetObjectItem(jsonData, JSON_KEY_NOTIFICATION);
+
+    if(jsonNotification == NULL)
+    {
+        return ESP_FAIL;
+    }
+
+    strcpy(s_notification, jsonNotification->valuestring);
+
+    cJSON_Delete(jsonData);
+
+    return ESP_OK;
+}
+
+char *getAppNotification()
+{
+    return s_notification;
 }
 
 esp_err_t jsonSetPowerState(PowerStateEnum powerState)
@@ -278,6 +341,32 @@ esp_err_t getDeviceRetainedState(char *stateData)
     cJSON_AddNumberToObject(jsonData, JSON_KEY_NEXT_WAKE_UP_TIME, s_deviceRetainedState.nextWakeUpTime);
     cJSON_AddNumberToObject(jsonData, JSON_KEY_NEXT_SLEEP_TIME, s_deviceRetainedState.nextSleepTime);
     cJSON_AddNumberToObject(jsonData, JSON_KEY_DEVICE_STATE, s_deviceRetainedState.deviceState);
+
+    data = cJSON_Print(jsonData);
+
+    strcpy(stateData,data);
+
+    vPortFree(data);
+
+    return ESP_OK;
+}
+
+esp_err_t jsonGenerateAppRetainedSettings(char *stateData)
+{
+    cJSON *jsonData = NULL;
+    char *data;
+
+    data = pvPortMalloc(1024);
+
+    jsonData = cJSON_CreateObject();
+
+    cJSON_AddNumberToObject(jsonData, JSON_KEY_WAKE_UP_INTERVAL, s_appRetainedSettings.wakeupInterval);
+    cJSON_AddNumberToObject(jsonData, JSON_KEY_POWER_ON_OFF, s_appRetainedSettings.powerCtrl);
+    cJSON_AddStringToObject(jsonData, JSON_KEY_PC_PASSWORD, s_appRetainedSettings.password);
+    cJSON_AddNumberToObject(jsonData, JSON_KEY_PC_PASSWORD_CTRL, s_appRetainedSettings.passwordCtrl);
+    cJSON_AddNumberToObject(jsonData, JSON_KEY_PC_PASSWORD_WAIT, s_appRetainedSettings.passwordWait);
+    cJSON_AddNumberToObject(jsonData, JSON_KEY_LED_CTRL, s_appRetainedSettings.ledCtrl);
+    cJSON_AddNumberToObject(jsonData, JSON_KEY_TOOLS_TOKEN, s_appRetainedSettings.toolsToken);
 
     data = cJSON_Print(jsonData);
 

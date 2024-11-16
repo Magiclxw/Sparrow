@@ -38,5 +38,6 @@ esp_err_t mqttSetBrokerUsername(const char *username);
 esp_err_t mqttSetBrokerPassword(const char *password);
 
 int drvMqttSendRetainedState();
+int drvMqttSendAppRetainedSettings();
 
 #endif
