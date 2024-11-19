@@ -1,8 +1,8 @@
 #include "drv_jsonHandler.h"
 #include "drv_nvs.h"
 #include "drv_servo.h"
-#include "drv_power.h"
 #include "drv_mqtt.h"
+
 
 static AppRetainedSettingsStruct s_appRetainedSettings = {0};
 static AppDisretainedSettingsStruct s_appDisretainedSettings = {0};
@@ -32,10 +32,6 @@ esp_err_t setAppRetainedSettings(char *data)
     cJSON *jsonPCPasswordWait = NULL;
     cJSON *jsonLed = NULL;
     cJSON *jsonToken = NULL;
-
-    static uint32_t idleAngle = 0;
-    static uint32_t posAngle = 0;
-    static uint32_t negAngle = 0;
 
     jsonData = cJSON_Parse(data);
 
@@ -129,38 +125,16 @@ esp_err_t setAppRetainedSettings(char *data)
     {
         s_appRetainedSettings.powerCtrl = jsonPowerCtrl->valueint;
         nvsSavePowerCtrl(s_appRetainedSettings.powerCtrl);
-        // 不需开关机
-        if (s_appRetainedSettings.powerCtrl == POWER_NO_CTRL) return ESP_OK;
-
-        // 控制电脑开关机
-        drvPowerOnOff();
-        // 舵机开机
-        if (s_appRetainedSettings.powerCtrl == POWER_ON)
-        {
-            nvsLoadPosAngle(&posAngle);
-            drvServoSetAngle(posAngle);
-        }
-        // 舵机关机
-        else if (s_appRetainedSettings.powerCtrl == POWER_OFF)
-        {
-            nvsLoadNegAngle(&negAngle);
-            drvServoSetAngle(negAngle);
-        }
-        vTaskDelay(pdMS_TO_TICKS(500));
-        // 恢复空闲角度
-        nvsLoadIdleAngle(&idleAngle);
-        drvServoSetAngle(idleAngle);
-        // 清空开关信号
-        s_appRetainedSettings.powerCtrl = POWER_NO_CTRL;
-        drvMqttSendAppRetainedSettings();
     }
+
+    cJSON_Delete(jsonData);
+
     return ESP_OK;
 }
 
-AppRetainedSettingsStruct getAppRetainedSettings()
+AppRetainedSettingsStruct * getAppRetainedSettings()
 {
-    
-    return s_appRetainedSettings;
+    return &s_appRetainedSettings;
 }
 
 esp_err_t setAppDisretainedSettings(char *data)
@@ -169,6 +143,7 @@ esp_err_t setAppDisretainedSettings(char *data)
 
     cJSON *jsonTurnAngle = NULL;
     cJSON *jsonSaveAngle = NULL;
+    cJSON *jsonTokenCtrl = NULL;
 
     jsonData = cJSON_Parse(data);
 
@@ -191,35 +166,25 @@ esp_err_t setAppDisretainedSettings(char *data)
         return ESP_FAIL;
     }
 
+    jsonTokenCtrl = cJSON_GetObjectItem(jsonData, JSON_KEY_TOKEN_CTRL);
+
+    if(jsonTokenCtrl == NULL)
+    {
+        return ESP_FAIL;
+    }
+
     s_appDisretainedSettings.turnAngle = jsonTurnAngle->valueint - 90;
     s_appDisretainedSettings.saveAngle = jsonSaveAngle->valueint;
+    s_appDisretainedSettings.tokenCtrl = jsonTokenCtrl->valueint;
 
     cJSON_Delete(jsonData);
-
-    drvServoSetAngle(s_appDisretainedSettings.turnAngle);
-
-    // 空闲时角度
-    if (s_appDisretainedSettings.saveAngle == 1)
-    {
-        nvsSaveIdleAngle(s_appDisretainedSettings.turnAngle);
-    }
-    // 正向时角度
-    else if (s_appDisretainedSettings.saveAngle == 2)
-    {
-        nvsSavePosAngle(s_appDisretainedSettings.turnAngle);
-    }
-    // 逆向时角度
-    else if (s_appDisretainedSettings.saveAngle == 3)
-    {
-        nvsSaveNegAngle(s_appDisretainedSettings.turnAngle);
-    }
 
     return ESP_OK;
 }
 
-AppDisretainedSettingsStruct getAppDisretainedSettings()
+AppDisretainedSettingsStruct * getAppDisretainedSettings()
 {
-    return s_appDisretainedSettings;
+    return &s_appDisretainedSettings;
 }
 
 esp_err_t setDeviceRetainedState(DeviceRetainedStateStruct state)
@@ -348,6 +313,8 @@ esp_err_t getDeviceRetainedState(char *stateData)
 
     vPortFree(data);
 
+    cJSON_Delete(jsonData);
+
     return ESP_OK;
 }
 
@@ -366,13 +333,14 @@ esp_err_t jsonGenerateAppRetainedSettings(char *stateData)
     cJSON_AddNumberToObject(jsonData, JSON_KEY_PC_PASSWORD_CTRL, s_appRetainedSettings.passwordCtrl);
     cJSON_AddNumberToObject(jsonData, JSON_KEY_PC_PASSWORD_WAIT, s_appRetainedSettings.passwordWait);
     cJSON_AddNumberToObject(jsonData, JSON_KEY_LED_CTRL, s_appRetainedSettings.ledCtrl);
-    cJSON_AddNumberToObject(jsonData, JSON_KEY_TOOLS_TOKEN, s_appRetainedSettings.toolsToken);
 
     data = cJSON_Print(jsonData);
 
     strcpy(stateData,data);
 
     vPortFree(data);
+
+    cJSON_Delete(jsonData);
 
     return ESP_OK;
 }
@@ -401,6 +369,8 @@ esp_err_t getDeviceRetainedStatistics(char *statisticsData)
 
     strcpy(statisticsData,data);
 
+    cJSON_Delete(jsonData);
+
     return ESP_OK;
 }
 
@@ -423,6 +393,8 @@ esp_err_t getDeviceDisretainedStateStatistics(char *statisticsData)
     data = cJSON_Print(jsonData);
 
     strcpy(statisticsData,data);
+
+    cJSON_Delete(jsonData);
 
     return ESP_OK;
 }

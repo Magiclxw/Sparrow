@@ -13,10 +13,12 @@
 #include <QProcess>
 #include <QFileDialog>
 #include <QDesktopServices>
+#include <QSystemTrayIcon>
+#include <QTimer>
 
 Driver_Usb *usbDriver;
 usblistener *listener = Q_NULLPTR;
-
+QTimer *recTextRefreshTimer = NULL;   //文本接收定时器
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -24,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    this->setWindowTitle("Sparrow");
+    this->setWindowIcon(QIcon(":/icon/Icon.png"));
     this->setFixedSize(this->width(),this->height());
 
     listener = new usblistener;
@@ -39,10 +43,15 @@ MainWindow::MainWindow(QWidget *parent)
         usbDriver->usbPcMonitorCtrl(1);
     }
 
+    recTextRefreshTimer = new QTimer;
+
+    recTextRefreshTimer->start(100);
+
 //    QList<QStorageInfo> msg;
 //    sysGetDiskMsg(&msg);
 
     connect(listener, &usblistener::DevicePlugIn, usbDriver, &Driver_Usb::usbConnectDevice);
+    connect(recTextRefreshTimer,&QTimer::timeout,this,&MainWindow::setText);
     updateRecFileList();
 }
 
@@ -224,7 +233,6 @@ void MainWindow::on_lwRecFiles_itemDoubleClicked(QListWidgetItem *item)
 
 }
 
-
 void MainWindow::on_btnOpenFloader_clicked()
 {
 
@@ -233,3 +241,16 @@ void MainWindow::on_btnOpenFloader_clicked()
     QDesktopServices::openUrl(path + "/" +fileFolder);
 }
 
+void MainWindow::setText()
+{
+    char * text;
+    if (usbDriver->usbGetTextRecFinishFlag() == 1)
+    {
+        text = (char*)usbDriver->usbGetRecText();
+        QString data = QString::fromUtf8(reinterpret_cast<const char*>(text), usbDriver->usbGetTextRecDataLen());
+        ui->teRecText->setText(text);
+
+        usbDriver->usbSetTextRecFinishFlag(0);
+    }
+
+}

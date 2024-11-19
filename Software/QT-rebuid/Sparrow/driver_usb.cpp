@@ -5,6 +5,7 @@
 #include "interface/usblistener.h"
 #include "interface/jqcpumonitor.h"
 #include <QTimer>
+#include "mainwindow.h"
 
 QSerialPort serial;
 QTimer *timer;
@@ -18,7 +19,13 @@ static uint16_t currentIndex = 0;   //当前数据帧
 static uint32_t recDataSize = 0;    //已接收数据大小
 static uint16_t exteaData = 0;      //不足一帧数据大小
 static uint8_t s_pcMonitor = 0;     //电脑监控开关
+static uint8_t s_textStartFlag = 0;
+static uint8_t s_textRecFinishFlag = 0;
+static int s_textRecDataLen = 0;
 uint8_t *s_filePointer;             //接收数据指针
+static uint8_t textBuffer[2048];
+RecTextCtrlStruct s_recTextCtrl;
+REC_DATA_FORMAT_t g_rec_data_format;
 
 QString failSavePath = "config/test.bin";
 
@@ -176,6 +183,71 @@ static void recDataHandler(uint8_t data[])
         {
             switch (cmd)
             {
+                case SERIAL_CMD_TEXT_START:
+                {
+                    uint8_t ack = 0;
+
+                    s_recTextCtrl.frameLen = data[5] << 8 | data[6];
+                    s_recTextCtrl.curFrame = 0;
+                    s_recTextCtrl.dataLen = s_recTextCtrl.frameLen * 53;
+                    //s_textPointer = (uint8_t*)malloc(s_recTextCtrl.dataLen);
+                    qDebug() << "frame length : " << s_recTextCtrl.frameLen;
+                    ack = 1;
+                    sendCdcData(SERIAL_CMD_TEXT_START, &ack, 1);
+
+                    s_textStartFlag = 1;
+                }
+                break;
+
+                case SERIAL_CMD_TEXT_FRAME:
+                {
+                    if (s_textStartFlag == 1)
+                    {
+                        uint8_t response[3];
+                        uint16_t dataLen = data[3] << 8 | data[4];
+                        uint16_t frameIndex = data[5] << 8 | data[6];
+
+                        qDebug() << "len:" << g_rec_data_format.dataLen;
+
+                        if (frameIndex == s_recTextCtrl.curFrame)
+                        {
+                            memcpy(&textBuffer[s_recTextCtrl.curFrame * 53], &data[7], dataLen);   //*53 : 除去frameIndex字节
+
+                            //收到最后一帧数据
+                            if(s_recTextCtrl.curFrame == s_recTextCtrl.frameLen - 1)
+                            {
+                                QString data = QString::fromUtf8(reinterpret_cast<const char*>(textBuffer), s_recTextCtrl.dataLen);
+
+                                qDebug() << "rec finished:" << data;
+                                //1、发送信号(注意释放申请的空间)
+//                                emit signalMsgText(textBuffer,s_recTextCtrl.dataLen);
+                                s_textRecFinishFlag = 1;
+                                s_textRecDataLen = s_recTextCtrl.dataLen;
+                                //2、清空buffer
+                                memset(&s_recTextCtrl, 0, sizeof(RecTextCtrlStruct));
+                                s_textStartFlag = 0;
+                            }
+                        }
+
+                        qDebug() << "current frame : " << s_recTextCtrl.curFrame;
+
+                        qDebug() << "frame index : " << frameIndex;
+
+                        QByteArray byteArray(reinterpret_cast<char*>(&data[7]), dataLen);
+
+                        qDebug() << byteArray.toHex();
+
+                        response[0] = s_recTextCtrl.curFrame >> 8;
+                        response[1] = s_recTextCtrl.curFrame;
+                        response[2] = 1;
+
+                        sendCdcData(SERIAL_CMD_TEXT_FRAME, response, 3);
+
+                        s_recTextCtrl.curFrame++;
+                    }
+                }
+                break;
+
                 case SERIAL_CMD_FILE_START:
                 {
                     uint8_t ack = 1;
@@ -469,4 +541,24 @@ void Driver_Usb::usbPcMonitorCtrl(uint8_t ctrl)
         timer->start(1000);
     }
     s_pcMonitor = ctrl;
+}
+
+uint8_t Driver_Usb::usbGetTextRecFinishFlag()
+{
+    return s_textRecFinishFlag;
+}
+
+int Driver_Usb::usbGetTextRecDataLen()
+{
+    return s_textRecDataLen;
+}
+
+void Driver_Usb::usbSetTextRecFinishFlag(uint8_t flag)
+{
+    s_textRecFinishFlag = flag;
+}
+
+uint8_t * Driver_Usb::usbGetRecText()
+{
+    return textBuffer;
 }

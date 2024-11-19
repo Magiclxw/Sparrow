@@ -54,6 +54,8 @@
         <activity android:name=".SettingsActivity"/>
         <activity android:name=".settings.ServerCfgActivity"/>
         <activity android:name=".settings.SmartCfgActivity"/>
+        <activity android:name=".tools.UploadFileActivity"/>
+        <activity android:name=".tools.UploadTextActivity"/>
     </application>
 
 </manifest>

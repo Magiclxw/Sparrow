@@ -56,5 +56,6 @@ void hid_data_send(uint8_t data[], uint8_t length);
 void hid_data_upload(uint8_t data[], uint8_t length);
 void hidSendProtocol(uint8_t cmd, uint8_t data[], uint8_t len);
 void cdcSendProtocol(uint8_t cmd, uint8_t data[], uint16_t len);
+void hid_input_passowrd(char string[]);
 
 #endif

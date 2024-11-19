@@ -11,8 +11,7 @@
 
 #define MQTT_TASK_STACK_SIZE    (8192)
 #define MQTT_TASK_PRIORITY      (5)
-#define MQTT_REC_QUEUE_LENGTH  (5)
-#define MQTT_REC_QUEUE_SIZE   (1024)
+#define MQTT_REC_QUEUE_LENGTH  (2)
 
 int createMqttTask();
 

@@ -173,14 +173,14 @@
         android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
         >
-        <CheckBox
+        <TextView
             android:id="@+id/cb_pc_password"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="开机密码"
             android:layout_weight="1"
-            android:textSize="20sp"
-            ></CheckBox>
+            android:textSize="25sp"
+            ></TextView>
 
         <EditText
             android:id="@+id/et_pc_password"
@@ -231,13 +231,6 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             />
-
-        <Button
-            android:id="@+id/btn_upload_file"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="文件上传"
-            android:textSize="20sp"/>
     </LinearLayout>
 
 </LinearLayout>

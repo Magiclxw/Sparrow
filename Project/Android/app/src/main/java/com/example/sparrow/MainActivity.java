@@ -127,8 +127,7 @@ public class MainActivity extends AppCompatActivity {
     static TextView tv_next_power_on_time;
     static TextView tv_device_state;
     static EditText et_pc_password, et_text;
-    static Button btn_power_on, btn_power_off ,btn_save_wakeup_interval, btn_save_pc_password, btn_upload_notification, btn_upload_file;
-    static CheckBox cb_pc_password;
+    static Button btn_power_on, btn_power_off ,btn_save_wakeup_interval, btn_save_pc_password, btn_upload_notification;
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -188,8 +187,6 @@ public class MainActivity extends AppCompatActivity {
         btn_save_pc_password = (Button) findViewById(R.id.btn_save_pc_password);
         btn_upload_notification = (Button) findViewById(R.id.btn_upload_notification);
 
-        cb_pc_password = (CheckBox) findViewById(R.id.cb_pc_password);
-
         np_wakeup_hour.setMinValue(0);
         np_wakeup_hour.setMaxValue(240);
         np_wakeup_minute.setMinValue(0);
@@ -237,21 +234,6 @@ public class MainActivity extends AppCompatActivity {
                 String text = String.valueOf(et_text.getText());
 
                 mqttSendNotification(text);
-            }
-        });
-
-        cb_pc_password.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (cb_pc_password.isChecked())
-                {
-                    setPcPasswordCtrl(1);
-                }
-                else
-                {
-                    setPcPasswordCtrl(0);
-                }
-                mqttSendAppRetainedSettings();
             }
         });
 

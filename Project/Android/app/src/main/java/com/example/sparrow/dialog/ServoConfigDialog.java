@@ -57,6 +57,8 @@ public class ServoConfigDialog extends AlertDialog {
         btn_center_angle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // 启动舵机控制
+                SaveAngle(1);
                 TurnAngle(90);
             }
         });
@@ -64,6 +66,8 @@ public class ServoConfigDialog extends AlertDialog {
         btn_set_angle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // 启动舵机控制
+                SaveAngle(1);
                 TurnAngle(np_angle.getValue());
             }
         });
@@ -72,7 +76,7 @@ public class ServoConfigDialog extends AlertDialog {
             @Override
             public void onClick(View view) {
                 // 保存为空闲时角度
-                SaveAngle(1);
+                SaveAngle(2);
                 dismiss();
             }
         });
@@ -81,7 +85,7 @@ public class ServoConfigDialog extends AlertDialog {
             @Override
             public void onClick(View view) {
                 // 保存为正向角度
-                SaveAngle(2);
+                SaveAngle(3);
                 dismiss();
             }
         });
@@ -90,7 +94,7 @@ public class ServoConfigDialog extends AlertDialog {
             @Override
             public void onClick(View view) {
                 // 保存为反向角度
-                SaveAngle(3);
+                SaveAngle(4);
                 dismiss();
             }
         });

@@ -13,6 +13,8 @@
 #define SERIAL_PROTOCOL_STOP_H      (0xED)
 #define SERIAL_PROTOCOL_STOP_L      (0xDE)
 
+#define SERIAL_CMD_TEXT_START       (0x01)
+#define SERIAL_CMD_TEXT_FRAME       (0x02)
 #define SERIAL_CMD_FILE_START       (0x03)
 #define SERIAL_CMD_FILE             (0x04)
 #define SERIAL_CMD_DISK_INFO        (0x07)
@@ -31,6 +33,22 @@ typedef enum mqttDataEnum
     MQTT_DATA_PASSWORD,
 }MqttDataEnum;
 
+typedef struct recTextCtrlStruct
+{
+    uint16_t frameLen;  //数据帧总个数
+    uint16_t curFrame;  //当前数据帧
+    int dataLen;   //数据总长度
+}RecTextCtrlStruct;
+
+typedef struct REC_DATA_FORMAT{
+    uint8_t start[2];
+    uint8_t cmd;
+    uint8_t dataLen;
+    uint8_t data[56];
+    uint8_t checksum;	//checksum = start + cmd + data_len + data[...]
+    uint8_t stop[2];
+} REC_DATA_FORMAT_t;
+
 extern QSerialPort serial;
 
 class Driver_Usb : public QThread
@@ -47,11 +65,16 @@ public:
     void usbSetWeatherUrl(uint8_t* url, uint8_t urlLen);
     void usbSetBilibiliUrl(uint8_t* url, uint8_t urlLen);
     void usbSetSleepTime(uint32_t sleepTime);
+    uint8_t usbGetTextRecFinishFlag();
+    void usbSetTextRecFinishFlag(uint8_t flag);
+    uint8_t * usbGetRecText();
+    int usbGetTextRecDataLen();
     void run();
 private:
 
     void serialReadData();
     void handleSerialError(QSerialPort::SerialPortError error);
+
 };
 
 #endif // DRIVER_USB_H

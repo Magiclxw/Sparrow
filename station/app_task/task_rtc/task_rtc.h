@@ -6,7 +6,7 @@
 #include "freertos/task.h"
 #include "esp_sleep.h"
 
-#define RTC_TASK_STACK_SIZE (4096)
+#define RTC_TASK_STACK_SIZE (2048)
 #define RTC_TASK_PRIORITY   (5)
 
 

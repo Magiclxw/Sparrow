@@ -17,6 +17,7 @@
 
 #define JSON_KEY_TURN_ANGLE                 "turn_angle"
 #define JSON_KEY_SAVE_ANGLE                 "save_angle"
+#define JSON_KEY_TOKEN_CTRL                 "token_ctrl"
 
 #define JSON_KEY_POWER                      "power"
 #define JSON_KEY_LAST_POWER_ON_TIME         "last_power_on_time"
@@ -61,13 +62,14 @@ typedef struct appRetainedSettingsStruct
     uint8_t passwordCtrl;      //电脑开机密码控制
     uint16_t passwordWait;     //电脑开机密码等待时间
     uint8_t ledCtrl;            //led控制
-    uint8_t toolsToken;         //令牌功能
+    uint8_t toolsToken;         //令牌功能开关
 }AppRetainedSettingsStruct;
 
 typedef struct appDisretainedSettingsStruct
 {
     int turnAngle;     //舵机转动角度
     uint8_t saveAngle;  //保存舵机角度
+    uint8_t tokenCtrl;         //令牌
 }AppDisretainedSettingsStruct;
 
 typedef struct deviceRetainedSettingsStruct
@@ -113,9 +115,9 @@ typedef struct deviceDisretainedStatisticsStruct
 
 
 esp_err_t setAppRetainedSettings(char *data);
-AppRetainedSettingsStruct getAppRetainedSettings();
+AppRetainedSettingsStruct * getAppRetainedSettings();
 esp_err_t setAppDisretainedSettings(char *data);
-AppDisretainedSettingsStruct getAppDisretainedSettings();
+AppDisretainedSettingsStruct * getAppDisretainedSettings();
 esp_err_t setDeviceRetainedState(DeviceRetainedStateStruct state);
 esp_err_t setAppNotification(char *data);
 esp_err_t getDeviceRetainedState(char *stateData);

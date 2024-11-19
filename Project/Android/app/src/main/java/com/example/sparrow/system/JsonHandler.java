@@ -15,6 +15,7 @@ public class JsonHandler {
 
     private final static String JSON_KEY_TURN_ANGLE = "turn_angle";
     private final static String JSON_KEY_SAVE_ANGLE = "save_angle";
+    private final static String JSON_KEY_TOKEN_CTRL = "token_ctrl";
 
     private final static String JSON_KEY_POWER = "power";
     private final static String JSON_KEY_LAST_POWER_ON_TIME = "last_power_on_time";
@@ -45,6 +46,7 @@ public class JsonHandler {
 
     private static int turnAngle = 0;
     private static int saveAngle = 0;
+    private static int tokenCtrl = 0;
 
     private static int power = 0;
     private static long lastPowerOnTime = 0;
@@ -74,7 +76,6 @@ public class JsonHandler {
             pcPasswordWait = jsonObject.getInt(JSON_KEY_PC_PASSWORD_WAIT);
             ledCtrl = jsonObject.getInt(JSON_KEY_LED_CTRL);
             toolsToken = jsonObject.getInt(JSON_KEY_TOOLS_TOKEN);
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -129,7 +130,7 @@ public class JsonHandler {
         return jsonString;
     }
 
-    public static String generateAppDisretainedSettings(int turnAngle, int saveFlag)
+    public static String generateAppDisretainedSettings(int turnAngle, int saveFlag, int tokenCtrl)
     {
         String jsonString = "null";
         try {
@@ -137,6 +138,7 @@ public class JsonHandler {
 
             jsonObject.put(JSON_KEY_TURN_ANGLE, turnAngle);
             jsonObject.put(JSON_KEY_SAVE_ANGLE, saveFlag);
+            jsonObject.put(JSON_KEY_TOKEN_CTRL, tokenCtrl);
 
             jsonString = jsonObject.toString();
 
@@ -254,6 +256,16 @@ public class JsonHandler {
     public static void setSaveAngleFlag(int flag)
     {
         saveAngle = flag;
+    }
+
+    public static int getTokenCtrl()
+    {
+        return tokenCtrl;
+    }
+
+    public static void setTokenCtrl(int token)
+    {
+        tokenCtrl = token;
     }
 
 /** Device 保留状态数据 **/

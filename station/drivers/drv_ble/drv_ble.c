@@ -535,7 +535,10 @@ static uint8_t generateCheckSum(uint8_t data[], uint8_t length)
 
 void bleSendProtocol(uint8_t data[])
 {
-    uint8_t transData[1024];
+    static uint8_t transData[1024];
+
+    memset(transData, 0, 1024);
+
     uint8_t cmd = data[2];
     uint16_t dataLength = data[3] << 8 | data[4];
 
@@ -545,18 +548,18 @@ void bleSendProtocol(uint8_t data[])
     // transData[3] = dataLength >> 8;
     // transData[4] = (uint8_t)dataLength;
 
-    // for(uint8_t i = 5; i < dataLength; i++)
+    // for(uint8_t i = 0; i < dataLength; i++)
     // {
-    //     transData[5+i] = data[i];
+    //     transData[5+i] = data[5+i];
     // }
     memcpy(&transData[2], &data[2], dataLength + 3);
 
-    transData[5 + dataLength] = generateCheckSum(&transData, dataLength + 5);
+    transData[5 + dataLength] = generateCheckSum(transData, dataLength + 5);
 
     transData[5 + dataLength + 1] = BLE_PROTOCOL_STOP_H;
     transData[5 + dataLength + 2] = BLE_PROTOCOL_STOP_L;
 
-    belSendData(&transData, dataLength + 5 + 3);
+    belSendData(transData, dataLength + 5 + 3);
 }
 
 

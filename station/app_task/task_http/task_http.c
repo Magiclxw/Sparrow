@@ -57,17 +57,17 @@ static void httpTask()
             jsonGetBilibiliData();
             // printf("城市：%s \r\n", name);
             jsonGetBilibiliFollowing(&bilibiliFollowing);
-            printf("bilibiliFollowing = %d\r\n", bilibiliFollowing);
+            // printf("bilibiliFollowing = %d\r\n", bilibiliFollowing);
             jsonGetBilibiliFollower(&bilibiliFollower);
-            printf("bilibiliFollower = %d\r\n", bilibiliFollower);
+            // printf("bilibiliFollower = %d\r\n", bilibiliFollower);
             drvHttpGetWeatherName(weatherName);
-            printf("weatherName = %s\r\n", weatherName);
+            // printf("weatherName = %s\r\n", weatherName);
             drvHttpGetWeatherText(weatherText);
-            printf("weatherText = %s\r\n", weatherText);
+            // printf("weatherText = %s\r\n", weatherText);
             drvHttpGetWeatherCode(weatherCode);
-            printf("weatherCode = %s\r\n", weatherCode);
+            // printf("weatherCode = %s\r\n", weatherCode);
             drvHttpGetWeatherTemperature(weatherTemperature);
-            printf("weatherTemperature = %s\r\n", weatherTemperature);
+            // printf("weatherTemperature = %s\r\n", weatherTemperature);
             
             ui_Screen_Main_SetWeatherIcon(atoi(weatherCode));
             ui_Screen_Main_SetWeatherTemperature(weatherTemperature);
@@ -83,7 +83,7 @@ static void httpTask()
 
             //释放json数据
             // drvHttpDeleteJsonData();
-            ESP_LOGI("TAG", "[APP] Free memory: %" PRIu32 " bytes", esp_get_free_heap_size());
+            // ESP_LOGI("TAG", "[APP] Free memory: %" PRIu32 " bytes", esp_get_free_heap_size());
         }
         vTaskDelay(pdMS_TO_TICKS(3000));
     }

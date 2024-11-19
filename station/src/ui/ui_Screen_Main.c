@@ -468,7 +468,7 @@ void ui_Screen_Main_SetWeatherTemperature(char *temperature)
 
 void ui_Screen_Main_SetNotification(char *notification)
 {
-    lv_label_set_text_static(ui_notification, NULL);
+    lv_label_set_text_static(ui_notification, "");
     lv_obj_set_style_text_color(ui_notification, lv_color_hex(0xFFFFFF), LV_STATE_DEFAULT);
     lv_label_set_text_static(ui_notification, notification);
     lv_timer_reset(notificationTimer);
@@ -480,7 +480,7 @@ void ui_Screen_Main_SetNotification(char *notification)
 
 void ui_Screen_Main_SetBilibiliFollower(char *follower)
 {
-    lv_label_set_text_static(ui_notification, NULL);
+    lv_label_set_text_static(ui_notification, "");
     lv_obj_set_style_text_color(ui_notification, lv_color_hex(0xFFB5C5), LV_STATE_DEFAULT);
     lv_label_set_text_static(ui_notification, follower);
     lv_timer_reset(notificationTimer);

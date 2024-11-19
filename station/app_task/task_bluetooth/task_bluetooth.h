@@ -7,7 +7,7 @@
 #include "freertos/queue.h"
 #include "drv_ble.h"
 
-#define BLUETOOTH_TASK_STACK_SIZE   (2048)
+#define BLUETOOTH_TASK_STACK_SIZE   (4096)
 #define BLUETOOTH_TASK_PRIORITY     (14)
 
 #define BLUETOOTH_REC_QUEUE_LENGTH  (5)

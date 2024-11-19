@@ -5,6 +5,7 @@
 #include "driver_usb.h"
 #include <QListWidgetItem>
 
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -16,7 +17,9 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+
     MainWindow(QWidget *parent = nullptr);
+    void setText();
     void updateRecFileList();
     ~MainWindow();
 
@@ -41,6 +44,7 @@ private slots:
 
 signals:
     void signalSetPcMonitor(uint8_t key);
+
 
 private:
     Ui::MainWindow *ui;

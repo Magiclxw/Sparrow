@@ -2,15 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:layout_marginTop="20dp"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="20dp">
 
         <Button
             android:id="@+id/btn_servo_cfg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
             android:text="舵机角度设置"
             android:textSize="25dp"
             ></Button>
@@ -20,8 +20,6 @@
             android:id="@+id/btn_server_settings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
             android:text="服务器配置"
             android:textSize="25dp"
             ></Button>
@@ -30,8 +28,6 @@
             android:id="@+id/btn_smart_cfg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
             android:text="配网"
             android:textSize="25dp"
             ></Button>
@@ -40,10 +36,58 @@
             android:id="@+id/btn_led_ctrl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
             android:text="LED控制"
             android:textSize="25dp"
             ></Button>
+
+        <Button
+            android:id="@+id/btn_password_delay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="开机密码延时"
+            android:textSize="25dp"
+            ></Button>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="令牌开关"
+                    android:textSize="25sp"></TextView>
+
+                <Switch
+                    android:id="@+id/switch_token_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="开机密码"
+                    android:textSize="25sp"></TextView>
+
+                <Switch
+                    android:id="@+id/switch_pc_password_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"/>
+        </RelativeLayout>
+
+
 
 </LinearLayout>

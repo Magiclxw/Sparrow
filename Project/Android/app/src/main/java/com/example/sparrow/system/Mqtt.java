@@ -11,6 +11,7 @@ import static com.example.sparrow.system.JsonHandler.getPcPasswordWait;
 import static com.example.sparrow.system.JsonHandler.getPowerOnOFF;
 import static com.example.sparrow.system.JsonHandler.getSaveAngleFlag;
 import static com.example.sparrow.system.JsonHandler.getToken;
+import static com.example.sparrow.system.JsonHandler.getTokenCtrl;
 import static com.example.sparrow.system.JsonHandler.getTurnAngle;
 import static com.example.sparrow.system.JsonHandler.getWakeupInterval;
 
@@ -168,7 +169,7 @@ public class Mqtt {
 
     public static void mqttSendAppDisretainedSettings()
     {
-        String jsonData = generateAppDisretainedSettings(getTurnAngle(), getSaveAngleFlag());
+        String jsonData = generateAppDisretainedSettings(getTurnAngle(), getSaveAngleFlag(), getTokenCtrl());
 
         MqttMessage message = new MqttMessage(jsonData.getBytes());
         message.setQos(0);

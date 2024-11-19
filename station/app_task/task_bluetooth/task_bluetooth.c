@@ -53,6 +53,7 @@ void bluetoothRecTask()
 
     while (1)
     {
+        
         if(Bluetooth_Queue_Handle != NULL)
         {
             xQueueReceive(Bluetooth_Queue_Handle,recData,portMAX_DELAY);
@@ -158,21 +159,21 @@ static void bluetoothRecDataHandler(uint8_t *data)
         case CMD_MOUSE_CLICK:
         {
             hid_mouse_click(data[5],data[6]);
-            ESP_LOGI(TAG, " CLICKED\r\n");
+            // ESP_LOGI(TAG, " CLICKED\r\n");
             break;
         }
         //键盘输入
         case CMD_KEYBOARD_INPUT:
         {
             hid_input_char(data[4]);
-            ESP_LOGI(TAG, " key %c\r\n",data[4]);
+            // ESP_LOGI(TAG, " key %c\r\n",data[4]);
             break;
         }
         //键盘功能键
         case CMD_KEYBOARD_FUNC:
         {
             hid_input_func(data[5],data[6]);
-            ESP_LOGI(TAG, " key %c\r\n",data[5]);
+            // ESP_LOGI(TAG, " key %c\r\n",data[5]);
             break;
         }
 
@@ -239,7 +240,7 @@ static void bluetoothRecDataHandler(uint8_t *data)
         {
             for(uint8_t i = 0; i < dataLen; i++)
             {
-                hidData[i] = data[5 + i];
+                transData[i] = data[5 + i];
             }
             cdcSendProtocol(USB_PROTOCOL_CMD_TEXT_START, transData, dataLen);
             //hidSendProtocol(HID_PROTOCOL_CMD_TEXT_START ,hidData, dataLen);
@@ -251,10 +252,10 @@ static void bluetoothRecDataHandler(uint8_t *data)
         {
             for(uint8_t i = 0; i < dataLen; i++)
             {
-                hidData[i] = data[4 + i];
+                transData[i] = data[5 + i];
             }
 
-            //hidSendProtocol(HID_PROTOCOL_CMD_TEXT, hidData, dataLen);
+            cdcSendProtocol(USB_PROTOCOL_CMD_TEXT, transData, dataLen);
             break;
         }
         case CMD_CDC_SEND_FILE_START:

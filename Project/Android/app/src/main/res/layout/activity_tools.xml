@@ -3,14 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginTop="20dp"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="20dp"
     android:orientation="vertical">
     <Button
         android:id="@+id/btn_mouse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
         android:text="鼠标"
         android:layout_gravity="center"
         ></Button>
@@ -19,39 +19,31 @@
         android:id="@+id/btn_keyboard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
         android:text="键盘"
         android:layout_gravity="center"
         ></Button>
 
     <Button
-        android:id="@+id/tools_btn_password"
+        android:id="@+id/btn_token"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:text="开机密码"
-        android:layout_gravity="center"
-        ></Button>
-
-    <Button
-        android:id="@+id/tools_btn_token"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
         android:text="手机令牌"
         android:layout_gravity="center"
         ></Button>
 
     <Button
-        android:id="@+id/tools_btn_upload"
+        android:id="@+id/tools_btn_notification"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
         android:text="留言"
+        android:layout_gravity="center"
+        ></Button>
+
+    <Button
+        android:id="@+id/btn_upload_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="上传文本"
         android:layout_gravity="center"
         ></Button>
 
@@ -59,8 +51,6 @@
         android:id="@+id/tools_btn_upload_file"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
         android:text="上传文件"
         android:layout_gravity="center"
         ></Button>

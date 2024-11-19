@@ -83,7 +83,7 @@ static void batteryTask()
                 itoa(nextWakeupTime, strNextWakeupTime, 10);
 
                 esp_mqtt_client_publish(client, MQTT_TOPIC_DEVICE_RETAINED_STATE, strNextWakeupTime, 0, 0, 1);
-                printf("sleep");
+                // printf("sleep");
                 if (nvsLoadWakeupInterval(&wakeupInterval) == ESP_OK)
                 {
                     esp_deep_sleep(1000000LL * wakeupInterval);

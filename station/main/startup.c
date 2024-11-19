@@ -54,11 +54,12 @@ void postStartup()
 {
     //mqtt初始化，建立mqtt连接
     createMqttTask();
-    
-    // createUsbTask();
 
-    createLedTask();
     createHttpTask();
+    
+    createUsbTask();
+
+    // createLedTask();
 
     createBleRecTask();
     createBleTransTask();
@@ -69,7 +70,7 @@ void postStartup()
     createBatteryTask();
 
     //启动RTC线程
-    createRtcTask();
+    // createRtcTask();
 
     vTaskDelay(pdMS_TO_TICKS(100));
     //记录开机次数

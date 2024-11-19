@@ -178,6 +178,11 @@ public class BLEInterface {
 
         if (frameLen >= 0) System.arraycopy(frameData, 0, data, 7, frameLen);
 
+//        for (int i = 0; i < frameLen; i++)
+//        {
+//            data[i+7] = frameData[i];
+//        }
+
         /***************************************/
         data[7 + frameLen] = (byte) CalcCheckSum(data,frameLen + 7);
         data[7 + frameLen + 1] = (byte)CMD_STOP_H;

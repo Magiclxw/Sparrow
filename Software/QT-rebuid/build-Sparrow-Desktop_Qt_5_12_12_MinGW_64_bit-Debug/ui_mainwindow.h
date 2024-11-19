@@ -18,6 +18,7 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
+#include <QtWidgets/QTextEdit>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -32,6 +33,8 @@ public:
     QWidget *tab;
     QPushButton *pushButton;
     QWidget *tab_2;
+    QVBoxLayout *verticalLayout_4;
+    QTextEdit *teRecText;
     QWidget *tab_3;
     QVBoxLayout *verticalLayout_3;
     QListWidget *lwRecFiles;
@@ -70,6 +73,14 @@ public:
         tabWidget->addTab(tab, QString());
         tab_2 = new QWidget();
         tab_2->setObjectName(QString::fromUtf8("tab_2"));
+        verticalLayout_4 = new QVBoxLayout(tab_2);
+        verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
+        teRecText = new QTextEdit(tab_2);
+        teRecText->setObjectName(QString::fromUtf8("teRecText"));
+        teRecText->setReadOnly(true);
+
+        verticalLayout_4->addWidget(teRecText);
+
         tabWidget->addTab(tab_2, QString());
         tab_3 = new QWidget();
         tab_3->setObjectName(QString::fromUtf8("tab_3"));
@@ -147,7 +158,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(2);
+        tabWidget->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -158,7 +169,7 @@ public:
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", nullptr));
         pushButton->setText(QApplication::translate("MainWindow", "PushButton", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainWindow", "Tab 1", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Tab 2", nullptr));
+        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "\346\226\207\346\234\254\346\216\245\346\224\266", nullptr));
         btnOpenFloader->setText(QApplication::translate("MainWindow", "  \346\211\223\345\274\200\346\226\207\344\273\266\345\244\271", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("MainWindow", "\346\226\207\344\273\266\346\216\245\346\224\266", nullptr));
         btnSetWifi->setText(QApplication::translate("MainWindow", "wifi\350\256\276\347\275\256", nullptr));

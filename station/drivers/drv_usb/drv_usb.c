@@ -158,6 +158,8 @@ void cdcSendProtocol(uint8_t cmd, uint8_t data[], uint16_t len)
     tud_cdc_write(uploadData, len+8);
     tud_cdc_write_flush();
     //tud_cdc_write_clear();
+
+    // memset(uploadData, 0, sizeof(uploadData));
 }
 
 
@@ -187,6 +189,21 @@ void hid_input_char(char c)
     vTaskDelay(pdMS_TO_TICKS(50));
 
     tud_hid_keyboard_report(HID_ITF_PROTOCOL_KEYBOARD, 0, NULL);
+}
+
+void hid_input_passowrd(char string[])
+{
+    uint16_t length = strlen(string);
+
+    hid_input_func(0, HID_KEY_HOME);
+    vTaskDelay(pdMS_TO_TICKS(100));
+    for (uint16_t i = 0; i < length; i++)
+    {
+        hid_input_char(string[i]);
+        vTaskDelay(pdMS_TO_TICKS(20));
+    }
+    vTaskDelay(pdMS_TO_TICKS(20));
+    hid_input_func(0, HID_KEY_ENTER);
 }
 
 void hid_input_func(uint8_t modifier,uint8_t keyCode)
