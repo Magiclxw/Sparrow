@@ -39,6 +39,8 @@
 #define CMD_HID_SEND_TEXT           (0x0A)
 #define CMD_CDC_SEND_FILE_START     (0x0B)
 #define CMD_CDC_SEND_FILE           (0x0C)
+#define CMD_BLE_SET_WEATHER_KEY     (0x0D)
+#define CMD_BLE_SET_BILIBILI_VMID   (0x0E)
 
 
 int createBleRecTask();

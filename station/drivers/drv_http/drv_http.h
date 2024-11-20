@@ -29,7 +29,4 @@ esp_err_t drvHttpGetWeatherText(char *buffer);
 esp_err_t drvHttpGetWeatherCode(char *buffer);
 esp_err_t drvHttpGetWeatherTemperature(char *buffer);
 
-esp_err_t httpSetWeatherUrl(const char *url);
-esp_err_t httpSetBilibiliUrl(const char *url);
-
 #endif

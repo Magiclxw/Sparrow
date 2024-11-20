@@ -60,5 +60,7 @@ esp_err_t nvsSaveNegAngle(uint32_t angle);
 esp_err_t nvsLoadNegAngle(uint32_t * angle);
 esp_err_t nvsSaveBackgroundIndex(uint32_t index);
 esp_err_t nvsLoadBackgroundIndex(uint32_t *out_value);
+esp_err_t nvsSetWeatherUrl(const char *url);
+esp_err_t nvsSetBilibiliUrl(const char *url);
 
 #endif

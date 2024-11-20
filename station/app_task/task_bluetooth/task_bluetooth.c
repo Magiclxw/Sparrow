@@ -276,5 +276,28 @@ static void bluetoothRecDataHandler(uint8_t *data)
             cdcSendProtocol(USB_PROTOCOL_CMD_FILE, transData, dataLen);
             break;
         }
+        case CMD_BLE_SET_WEATHER_KEY:
+        {
+            char biliBiliData[100] = {0};
+
+            for(uint16_t i = 0; i < dataLen; i++)
+            {
+                biliBiliData[i] = data[5 + i];
+            }
+            nvsSetBilibiliUrl(biliBiliData);
+            break;
+        }
+        case CMD_BLE_SET_BILIBILI_VMID:
+        {
+            char weatherData[100] = {0};
+
+            for(uint16_t i = 0; i < dataLen; i++)
+            {
+                weatherData[i] = data[5 + i];
+            }
+
+            nvsSetBilibiliUrl(weatherData);
+            break;
+        }
     }
 }

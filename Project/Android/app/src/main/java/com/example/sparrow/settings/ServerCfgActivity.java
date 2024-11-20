@@ -28,8 +28,8 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 
 public class ServerCfgActivity extends AppCompatActivity {
-    private EditText et_mqtt_addr,et_username,et_password;
-    private Button btn_server_save, btn_server_save_to_sparrow;
+    private EditText et_mqtt_addr,et_username,et_password, et_bilibili_vmid, et_weather_key;
+    private Button btn_server_save, btn_server_save_to_sparrow, btn_save_bilibi_vmid, btn_save_weather_key;
     String addr = "mqtts://";
     String username;
     String password;
@@ -51,9 +51,13 @@ public class ServerCfgActivity extends AppCompatActivity {
         et_mqtt_addr = (EditText) findViewById(R.id.mqtt_addr);
         et_username = (EditText) findViewById(R.id.username);
         et_password = (EditText) findViewById(R.id.password);
+        et_bilibili_vmid = (EditText) findViewById(R.id.et_bilibili_vmid);
+        et_weather_key = (EditText) findViewById(R.id.et_weather_key);
 
         btn_server_save = (Button) findViewById(R.id.btn_server_save);
         btn_server_save_to_sparrow = (Button) findViewById(R.id.btn_server_save_to_sparrow);
+        btn_save_bilibi_vmid = (Button) findViewById(R.id.btn_save_bilibili_vmid);
+        btn_save_weather_key = (Button) findViewById(R.id.btn_save_weather_key);
 
         et_mqtt_addr.setText(getMqttAddr(ServerCfgActivity.this).substring(6));
         et_username.setText(getMqttUserName(ServerCfgActivity.this));
@@ -111,7 +115,21 @@ public class ServerCfgActivity extends AppCompatActivity {
                 thread.start();
             }
         });
+        btn_save_bilibi_vmid.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String vmid = String.valueOf(et_bilibili_vmid.getText());
+                BLEInterface.cmdSetBilibiliVid(vmid.getBytes(), (byte) vmid.length());
+            }
+        });
 
+        btn_save_weather_key.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String key = String.valueOf(et_weather_key.getText());
+                BLEInterface.cmdSetWeatherKey(key.getBytes(), (byte) key.length());
+            }
+        });
     }
 
     public void saveSettings(Context context)

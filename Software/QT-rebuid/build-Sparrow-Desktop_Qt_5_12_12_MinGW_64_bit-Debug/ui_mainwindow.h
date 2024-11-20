@@ -30,8 +30,6 @@ public:
     QWidget *centralwidget;
     QVBoxLayout *verticalLayout;
     QTabWidget *tabWidget;
-    QWidget *tab;
-    QPushButton *pushButton;
     QWidget *tab_2;
     QVBoxLayout *verticalLayout_4;
     QTextEdit *teRecText;
@@ -57,27 +55,24 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(258, 400);
+        MainWindow->resize(218, 385);
+        MainWindow->setMaximumSize(QSize(218, 16777215));
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         verticalLayout = new QVBoxLayout(centralwidget);
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
         tabWidget = new QTabWidget(centralwidget);
         tabWidget->setObjectName(QString::fromUtf8("tabWidget"));
+        tabWidget->setMaximumSize(QSize(200, 16777215));
         tabWidget->setTabPosition(QTabWidget::West);
-        tab = new QWidget();
-        tab->setObjectName(QString::fromUtf8("tab"));
-        pushButton = new QPushButton(tab);
-        pushButton->setObjectName(QString::fromUtf8("pushButton"));
-        pushButton->setGeometry(QRect(50, 30, 80, 20));
-        tabWidget->addTab(tab, QString());
         tab_2 = new QWidget();
         tab_2->setObjectName(QString::fromUtf8("tab_2"));
         verticalLayout_4 = new QVBoxLayout(tab_2);
         verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
         teRecText = new QTextEdit(tab_2);
         teRecText->setObjectName(QString::fromUtf8("teRecText"));
-        teRecText->setReadOnly(true);
+        teRecText->setMaximumSize(QSize(200, 16777215));
+        teRecText->setReadOnly(false);
 
         verticalLayout_4->addWidget(teRecText);
 
@@ -158,7 +153,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(1);
+        tabWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -167,8 +162,6 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", nullptr));
-        pushButton->setText(QApplication::translate("MainWindow", "PushButton", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainWindow", "Tab 1", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "\346\226\207\346\234\254\346\216\245\346\224\266", nullptr));
         btnOpenFloader->setText(QApplication::translate("MainWindow", "  \346\211\223\345\274\200\346\226\207\344\273\266\345\244\271", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("MainWindow", "\346\226\207\344\273\266\346\216\245\346\224\266", nullptr));

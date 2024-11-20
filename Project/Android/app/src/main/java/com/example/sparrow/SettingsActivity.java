@@ -28,7 +28,7 @@ import com.example.sparrow.settings.SmartCfgActivity;
 
 
 public class SettingsActivity extends AppCompatActivity {
-    private Button btn_server_settings,btn_servo_cfg, btn_smart_cfg, btn_led_ctrl, btn_password_wait;
+    private Button btn_server_settings, btn_servo_cfg, btn_smart_cfg, btn_led_ctrl, btn_password_wait;
     private NumberPicker turn_angle;
     private Switch switch_token_switch, switch_pc_password_switch;
     private int ledCtrlIndex = 0;

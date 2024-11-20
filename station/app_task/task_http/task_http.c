@@ -35,8 +35,8 @@ static void httpTask()
     int bilibiliFollower = 0;
 
 
-    // httpSetWeatherUrl("0");
-    // httpSetBilibiliUrl("0");
+    // nvsSetWeatherUrl("0");
+    // nvsSetBilibiliUrl("0");
 
     //初始化http
     esp_err_t ret = initHttp();

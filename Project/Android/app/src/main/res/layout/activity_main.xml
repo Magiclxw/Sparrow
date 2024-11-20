@@ -8,7 +8,10 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:openDrawer="start"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:layout_marginTop="20dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -197,40 +200,6 @@
             android:textSize="20sp"
             ></Button>
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
-        >
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            >
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="文本"
-                android:textSize="20sp"
-                android:layout_weight="1"/>
-            <Button
-                android:id="@+id/btn_upload_notification"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="上传"
-                android:textSize="20sp"/>
-        </LinearLayout>
-
-
-        <EditText
-            android:id="@+id/et_text"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            />
-    </LinearLayout>
+    
 
 </LinearLayout>

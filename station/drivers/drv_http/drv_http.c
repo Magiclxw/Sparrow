@@ -569,19 +569,6 @@ esp_err_t drvHttpGetWeatherTemperature(char *buffer)
     return ESP_FAIL;
 }
 
-
-esp_err_t httpSetWeatherUrl(const char *url)
-{
-    esp_err_t ret = nvsSaveValue(USER_NAMESPACE_0, NVS_READWRITE, NVS_WEATHER, url);
-    return ret;
-}
-
-esp_err_t httpSetBilibiliUrl(const char *url)
-{
-    esp_err_t ret = nvsSaveValue(USER_NAMESPACE_0, NVS_READWRITE, NVS_BILIBILI, url);
-    return ret;
-}
-
 static size_t s_weatherGetUrl()
 {
     size_t length = 0;

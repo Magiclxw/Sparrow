@@ -20,6 +20,9 @@ public class BLEInterface {
     private static final char CMD_HID_SEND_TEXT = 0x0A;
     private static final char CMD_CDC_SEND_FILE_START = 0x0B;
     private static final char CMD_CDC_SEND_FILE = 0x0C;
+    private static final char CMD_BLE_SET_WEATHER_KEY = 0x0D;
+    private static final char CMD_BLE_SET_BILIBILI_VMID = 0x0E;
+
 
     public static int MOUSE_LEFT_BUTTON = 1;
     public static int MOUSE_RIGHT_BUTTON = 2;
@@ -289,6 +292,46 @@ public class BLEInterface {
         for(byte i = 0; i < length; i++)
         {
             data[i+5] = password[i];
+        }
+
+        data[5+length] = (byte) CalcCheckSum(data,5+length);
+        data[5+length+1] = (byte)CMD_STOP_H;
+        data[5+length+2] = (byte)CMD_STOP_L;
+        MainActivity.bleManager.sendCmd(data);
+    }
+
+    public static void cmdSetBilibiliVid(byte vmdi[], int length)
+    {
+        byte data[] = new byte[8+length];
+        data[0] = (byte) CMD_START_H;
+        data[1] = (byte)CMD_START_L;
+        data[2] = CMD_BLE_SET_BILIBILI_VMID;
+        data[3] = (byte) (length >> 8);
+        data[4] = (byte) length;
+
+        for(byte i = 0; i < length; i++)
+        {
+            data[i+5] = vmdi[i];
+        }
+
+        data[5+length] = (byte) CalcCheckSum(data,5+length);
+        data[5+length+1] = (byte)CMD_STOP_H;
+        data[5+length+2] = (byte)CMD_STOP_L;
+        MainActivity.bleManager.sendCmd(data);
+    }
+
+    public static void cmdSetWeatherKey(byte key[], int length)
+    {
+        byte data[] = new byte[8+length];
+        data[0] = (byte) CMD_START_H;
+        data[1] = (byte)CMD_START_L;
+        data[2] = CMD_BLE_SET_WEATHER_KEY;
+        data[3] = (byte) (length >> 8);
+        data[4] = (byte) length;
+
+        for(byte i = 0; i < length; i++)
+        {
+            data[i+5] = key[i];
         }
 
         data[5+length] = (byte) CalcCheckSum(data,5+length);

@@ -239,7 +239,7 @@ static void usbDataHandler(uint8_t data[])
 
                 memcpy(weatherData, &data[6], weatherUrlLen);
 
-                httpSetWeatherUrl(weatherData);
+                nvsSetWeatherUrl(weatherData);
 
                 setLed(LED_GREEN);
                 break;
@@ -252,7 +252,7 @@ static void usbDataHandler(uint8_t data[])
 
                 memcpy(biliBiliData, &data[6], biliBiliUrlLen);
 
-                httpSetBilibiliUrl(biliBiliData);
+                nvsSetBilibiliUrl(biliBiliData);
 
                 setLed(LED_GREEN);
                 break;

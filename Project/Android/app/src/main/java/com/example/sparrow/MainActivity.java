@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
     static TextView tv_next_power_on_time;
     static TextView tv_device_state;
     static EditText et_pc_password, et_text;
-    static Button btn_power_on, btn_power_off ,btn_save_wakeup_interval, btn_save_pc_password, btn_upload_notification;
+    static Button btn_power_on, btn_power_off ,btn_save_wakeup_interval, btn_save_pc_password;
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -179,13 +179,11 @@ public class MainActivity extends AppCompatActivity {
         tv_next_power_on_time = (TextView) findViewById(R.id.next_power_on_time);
         tv_device_state = (TextView) findViewById(R.id.tv_device_state);
         et_pc_password = (EditText) findViewById(R.id.et_pc_password);
-        et_text = (EditText) findViewById(R.id.et_text);
 
         btn_power_on = (Button) findViewById(R.id.btn_power_on);
         btn_power_off = (Button) findViewById(R.id.btn_power_off);
         btn_save_wakeup_interval = (Button) findViewById(R.id.btn_save_wakeup_interval);
         btn_save_pc_password = (Button) findViewById(R.id.btn_save_pc_password);
-        btn_upload_notification = (Button) findViewById(R.id.btn_upload_notification);
 
         np_wakeup_hour.setMinValue(0);
         np_wakeup_hour.setMaxValue(240);
@@ -225,15 +223,6 @@ public class MainActivity extends AppCompatActivity {
                 String password = String.valueOf(et_pc_password.getText());
                 setPcPassword(password);
                 mqttSendAppRetainedSettings();
-            }
-        });
-
-        btn_upload_notification.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String text = String.valueOf(et_text.getText());
-
-                mqttSendNotification(text);
             }
         });
 
@@ -299,17 +288,20 @@ public class MainActivity extends AppCompatActivity {
                 long originTime = getNextWakeupTime();
                 String wakeupTime = sdf.format(new Date(originTime * 1000L));
                 System.out.println("wakeup time : " + wakeupTime + "origin" + originTime);
-                tv_next_power_on_time.setText(wakeupTime);
+
                 int deviceState = getDeviceState();
                 if (deviceState == 0)
                 {
                     tv_device_state.setTextColor(Color.parseColor("#ff0000"));
                     tv_device_state.setText("设备离线");
+                    tv_next_power_on_time.setText(wakeupTime);
                 }
                 else
                 {
                     tv_device_state.setTextColor(Color.parseColor("#00ff00"));
                     tv_device_state.setText("设备在线");
+                    // 在线时不显示开机时间
+                    tv_next_power_on_time.setText("");
                 }
             }
         }

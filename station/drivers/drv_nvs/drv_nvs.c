@@ -329,3 +329,15 @@ esp_err_t nvsLoadBackgroundIndex(uint32_t *out_value)
 
     return ret;
 }
+
+esp_err_t nvsSetWeatherUrl(const char *url)
+{
+    esp_err_t ret = nvsSaveValue(USER_NAMESPACE_0, NVS_READWRITE, NVS_WEATHER, url);
+    return ret;
+}
+
+esp_err_t nvsSetBilibiliUrl(const char *url)
+{
+    esp_err_t ret = nvsSaveValue(USER_NAMESPACE_0, NVS_READWRITE, NVS_BILIBILI, url);
+    return ret;
+}
