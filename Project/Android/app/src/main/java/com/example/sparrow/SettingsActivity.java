@@ -5,6 +5,7 @@ import static com.example.sparrow.system.JsonHandler.getPcPassword;
 import static com.example.sparrow.system.JsonHandler.getPcPasswordCtrl;
 import static com.example.sparrow.system.JsonHandler.getToken;
 import static com.example.sparrow.system.JsonHandler.setLedCtrl;
+import static com.example.sparrow.system.JsonHandler.setPcPassword;
 import static com.example.sparrow.system.JsonHandler.setPcPasswordCtrl;
 import static com.example.sparrow.system.JsonHandler.setToken;
 import static com.example.sparrow.system.Mqtt.mqttSendAppRetainedSettings;
@@ -15,6 +16,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.Switch;
 
@@ -25,10 +27,12 @@ import com.example.sparrow.dialog.PasswordDelayDialog;
 import com.example.sparrow.dialog.ServoConfigDialog;
 import com.example.sparrow.settings.ServerCfgActivity;
 import com.example.sparrow.settings.SmartCfgActivity;
+import com.example.sparrow.settings.BleNameSetActivity;
 
 
 public class SettingsActivity extends AppCompatActivity {
-    private Button btn_server_settings, btn_servo_cfg, btn_smart_cfg, btn_led_ctrl, btn_password_wait;
+    private Button btn_server_settings, btn_servo_cfg, btn_smart_cfg, btn_led_ctrl, btn_password_wait,btn_save_pc_password,btn_set_bel_name;
+    static EditText et_pc_password;
     private NumberPicker turn_angle;
     private Switch switch_token_switch, switch_pc_password_switch;
     private int ledCtrlIndex = 0;
@@ -44,9 +48,15 @@ public class SettingsActivity extends AppCompatActivity {
         btn_smart_cfg = (Button) findViewById(R.id.btn_smart_cfg);
         btn_led_ctrl = (Button) findViewById(R.id.btn_led_ctrl);
         btn_password_wait = (Button) findViewById(R.id.btn_password_delay);
+        btn_save_pc_password = (Button) findViewById(R.id.btn_save_pc_password);
+        btn_set_bel_name = (Button) findViewById(R.id.btn_ble_name);
+
+        et_pc_password = (EditText) findViewById(R.id.et_pc_password);
 
         switch_token_switch = (Switch) findViewById(R.id.switch_token_switch);
         switch_pc_password_switch = (Switch) findViewById(R.id.switch_pc_password_switch);
+
+        et_pc_password.setText(getPcPassword());
 
         if (getToken() == 0)
         {
@@ -154,6 +164,24 @@ public class SettingsActivity extends AppCompatActivity {
                     setPcPasswordCtrl(0);
                 }
                 mqttSendAppRetainedSettings();
+            }
+        });
+
+        btn_save_pc_password.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String password = String.valueOf(et_pc_password.getText());
+                setPcPassword(password);
+                mqttSendAppRetainedSettings();
+            }
+        });
+
+        btn_set_bel_name.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.setClass(SettingsActivity.this, BleNameSetActivity.class);
+                startActivity(intent);
             }
         });
     }

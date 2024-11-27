@@ -20,7 +20,7 @@
             android:id="@+id/btn_server_settings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="MQTT服务器"
+            android:text="服务器设置"
             android:textSize="25dp"
             ></Button>
 
@@ -45,14 +45,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="开机密码延时"
-            android:textSize="25dp"
+            android:textSize="25sp"
             ></Button>
+
+        <Button
+            android:id="@+id/btn_ble_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="蓝牙名称"
+            android:textSize="25sp"
+            />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp">
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -71,13 +79,13 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp">
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="开机密码"
+                    android:text="密码开关"
                     android:textSize="25sp"></TextView>
 
                 <Switch
@@ -88,6 +96,37 @@
                     android:layout_alignParentRight="true"/>
         </RelativeLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            >
+                <TextView
+                    android:id="@+id/cb_pc_password"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="开机密码"
+                    android:layout_weight="1"
+                    android:textSize="25sp"
+                    ></TextView>
+
+                <EditText
+                    android:id="@+id/et_pc_password"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:password="true"
+                    ></EditText>
+                <Button
+                    android:id="@+id/btn_save_pc_password"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="保存"
+                    android:textSize="20sp"
+                    ></Button>
+        </LinearLayout>
 
 
 </LinearLayout>

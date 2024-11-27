@@ -30,6 +30,7 @@
 #define USB_PROTOCOL_CMD_SET_WEATHER_URL (0x0C)
 #define USB_PROTOCOL_CMD_SET_BILIBILI_URL (0x0D)
 #define USB_PROTOCOL_CMD_SET_SLEEP_TIME     (0x0E)
+#define USB_PROTOCOL_CMD_SET_BEL_NAME       (0x0F)
 
 extern QueueHandle_t Usb_Queue_Handle;
 

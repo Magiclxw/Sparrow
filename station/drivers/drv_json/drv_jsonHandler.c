@@ -333,6 +333,7 @@ esp_err_t jsonGenerateAppRetainedSettings(char *stateData)
     cJSON_AddNumberToObject(jsonData, JSON_KEY_PC_PASSWORD_CTRL, s_appRetainedSettings.passwordCtrl);
     cJSON_AddNumberToObject(jsonData, JSON_KEY_PC_PASSWORD_WAIT, s_appRetainedSettings.passwordWait);
     cJSON_AddNumberToObject(jsonData, JSON_KEY_LED_CTRL, s_appRetainedSettings.ledCtrl);
+    cJSON_AddNumberToObject(jsonData, JSON_KEY_TOOLS_TOKEN, s_appRetainedSettings.toolsToken);
 
     data = cJSON_Print(jsonData);
 

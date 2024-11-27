@@ -7,6 +7,7 @@
 #include "dialog_mqtt_cfg.h"
 #include "dialog_weather_cfg.h"
 #include "dialog_bilibili_cfg.h"
+#include "dialog_ble_name.h"
 #include "dialog_sleep_time.h"
 #include <QFileIconProvider>
 #include <QLabel>
@@ -254,3 +255,10 @@ void MainWindow::setText()
     }
 
 }
+
+void MainWindow::on_btnSetBleName_clicked()
+{
+    Dialog_Ble_Name dialog(this);
+    dialog.exec();
+}
+

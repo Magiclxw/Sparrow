@@ -1,4 +1,5 @@
 release/dialog_bilibili_cfg.o
+release/dialog_ble_name.o
 release/dialog_mqtt_cfg.o
 release/dialog_sleep_time.o
 release/dialog_weather_cfg.o
@@ -11,6 +12,7 @@ release/mainwindow.o
 release/system.o
 release/qrc_Resources.o
 release/moc_dialog_bilibili_cfg.o
+release/moc_dialog_ble_name.o
 release/moc_dialog_mqtt_cfg.o
 release/moc_dialog_sleep_time.o
 release/moc_dialog_weather_cfg.o

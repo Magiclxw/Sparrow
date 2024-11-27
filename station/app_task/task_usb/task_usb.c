@@ -269,6 +269,18 @@ static void usbDataHandler(uint8_t data[])
 
                 break;
             }
+            // 设置蓝牙名称
+            case USB_PROTOCOL_CMD_SET_BEL_NAME:
+            {
+                uint8_t bleNameLen = data[5];
+
+                char bleNameData[bleNameLen];
+
+                memcpy(bleNameData, &data[6], bleNameLen);
+
+                nvsSaveBleName(bleNameData);
+                break;
+            }
         }
     }
 }

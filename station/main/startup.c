@@ -32,6 +32,8 @@ void preStartup()
     // 初始化电源引脚
     drvPowerInit();
 
+    initLed();
+
     //wifi初始化
     initWifi();
 

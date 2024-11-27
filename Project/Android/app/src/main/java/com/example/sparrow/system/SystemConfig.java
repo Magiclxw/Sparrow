@@ -88,4 +88,18 @@ public class SystemConfig {
         return sp.getString("write_uuid",null);
     }
 
+    public static void setBleName(Context context,String bleName)
+    {
+        SharedPreferences sp = context.getSharedPreferences("data",Context.MODE_PRIVATE);
+        SharedPreferences.Editor edit = sp.edit();
+        edit.putString("bel_name",bleName);
+        edit.commit();
+    }
+
+    public static String getBleName(Context context)
+    {
+        SharedPreferences sp = context.getSharedPreferences("data",Context.MODE_PRIVATE);
+        return sp.getString("bel_name",null);
+    }
+
 }

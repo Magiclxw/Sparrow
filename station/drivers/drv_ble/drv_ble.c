@@ -1,4 +1,5 @@
 #include "drv_ble.h"
+#include "drv_nvs.h"
 
 #define GATTS_TAG "GATTS_DEMO"
 
@@ -28,6 +29,8 @@ static bool compareCheckSum(uint8_t *data, uint16_t length);
 
 static uint8_t char1_str[] = {0x11,0x22,0x33};
 static esp_gatt_char_prop_t a_property = 0;
+// 蓝牙名称
+static char s_bleName[30] = "Sparrow";
 
 static esp_attr_value_t gatts_demo_char1_val =
 {
@@ -144,6 +147,7 @@ static prepare_type_env_t a_prepare_write_env;
 void example_write_event_env(esp_gatt_if_t gatts_if, prepare_type_env_t *prepare_write_env, esp_ble_gatts_cb_param_t *param);
 void example_exec_write_event_env(prepare_type_env_t *prepare_write_env, esp_ble_gatts_cb_param_t *param);
 static void belSendData(uint8_t *data, uint8_t length);
+static void s_bleLoadNameFromNvs();
 
 static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param)
 {
@@ -268,7 +272,7 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
         gl_profile_tab[PROFILE_A_APP_ID].service_id.id.uuid.len = ESP_UUID_LEN_16;
         gl_profile_tab[PROFILE_A_APP_ID].service_id.id.uuid.uuid.uuid16 = GATTS_SERVICE_UUID_TEST_A;
 
-        esp_err_t set_dev_name_ret = esp_ble_gap_set_device_name(TEST_DEVICE_NAME);
+        esp_err_t set_dev_name_ret = esp_ble_gap_set_device_name(s_bleName);
         if (set_dev_name_ret){
             ESP_LOGE(GATTS_TAG, "set device name failed, error code = %x", set_dev_name_ret);
         }
@@ -562,6 +566,10 @@ void bleSendProtocol(uint8_t data[])
     belSendData(transData, dataLength + 5 + 3);
 }
 
+static void s_bleLoadNameFromNvs()
+{
+    nvsLoadBleName(s_bleName);
+}
 
 void belSendData(uint8_t *data, uint8_t length)
 {
@@ -572,6 +580,8 @@ void belSendData(uint8_t *data, uint8_t length)
 void initBLE()
 {
     esp_err_t ret;
+
+    s_bleLoadNameFromNvs();
 
     ESP_ERROR_CHECK(esp_bt_controller_mem_release(ESP_BT_MODE_CLASSIC_BT));
 

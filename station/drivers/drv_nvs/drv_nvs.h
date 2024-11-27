@@ -27,6 +27,7 @@
 #define NVS_SERVO_IDLE_ANGLE    ("idleAngle")
 #define NVS_SERVO_POS_ANGLE     ("posAngle")
 #define NVS_SERVO_NEG_ANGLE     ("negAngle")
+#define NVS_BEL_NAME            ("bleName")
 
 #define NVS_KEY_BACKGROUND_INDEX     ("bgIndex")   // 背景索引
 
@@ -62,5 +63,7 @@ esp_err_t nvsSaveBackgroundIndex(uint32_t index);
 esp_err_t nvsLoadBackgroundIndex(uint32_t *out_value);
 esp_err_t nvsSetWeatherUrl(const char *url);
 esp_err_t nvsSetBilibiliUrl(const char *url);
+esp_err_t nvsSaveBleName(char* name);
+esp_err_t nvsLoadBleName(char *name);
 
 #endif

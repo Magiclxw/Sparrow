@@ -341,3 +341,20 @@ esp_err_t nvsSetBilibiliUrl(const char *url)
     esp_err_t ret = nvsSaveValue(USER_NAMESPACE_0, NVS_READWRITE, NVS_BILIBILI, url);
     return ret;
 }
+
+esp_err_t nvsSaveBleName(char* name)
+{
+    esp_err_t ret = nvsSaveValue(USER_NAMESPACE_0, NVS_READWRITE, NVS_BEL_NAME, name);
+    return ret;
+}
+
+esp_err_t nvsLoadBleName(char *name)
+{
+    esp_err_t ret = ESP_OK;
+
+    size_t length = 0;
+
+    ret = nvsLoadValue(USER_NAMESPACE_0, NVS_READWRITE, NVS_BEL_NAME, name, &length);
+
+    return ret;
+}

@@ -1,4 +1,5 @@
 debug/dialog_bilibili_cfg.o
+debug/dialog_ble_name.o
 debug/dialog_mqtt_cfg.o
 debug/dialog_sleep_time.o
 debug/dialog_weather_cfg.o
@@ -11,6 +12,7 @@ debug/mainwindow.o
 debug/system.o
 debug/qrc_Resources.o
 debug/moc_dialog_bilibili_cfg.o
+debug/moc_dialog_ble_name.o
 debug/moc_dialog_mqtt_cfg.o
 debug/moc_dialog_sleep_time.o
 debug/moc_dialog_weather_cfg.o

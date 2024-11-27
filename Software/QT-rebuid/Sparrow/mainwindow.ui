@@ -113,6 +113,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="btnSetBleName">
+          <property name="text">
+           <string> 蓝牙名称</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QWidget" name="widget_2" native="true">
           <property name="maximumSize">
            <size>

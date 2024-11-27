@@ -530,6 +530,19 @@ void Driver_Usb::usbSetSleepTime(uint32_t sleepTime)
     sendCdcData(USB_PROTOCOL_CMD_SET_SLEEP_TIME, cmbData, 4);
 }
 
+void Driver_Usb::usbSetBleName(uint8_t* name, uint8_t len)
+{
+    uint8_t cmbData[len + 1];
+
+    cmbData[0] = len;
+
+    memcpy(&cmbData[1], name, len);
+
+    cmbData[len + 1] = '\0';
+
+    sendCdcData(USB_PROTOCOL_CMD_SET_BEL_NAME, cmbData, len + 1);
+}
+
 void Driver_Usb::usbPcMonitorCtrl(uint8_t ctrl)
 {
     if (ctrl == 0)

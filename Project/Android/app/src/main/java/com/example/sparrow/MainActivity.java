@@ -4,15 +4,10 @@ import static com.example.sparrow.system.JsonHandler.analysisAppRetainedSettings
 import static com.example.sparrow.system.JsonHandler.analysisDevRetainedState;
 import static com.example.sparrow.system.JsonHandler.getDeviceState;
 import static com.example.sparrow.system.JsonHandler.getNextWakeupTime;
-import static com.example.sparrow.system.JsonHandler.getPcPassword;
-import static com.example.sparrow.system.JsonHandler.getPowerOnOFF;
 import static com.example.sparrow.system.JsonHandler.getWakeupInterval;
-import static com.example.sparrow.system.JsonHandler.setPcPassword;
-import static com.example.sparrow.system.JsonHandler.setPcPasswordCtrl;
 import static com.example.sparrow.system.JsonHandler.setPowerOnOff;
 import static com.example.sparrow.system.JsonHandler.setWakeupInterval;
 import static com.example.sparrow.system.Mqtt.mqttSendAppRetainedSettings;
-import static com.example.sparrow.system.Mqtt.mqttSendNotification;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -36,10 +31,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.NumberPicker;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,20 +46,11 @@ import com.example.sparrow.system.Mqtt;
 import com.example.sparrow.system.SystemConfig;
 import com.example.sparrow.system.TypeConversion;
 import com.example.sparrow.system.UpdateState;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.navigation.NavigationView;
+
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
-import com.example.sparrow.databinding.ActivityMainBinding;
-
-import org.eclipse.paho.client.mqttv3.MqttClient;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -76,7 +59,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "BLEMain";
-    private final String DeviceName = "Sparrow";
+    private String DeviceName = "Sparrow";
     private int quitFlag = 0; //退出确认标志
 
     public static String SERVICE_UUID = "000000ff-0000-1000-8000-00805f9b34fb";//"49535343-fe7d-4ae5-8fa9-9fafd205e455";  //蓝牙通讯服务
@@ -126,8 +109,8 @@ public class MainActivity extends AppCompatActivity {
     static NumberPicker np_wakeup_minute;
     static TextView tv_next_power_on_time;
     static TextView tv_device_state;
-    static EditText et_pc_password, et_text;
-    static Button btn_power_on, btn_power_off ,btn_save_wakeup_interval, btn_save_pc_password;
+
+    static Button btn_power_on, btn_power_off ,btn_save_wakeup_interval;
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -157,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
         SERVICE_UUID = SystemConfig.getBleServiceUUID(MainActivity.this);
         READ_UUID = SystemConfig.getBleReadUUID(MainActivity.this);
         WRITE_UUID = SystemConfig.getBleWriteUUID(MainActivity.this);
+        DeviceName = SystemConfig.getBleName(MainActivity.this);
 
         if (SERVICE_UUID == null) {
             SERVICE_UUID = "000000ff-0000-1000-8000-00805f9b34fb";
@@ -170,6 +154,11 @@ public class MainActivity extends AppCompatActivity {
             WRITE_UUID = "0000ff01-0000-1000-8000-00805f9b34fb";
             SystemConfig.setBleReadUUID(this, WRITE_UUID);
         }
+        if (DeviceName == null)
+        {
+            DeviceName = "Sparrow";
+            SystemConfig.setBleName(this, DeviceName);
+        }
 
         mContext = getApplicationContext();
 
@@ -178,12 +167,12 @@ public class MainActivity extends AppCompatActivity {
 
         tv_next_power_on_time = (TextView) findViewById(R.id.next_power_on_time);
         tv_device_state = (TextView) findViewById(R.id.tv_device_state);
-        et_pc_password = (EditText) findViewById(R.id.et_pc_password);
+
 
         btn_power_on = (Button) findViewById(R.id.btn_power_on);
         btn_power_off = (Button) findViewById(R.id.btn_power_off);
         btn_save_wakeup_interval = (Button) findViewById(R.id.btn_save_wakeup_interval);
-        btn_save_pc_password = (Button) findViewById(R.id.btn_save_pc_password);
+
 
         np_wakeup_hour.setMinValue(0);
         np_wakeup_hour.setMaxValue(240);
@@ -216,16 +205,6 @@ public class MainActivity extends AppCompatActivity {
                 mqttSendAppRetainedSettings();
             }
         });
-
-        btn_save_pc_password.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String password = String.valueOf(et_pc_password.getText());
-                setPcPassword(password);
-                mqttSendAppRetainedSettings();
-            }
-        });
-
 
         new Thread(new UpdateState()).start();
 
@@ -260,8 +239,6 @@ public class MainActivity extends AppCompatActivity {
 
                 np_wakeup_hour.setValue(getWakeupInterval() / 60);
                 np_wakeup_minute.setValue(getWakeupInterval() % 60);
-                et_pc_password.setText(getPcPassword());
-
             }
             if(appDisretainedSettings != null)
             {

@@ -42,6 +42,8 @@ private slots:
 
     void on_btnOpenFloader_clicked();
 
+    void on_btnSetBleName_clicked();
+
 signals:
     void signalSetPcMonitor(uint8_t key);
 

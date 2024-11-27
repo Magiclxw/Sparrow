@@ -11,6 +11,7 @@ CONFIG += c++11
 
 SOURCES += \
     dialog_bilibili_cfg.cpp \
+    dialog_ble_name.cpp \
     dialog_mqtt_cfg.cpp \
     dialog_sleep_time.cpp \
     dialog_weather_cfg.cpp \
@@ -24,6 +25,7 @@ SOURCES += \
 
 HEADERS += \
     dialog_bilibili_cfg.h \
+    dialog_ble_name.h \
     dialog_mqtt_cfg.h \
     dialog_sleep_time.h \
     dialog_weather_cfg.h \
@@ -38,6 +40,7 @@ HEADERS += \
 
 FORMS += \
     dialog_bilibili_cfg.ui \
+    dialog_ble_name.ui \
     dialog_mqtt_cfg.ui \
     dialog_sleep_time.ui \
     dialog_weather_cfg.ui \
