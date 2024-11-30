@@ -195,14 +195,14 @@ void hid_input_passowrd(char string[])
 {
     uint16_t length = strlen(string);
 
-    hid_input_func(0, HID_KEY_HOME);
-    vTaskDelay(pdMS_TO_TICKS(100));
+    hid_input_func(0, HID_KEY_BACKSPACE);
+    vTaskDelay(pdMS_TO_TICKS(300));
     for (uint16_t i = 0; i < length; i++)
     {
         hid_input_char(string[i]);
-        vTaskDelay(pdMS_TO_TICKS(20));
+        vTaskDelay(pdMS_TO_TICKS(30));
     }
-    vTaskDelay(pdMS_TO_TICKS(20));
+    vTaskDelay(pdMS_TO_TICKS(50));
     hid_input_func(0, HID_KEY_ENTER);
 }
 

@@ -30,7 +30,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 public class ServerCfgActivity extends AppCompatActivity {
     private EditText et_mqtt_addr,et_username,et_password, et_bilibili_vmid, et_weather_key;
     private Button btn_server_save, btn_server_save_to_sparrow, btn_save_bilibi_vmid, btn_save_weather_key;
-    String addr = "mqtts://";
+    String addr = "ssl://";
     String username;
     String password;
     private int serverCfgCounter = 0;

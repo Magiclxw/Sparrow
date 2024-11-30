@@ -30,7 +30,7 @@ public class Mqtt {
 
     static Context context;
 
-    public static String mqttServer;//ssl://j1aa1aff.ala.cn-hangzhou.emqxsl.cn:8883";
+    public static String mqttServer = "ssl://j1aa1aff.ala.cn-hangzhou.emqxsl.cn:8883";
     public static String userName = "test";
     public static String password = "asd13579";   //用户密码
 
@@ -56,18 +56,18 @@ public class Mqtt {
 
 
         if (mqttServer == null || mqttServer.equals("ssl://")) {
-//            mqttServer = "ssl://j1aa1aff.ala.cn-hangzhou.emqxsl.cn:8883";
-//            SystemConfig.setMqttAddr(context, mqttServer);
+            mqttServer = "ssl://j1aa1aff.ala.cn-hangzhou.emqxsl.cn:8883";
+            SystemConfig.setMqttAddr(context, mqttServer);
             return;
         }
         if (userName == null) {
-//            userName = "test";
-//            SystemConfig.setMqttUserName(context, userName);
+            userName = "test";
+            SystemConfig.setMqttUserName(context, userName);
             return;
         }
         if (password == null) {
-//            password = "asd13579";
-//            SystemConfig.setMqttPassword(context, password);
+            password = "asd13579";
+            SystemConfig.setMqttPassword(context, password);
             return;
         }
 
